@@ -1,0 +1,13 @@
+---
+description: Git workflow — named commits, branch off main, merge after testing
+alwaysApply: true
+---
+
+# Git workflow
+
+- **Never develop directly on `main`.** Create a branch from up-to-date `main` for each phase/feature.
+- **Always write a clear commit message** (what changed and why). No unnamed or empty-message commits.
+- **Test before merge.** Merge (or open a PR) into `main` only after the branch is validated.
+- Branch names: `phase-N/…`, `feat/…`, `fix/…`, `docs/…`, `chore/…`.
+- Do not push to `main` unless the user explicitly asks; prefer pushing the work branch.
+- Full detail: `docs/DEVELOPMENT.md` (Git workflow section).

@@ -20,7 +20,7 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 | **Data** | [BALLDONTLIE](https://docs.balldontlie.io/) behind `NbaStatsPort` (note paid-tier limits for some stats) |
 | **Stack** | TypeScript, React, Next.js, Vercel |
 | **Quality bar** | Clean, maintainable code; root-cause fixes (no quick-fix patches); original scoring + AI disclosed |
-| **Process** | Phase-by-phase (`docs/DEVELOPMENT.md`); pause between phases to adjust |
+| **Process** | Phase-by-phase (`docs/DEVELOPMENT.md`); branch off `main`, named commits, merge after testing |
 
 ## Project docs
 - Full outline: [`docs/PROJECT_OUTLINE.md`](docs/PROJECT_OUTLINE.md)
