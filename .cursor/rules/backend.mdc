@@ -1,0 +1,35 @@
+---
+description: Backend architecture — ports/adapters, validation, pure scoring, thin API
+globs: **/api/**/*.ts,**/nba/**/*.ts,**/scoring/**/*.ts,**/domain/**/*.ts
+alwaysApply: false
+---
+
+# Backend rules
+
+Full design + citations: `docs/BACKEND.md`.
+
+## Philosophy
+- Backend owns **interpretation**; frontend owns **presentation**.
+- Compile vendor stats into one typed `Dossier`; UI must not re-derive fit grades.
+
+## Layers (ports & adapters)
+- **Adapter (`nba/`)**: fetch vendor → Zod-parse → domain types. No scoring.
+- **Scoring (`scoring/`)**: pure functions only — no `fetch`, cache, or env.
+- **Application**: orchestrate port + scoring.
+- **Route Handlers**: HTTP only — status codes, query validation, JSON envelope.
+
+## Validation (OWASP)
+- Server-side allow-list validation on query/params before work.
+- Zod at every trust boundary (HTTP in, vendor JSON, env). Validate once; pass inferred types inward.
+- Domain rules (thin sample, confidence) live in scoring — not Zod.
+
+## API
+- v1: `GET /api/players?q=` and `GET /api/dossier/[playerId]`.
+- Typed error codes: `validation_error`, `not_found`, `upstream`, `invalid_payload`; thin sample is explicit in the dossier.
+- Vendor types never appear in route responses.
+
+## Forbidden
+- Business math inside `route.ts`
+- `any` / unchecked `as` on API JSON
+- Silent defaults that hide missing upstream fields
+- Auth, DB writes, or a separate Nest/Express service in v1

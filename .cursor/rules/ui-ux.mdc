@@ -1,0 +1,34 @@
+---
+description: UI/UX principles for RosterRadar — clarity, defined style, responsive, accessible
+globs: **/*.tsx,**/*.css
+alwaysApply: false
+---
+
+# UI/UX principles
+
+Goal: Leetify-like clarity for a scouting dossier — verdict first, calm and readable.
+Full palette, tokens, and type scale: `docs/DESIGN_SYSTEM.md`.
+
+## Clarity & ease of use
+- Verdict first, evidence second; progressive disclosure, max 2 levels (NN/g).
+- Level 1 must complete the core task without opening anything; never hide decision-critical info (grade, recommendation, confidence).
+- Aesthetic & minimalist: only task-essential content on the first screen.
+- Consistency: one shared percentile bar, one callout pattern, one chip style everywhere.
+- Always show system status: loading skeletons, empty, and error states are designed, not afterthoughts.
+
+## Defined style
+- Use semantic design tokens, never raw hex in components (Material 3 / role-based token model).
+- Tiers: `surface`, `content`, `border`, `accent`, `fit` (semantic status). Nothing outside these.
+- Exactly one accent color. Fit colors (green/amber/red) only for fit signals, never decoration.
+- Never rely on color alone — pair fit signals with text/icon (WCAG 1.4.1).
+
+## Accessibility (WCAG 2.2 AA)
+- Body text contrast ≥ 4.5:1; large text (≥24px, or 19px bold) and UI/graphics/focus indicators ≥ 3:1.
+- Every `on-*` token must pass contrast against its paired surface.
+- Visible focus states; full keyboard operability; honor `prefers-reduced-motion`.
+
+## Responsive (mobile-first, MDN)
+- Include `<meta name="viewport" content="width=device-width, initial-scale=1">`.
+- Base styles target mobile; add complexity with `min-width` media queries.
+- Prefer fluid layout (Grid/Flexbox, `minmax`, `clamp()`) and relative units (rem/em/%/vw); breakpoints in `em`/`rem`, not device pixels.
+- Use container queries for component-level adaptation where it beats viewport queries.

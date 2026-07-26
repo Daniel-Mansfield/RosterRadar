@@ -1,0 +1,41 @@
+---
+description: RosterRadar product thesis, MVP scope, and build constraints
+alwaysApply: true
+---
+
+# RosterRadar
+
+Role-aware NBA **scouting dossiers** for team decision-makers — verdict first, evidence second.
+
+## Assignment constraints
+- NBA data via chosen API; clear backend/API → frontend flow
+- Opinionated, easy-to-use UI; useful to FO/scouting staff
+- Small 10-day scope; GitHub repo + live deploy + write-up
+- Prefer TypeScript; clean, maintainable code
+- AI OK if disclosed; concept and scoring must be original
+
+## MVP (must ship)
+1. Player search
+2. Dossier hero: role, fit grade, one-sentence verdict, Strong/Conditional/Poor fit, confidence
+3. 4–6 role pillars as peer percentiles
+4. 2 strengths + 2 risks (plain language)
+5. Evidence strip (e.g. L10 vs season)
+6. Collapsed methodology + loading/empty/error states
+
+## Non-goals (v1)
+Auth/teams, film, tracking, salary/cap, full roster mapper, social, live in-game tools.
+
+## UX
+- Search → Dossier only; progressive disclosure (NN/g)
+- One accent; fit colors sparingly; shared percentile bars
+- Calm ops + editorial hybrid (CTG seriousness + Leetify clarity structure)
+
+## Architecture default
+TypeScript + Next.js; ports/adapters (`nba/` + pure `scoring/`); Zod at boundaries; BALLDONTLIE via `NbaStatsPort`; Route Handlers return typed `Dossier` JSON; deploy (e.g. Vercel).
+
+## Source of truth
+- Outline: `docs/PROJECT_OUTLINE.md`
+- Backend: `docs/BACKEND.md`
+- Design system: `docs/DESIGN_SYSTEM.md`
+- Phases: `docs/DEVELOPMENT.md`
+- AI log: `docs/AI_USAGE.md`

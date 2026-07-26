@@ -1,0 +1,40 @@
+---
+description: TypeScript and React coding standards for RosterRadar
+globs: **/*.ts,**/*.tsx
+alwaysApply: false
+---
+
+# TypeScript standards
+
+Based on TypeScript team direction (strict-by-default) and `@tsconfig/strictest` practice.
+
+- `tsconfig.json`: `"strict": true` plus `noUncheckedIndexedAccess`, `noImplicitOverride`, `noFallthroughCasesInSwitch`, `verbatimModuleSyntax` (use `import type`).
+- Never use `any`. For external/unknown data use `unknown` and narrow with type guards.
+- Validate at system boundaries only (API responses, user input) — e.g. Zod schemas in the data-fetch layer. Trust internal types elsewhere.
+- Model state with discriminated unions, not boolean flags:
+  ```typescript
+  type DossierState =
+    | { status: 'loading' }
+    | { status: 'error'; message: string }
+    | { status: 'ready'; dossier: Dossier };
+  ```
+- Prefer `satisfies` over type assertions (`as`) for config/lookup objects.
+- Explicit return types on exported functions; inference is fine for locals.
+- If suppression is unavoidable, use `// @ts-expect-error` with a reason — never `@ts-ignore`.
+- Scoring logic stays in pure, unit-testable functions with no I/O.
+
+# React rules (react.dev/reference/rules)
+
+- Components and Hooks must be pure: same inputs → same output; no side effects during render.
+- Never mutate props, state, or hook arguments/return values; use setters and new objects.
+- Side effects belong in event handlers first; `useEffect` is a last resort.
+- Hooks only at top level — never in loops, conditions, nested functions, or after early returns; only call from components or custom hooks.
+- Components are used via JSX only; never call a component function directly.
+- Enable `<StrictMode>` and `eslint-plugin-react-hooks`; fix violations, never silence them.
+
+# Style
+
+- Function components only; extract reusable logic into custom hooks.
+- Derive data during render instead of syncing state with effects.
+- Keep components small and single-purpose; colocate component-specific types.
+- Naming: `PascalCase` components/types, `camelCase` functions/variables, `useX` hooks.

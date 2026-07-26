@@ -1,0 +1,25 @@
+---
+description: Highest priority — resolve issues at the root cause, never with quick-fix patches
+alwaysApply: true
+---
+
+# Root-cause-first debugging (highest priority)
+
+When anything breaks — type errors, failing tests, runtime bugs, lint violations — diagnose the underlying cause before changing code.
+
+## Required approach
+1. Reproduce and read the actual error; trace it to its origin (data source, type model, logic), not the line where it surfaced.
+2. State the root cause explicitly before applying a fix.
+3. Fix at the origin. If a bad value comes from the API layer, fix normalization there — not in the component that crashed.
+4. After fixing, check for the same flawed pattern elsewhere in the codebase.
+
+## Forbidden quick fixes
+- `@ts-ignore`, casting to `any`/`as unknown as X` to silence type errors
+- Optional chaining / default values that hide missing data instead of fixing why it's missing
+- try/catch that swallows errors without handling them
+- Disabling ESLint rules or React StrictMode to make warnings go away
+- Retries, timeouts, or `setTimeout` hacks to paper over race conditions
+- Deleting or skipping failing tests to make CI pass
+
+## When a workaround is genuinely necessary
+Only when the root cause is outside our control (e.g. upstream API bug). Then: isolate it in the adapter layer, comment why, and note the upstream cause.
