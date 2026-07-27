@@ -71,6 +71,8 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   }
 
   function closeDrawer(): void {
+    // Invalidate in-flight dossier fetches so a late response cannot reopen the drawer.
+    requestIdRef.current += 1;
     setDrawer({ open: false });
   }
 
