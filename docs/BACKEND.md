@@ -18,7 +18,7 @@ Full product scope: [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md).
 | API surface | **Thin GET resources** | Search + dossier; compare is stretch |
 | Persistence | **None for v1** | Read-through cache only; no DB |
 | Auth | **None for v1** | Assignment non-goal |
-| Data vendor | **BALLDONTLIE NBA API** (primary) | NBA.com spike **failed on Vercel** — see [`SPIKE_NBA_COM.md`](./SPIKE_NBA_COM.md); use paid BALLDONTLIE tier for roster/stats |
+| Data vendor | **BALLDONTLIE NBA API** (primary) | GOAT trial for Phase 2; NBA.com rejected for Vercel runtime — [`VENDOR_DECISION.md`](./VENDOR_DECISION.md) |
 
 ---
 
@@ -161,7 +161,7 @@ Auth, multi-tenant orgs, write DB, film URLs, salary joins, webhooks, background
 | Env | `BALLDONTLIE_API_KEY` — see `.env.example` |
 | Adapter | First implementation of `NbaStatsPort` |
 
-**Vendor decision (2026-07-27):** Official NBA.com stats work locally (roster, search, season, game logs, league dash) but **fail from Vercel** (`fetch failed`). Per [`SPIKE_NBA_COM.md`](./SPIKE_NBA_COM.md), do **not** use NBA.com as the production adapter. Proceed with BALLDONTLIE **paid trial/upgrade** for active roster + stats; keep curated seed as fallback.
+**Vendor decision (2026-07-27):** See [`VENDOR_DECISION.md`](./VENDOR_DECISION.md). Official NBA.com stats work locally but **fail from Vercel**. Production path is BALLDONTLIE (GOAT trial for Phase 2 build) with curated seed fallback — not an `nba_com` adapter on Vercel.
 
 ### Tier reality (plan around this)
 Per BALLDONTLIE’s published endpoint matrix ([nba.balldontlie.io](https://nba.balldontlie.io/)):

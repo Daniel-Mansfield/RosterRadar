@@ -64,6 +64,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Made repo public; Vercel preview deploy; disabled SSO protection; Proof C returned `fetch failed` from stats.nba.com on Vercel; recorded FAIL → BALLDONTLIE paid path
 - **Not used for:** Building nba_com production adapter; starting GOAT trial (human account step)
 
+### 2026-07-27 — Vendor decision doc + repo cleanup prep
+- **Tool:** Cursor agent
+- **Used for:** Authored `docs/VENDOR_DECISION.md` (absorbs spike findings); removing spike artifacts and scaffold clutter on `spike/nba-com-vendor` (PR, not merge-yet)
+- **Not used for:** GOAT endpoint verification; Phase 2 scoring
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

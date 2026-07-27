@@ -55,10 +55,10 @@ git add -A && git commit -m "Describe the change and why."
 - [x] `.env.local` from `.env.example` (local only; never commit)
 
 ### Vendor decision (before Phase 2 scoring)
-- [x] Bounded NBA.com spike ([`SPIKE_NBA_COM.md`](./SPIKE_NBA_COM.md)) — **FAIL on Vercel**; stay on BALLDONTLIE + paid trial/upgrade
-- [x] Record decision in spike results
-- [ ] Start BALLDONTLIE GOAT trial / confirm stats endpoints
-- [x] Hello-world deploy (Vercel preview works; SSO protection disabled for public demo)
+- [x] Bounded NBA.com vs BALLDONTLIE research ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) — NBA.com FAIL on Vercel; BALLDONTLIE GOAT trial path
+- [x] Hello-world deploy (Vercel)
+- [ ] Confirm GOAT endpoints with rotated API key
+- [ ] Plan post-trial (paid month vs fixtures) before trial ends
 
 ### Phase 2 — Vertical slice
 - [x] `NbaStatsPort` + Zod boundary (players + nets roster)

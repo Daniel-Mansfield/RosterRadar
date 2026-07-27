@@ -17,7 +17,7 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 | **Frontend** | Opinionated, easy, responsive; one accent; semantic design tokens; WCAG AA contrast |
 | **Backend** | Backend owns interpretation; frontend owns presentation; ports/adapters; pure scoring; Zod at boundaries |
 | **API surface** | `GET /api/players`, `GET /api/dossier/[id]` → typed dossier JSON |
-| **Data** | [BALLDONTLIE](https://docs.balldontlie.io/) behind `NbaStatsPort` (note paid-tier limits for some stats) |
+| **Data** | [BALLDONTLIE](https://docs.balldontlie.io/) (GOAT trial for Phase 2) behind `NbaStatsPort` — see [`docs/VENDOR_DECISION.md`](docs/VENDOR_DECISION.md) |
 | **Stack** | TypeScript, React, Next.js, Vercel |
 | **Quality bar** | Clean, maintainable code; root-cause fixes (no quick-fix patches); original scoring + AI disclosed |
 | **Process** | Phase-by-phase (`docs/DEVELOPMENT.md`); branch off `main`, named commits, merge after testing |
@@ -26,15 +26,15 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 - Full outline: [`docs/PROJECT_OUTLINE.md`](docs/PROJECT_OUTLINE.md)
 - Identity / drawing board: [`docs/IDENTITY.md`](docs/IDENTITY.md)
 - Backend design: [`docs/BACKEND.md`](docs/BACKEND.md)
+- Vendor & hosting decision: [`docs/VENDOR_DECISION.md`](docs/VENDOR_DECISION.md)
 - Design system: [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md)
 - Development phases: [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
 - Phase 1 review log: [`docs/PHASE_1_REVIEW.md`](docs/PHASE_1_REVIEW.md)
-- Vendor spike (NBA.com): [`docs/SPIKE_NBA_COM.md`](docs/SPIKE_NBA_COM.md)
 - AI disclosure log: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
 - Cursor rules: [`.cursor/rules/`](.cursor/rules/)
 
 ## Status
-Phase 1 in progress on branch `phase-1/scaffold`: Next.js app + BALLDONTLIE player-search spike working locally. Deploy to Vercel still open.
+Phase 1 merged. Vendor decision locked (BALLDONTLIE GOAT trial; NBA.com not used on Vercel). Next: verify GOAT endpoints → Phase 2 dossier/scoring.
 
-## Setup (after Phase 1 scaffold)
-Copy `.env.example` → `.env.local` and set `BALLDONTLIE_API_KEY`.
+## Setup
+Copy `.env.example` → `.env.local` and set `BALLDONTLIE_API_KEY`. Never commit secrets.
