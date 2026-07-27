@@ -7,8 +7,9 @@ import type { CourtSlot, PlayerId } from "@/domain/player";
  * /players/active and box stats return 401. Filtering players by team_ids
  * returns historical Nets associations, not the current roster.
  *
- * We therefore maintain a small curated seed (names + slots + BDL ids when known)
- * and hydrate display from this seed. Update ids when resolving against the API.
+ * We therefore maintain a small curated seed (names + slots + BDL ids when known
+ * + ESPN athlete ids for headshots) and hydrate display from this seed.
+ * Headshots are Option B (curated), not a full BDL→NBA id pipeline.
  *
  * Starter set approximates a common 2025–26 Nets group; not a live depth chart.
  *
@@ -26,6 +27,11 @@ export const STARTER_SLOTS = ["PG", "SG", "SF", "PF", "C"] as const;
 export type NetsSeedEntry = {
   /** BALLDONTLIE player id when known; null until resolved. */
   id: PlayerId | null;
+  /**
+   * ESPN athlete id for headshot CDN (Option B).
+   * Independent of BDL id — null means initials-only avatar.
+   */
+  espnAthleteId: number | null;
   firstName: string;
   lastName: string;
   position: string;
@@ -36,6 +42,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   // Starters
   {
     id: 1057266813,
+    espnAthleteId: 5175643,
     firstName: "Egor",
     lastName: "Demin",
     position: "G",
@@ -43,6 +50,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   {
     id: null,
+    espnAthleteId: 5279130,
     firstName: "Nolan",
     lastName: "Traore",
     position: "G",
@@ -50,6 +58,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   {
     id: 375,
+    espnAthleteId: 4278104,
     firstName: "Michael",
     lastName: "Porter Jr.",
     position: "F",
@@ -57,6 +66,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   {
     id: 56677843,
+    espnAthleteId: 4712896,
     firstName: "Noah",
     lastName: "Clowney",
     position: "F",
@@ -64,6 +74,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   {
     id: 666508,
+    espnAthleteId: 4278067,
     firstName: "Nic",
     lastName: "Claxton",
     position: "C",
@@ -72,6 +83,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   // Bench
   {
     id: null,
+    espnAthleteId: 4432174,
     firstName: "Cam",
     lastName: "Thomas",
     position: "G",
@@ -79,13 +91,15 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   {
     id: 666743,
+    espnAthleteId: 3907823,
     firstName: "Terance",
     lastName: "Mann",
     position: "G",
     slot: "BENCH",
   },
   {
-    id: null,
+    id: 17896027,
+    espnAthleteId: 4433137,
     firstName: "Ziaire",
     lastName: "Williams",
     position: "F",
@@ -93,6 +107,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   {
     id: 17896038,
+    espnAthleteId: 4432194,
     firstName: "Day'Ron",
     lastName: "Sharpe",
     position: "C",
@@ -100,13 +115,15 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   {
     id: 56677722,
+    espnAthleteId: 4431714,
     firstName: "Jalen",
     lastName: "Wilson",
     position: "F",
     slot: "BENCH",
   },
   {
-    id: null,
+    id: 38017620,
+    espnAthleteId: 4397018,
     firstName: "Ochai",
     lastName: "Agbaji",
     position: "G",
@@ -114,6 +131,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   {
     id: 1057280779,
+    espnAthleteId: 5107173,
     firstName: "Danny",
     lastName: "Wolf",
     position: "F",
@@ -121,6 +139,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   {
     id: 1057279425,
+    espnAthleteId: 5037873,
     firstName: "Drake",
     lastName: "Powell",
     position: "G",
@@ -128,6 +147,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   {
     id: 1057279760,
+    espnAthleteId: 5242502,
     firstName: "Ben",
     lastName: "Saraf",
     position: "G",

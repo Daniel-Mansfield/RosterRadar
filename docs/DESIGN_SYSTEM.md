@@ -17,7 +17,8 @@ Raw brand variables live in `src/styles/palette.css`. Components should use **se
 |---|---|---|
 | `--graphite` | `#28292aff` | App background |
 | `--intense-cherry` | `#d21143ff` | Accent / *Radar* |
-| `--imperial-blue` | `#00275eff` | Court / subtle panels |
+| `--imperial-blue` | `#00275eff` | Subtle panels |
+| `--court-matte` | `#001c42` | Half-court panel behind floor art |
 | `--white` | `#fefefeff` | Primary text / **Roster** |
 | `--dim-grey` | `#747474ff` | Muted text |
 

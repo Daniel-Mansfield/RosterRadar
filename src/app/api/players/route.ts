@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { toErrorResponse } from "@/lib/api/errorResponse";
 import { searchQuerySchema } from "@/lib/api/schemas";
-import { createBalldontlieAdapter } from "@/nba/balldontlie/client";
+import { getNbaStatsPort } from "@/nba/getNbaStatsPort";
 
 const querySchema = z.object({
   q: searchQuerySchema,
@@ -30,7 +30,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   }
 
   try {
-    const nba = createBalldontlieAdapter();
+    const nba = getNbaStatsPort();
     const players = await nba.searchPlayers({
       query: parsedQuery.data.q,
       excludeNets: true,

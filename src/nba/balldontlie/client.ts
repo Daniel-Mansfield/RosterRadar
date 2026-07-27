@@ -1,7 +1,8 @@
 import { z } from "zod";
 
+import type { PlayerGameLine, PlayerSeasonLine } from "@/domain/dossier";
 import { AppError } from "@/domain/errors";
-import type { NetsRoster, PlayerSummary, RosterPlayer } from "@/domain/player";
+import type { NetsRoster, PlayerId, PlayerSummary, RosterPlayer } from "@/domain/player";
 import { searchQuerySchema } from "@/lib/api/schemas";
 import type { NbaStatsPort, SearchPlayersInput } from "@/nba/port";
 import {
@@ -14,16 +15,35 @@ import {
   normalizePersonName,
   type NetsSeedEntry,
 } from "@/nba/nets/rosterSeed";
+import { parseMinutes } from "@/nba/parseMinutes";
+import { isEspnAthleteId } from "@/nba/headshot";
 
 import {
   balldontliePlayersResponseSchema,
+  balldontlieSeasonAveragesResponseSchema,
+  balldontlieStatsResponseSchema,
+  type BalldontlieGameStat,
   type BalldontliePlayer,
+  type BalldontlieSeasonAverage,
 } from "./schemas";
 
 const envSchema = z.object({
   BALLDONTLIE_API_KEY: z.string().min(1),
   BALLDONTLIE_BASE_URL: z.string().url().default("https://api.balldontlie.io"),
 });
+
+/** Extra normalized name keys so Nic ↔ Nicolas (etc.) still exclude as Nets. */
+const NETS_ALIAS_NAME_KEYS: ReadonlySet<string> = new Set([
+  ...NETS_SEED_NAME_KEYS,
+  "nicolas|claxton",
+  "cameron|thomas",
+]);
+
+const NETS_SEED_IDS: ReadonlySet<number> = new Set(
+  NETS_ROSTER_SEED.map((entry) => entry.id).filter(
+    (id): id is number => id != null,
+  ),
+);
 
 function getConfig(): z.infer<typeof envSchema> {
   const parsed = envSchema.safeParse({
@@ -56,15 +76,10 @@ function seedNameKey(firstName: string, lastName: string): string {
   return `${normalizePersonName(firstName)}|${normalizePersonName(lastName)}`;
 }
 
-/**
- * Acquisition filter: BKN abbreviation, or a name that matches the curated
- * Nets seed (covers null/stale team payloads for current Nets players).
- */
 function isNetsPlayer(player: PlayerSummary): boolean {
-  if (player.teamAbbreviation === BROOKLYN_NETS_ABBREVIATION) {
-    return true;
-  }
-  return NETS_SEED_NAME_KEYS.has(
+  if (NETS_SEED_IDS.has(player.id)) return true;
+  if (player.teamAbbreviation === BROOKLYN_NETS_ABBREVIATION) return true;
+  return NETS_ALIAS_NAME_KEYS.has(
     seedNameKey(player.firstName, player.lastName),
   );
 }
@@ -97,11 +112,32 @@ function assertValidNetsSeed(seed: readonly NetsSeedEntry[]): void {
       500,
     );
   }
+
+  const espnIds = new Set<number>();
+  for (const entry of seed) {
+    if (entry.espnAthleteId == null) continue;
+    if (!isEspnAthleteId(entry.espnAthleteId)) {
+      throw new AppError(
+        "invalid_payload",
+        `Nets seed has invalid espnAthleteId for ${entry.firstName} ${entry.lastName}.`,
+        500,
+      );
+    }
+    if (espnIds.has(entry.espnAthleteId)) {
+      throw new AppError(
+        "invalid_payload",
+        `Nets seed has duplicate espnAthleteId ${entry.espnAthleteId}.`,
+        500,
+      );
+    }
+    espnIds.add(entry.espnAthleteId);
+  }
 }
 
 function seedToRosterPlayer(entry: NetsSeedEntry): RosterPlayer {
   return {
     id: entry.id,
+    espnAthleteId: entry.espnAthleteId,
     firstName: entry.firstName,
     lastName: entry.lastName,
     position: entry.position,
@@ -110,14 +146,68 @@ function seedToRosterPlayer(entry: NetsSeedEntry): RosterPlayer {
   };
 }
 
+function toSeasonLine(row: BalldontlieSeasonAverage): PlayerSeasonLine {
+  const stats = row.stats;
+  return {
+    playerId: row.player.id,
+    firstName: row.player.first_name,
+    lastName: row.player.last_name,
+    position: row.player.position ?? null,
+    teamAbbreviation: row.player.team?.abbreviation ?? null,
+    season: row.season,
+    gamesPlayed: stats.gp ?? 0,
+    minutes: stats.min ?? 0,
+    points: stats.pts ?? 0,
+    assists: stats.ast ?? 0,
+    rebounds: stats.reb ?? 0,
+    steals: stats.stl ?? 0,
+    blocks: stats.blk ?? 0,
+    turnovers: stats.tov ?? 0,
+    fga: stats.fga ?? 0,
+    fg3a: stats.fg3a ?? 0,
+    fg3m: stats.fg3m ?? 0,
+    fg3Pct: stats.fg3_pct ?? 0,
+    ranks: {
+      points: stats.pts_rank ?? null,
+      assists: stats.ast_rank ?? null,
+      rebounds: stats.reb_rank ?? null,
+      steals: stats.stl_rank ?? null,
+      blocks: stats.blk_rank ?? null,
+      fg3a: stats.fg3a_rank ?? null,
+      minutes: stats.min_rank ?? null,
+    },
+  };
+}
+
+function toGameLine(row: BalldontlieGameStat): PlayerGameLine | null {
+  if (!row.game) return null;
+  return {
+    gameId: row.game.id,
+    date: row.game.date,
+    minutes: parseMinutes(row.min),
+    points: row.pts ?? 0,
+    assists: row.ast ?? 0,
+    rebounds: row.reb ?? 0,
+    steals: row.stl ?? 0,
+    blocks: row.blk ?? 0,
+    turnovers: row.turnover ?? 0,
+    fga: row.fga ?? 0,
+    fg3a: row.fg3a ?? 0,
+  };
+}
+
 async function balldontlieFetch(
   path: string,
-  searchParams: Record<string, string>,
+  searchParams: Record<string, string | string[]>,
 ): Promise<unknown> {
   const config = getConfig();
   const url = new URL(path, config.BALLDONTLIE_BASE_URL);
   for (const [key, value] of Object.entries(searchParams)) {
-    url.searchParams.set(key, value);
+    if (Array.isArray(value)) {
+      for (const item of value) url.searchParams.append(key, item);
+    } else {
+      url.searchParams.set(key, value);
+    }
   }
 
   let response: Response;
@@ -126,7 +216,7 @@ async function balldontlieFetch(
       headers: {
         Authorization: config.BALLDONTLIE_API_KEY,
       },
-      next: { revalidate: 60 },
+      cache: "no-store",
     });
   } catch {
     throw new AppError("upstream", "Failed to reach BALLDONTLIE API.", 503);
@@ -134,9 +224,9 @@ async function balldontlieFetch(
 
   if (response.status === 429) {
     throw new AppError(
-      "upstream",
-      "BALLDONTLIE rate limit hit. Try again shortly.",
-      503,
+      "rate_limited",
+      "BALLDONTLIE trial rate limit reached (about 5 requests per minute). Wait ~60 seconds, then try again. Search and each dossier open use multiple API calls.",
+      429,
     );
   }
 
@@ -157,8 +247,7 @@ export function createBalldontlieAdapter(): NbaStatsPort {
       const parsedQuery = searchQuerySchema.safeParse(input.query);
       if (!parsedQuery.success) {
         const message =
-          parsedQuery.error.issues[0]?.message ??
-          "Invalid search query.";
+          parsedQuery.error.issues[0]?.message ?? "Invalid search query.";
         throw new AppError("validation_error", message, 400);
       }
 
@@ -184,7 +273,6 @@ export function createBalldontlieAdapter(): NbaStatsPort {
     },
 
     async getNetsRoster(): Promise<NetsRoster> {
-      // Seed-backed: see rosterSeed.ts for why we don't use team_ids listing.
       assertValidNetsSeed(NETS_ROSTER_SEED);
       const players = NETS_ROSTER_SEED.map(seedToRosterPlayer);
 
@@ -195,6 +283,59 @@ export function createBalldontlieAdapter(): NbaStatsPort {
         starters: players.filter((player) => player.slot !== "BENCH"),
         bench: players.filter((player) => player.slot === "BENCH"),
       };
+    },
+
+    async getPlayerSeasonLine(
+      playerId: PlayerId,
+      season: number,
+    ): Promise<PlayerSeasonLine | null> {
+      const json = await balldontlieFetch(
+        "/nba/v1/season_averages/general",
+        {
+          season: String(season),
+          season_type: "regular",
+          type: "base",
+          "player_ids[]": [String(playerId)],
+        },
+      );
+
+      const parsed = balldontlieSeasonAveragesResponseSchema.safeParse(json);
+      if (!parsed.success) {
+        throw new AppError(
+          "invalid_payload",
+          "BALLDONTLIE season averages failed schema validation.",
+          502,
+        );
+      }
+
+      const row = parsed.data.data[0];
+      return row ? toSeasonLine(row) : null;
+    },
+
+    async getPlayerRecentGames(
+      playerId: PlayerId,
+      season: number,
+      perPage = 30,
+    ): Promise<PlayerGameLine[]> {
+      const json = await balldontlieFetch("/nba/v1/stats", {
+        "player_ids[]": [String(playerId)],
+        "seasons[]": [String(season)],
+        per_page: String(perPage),
+      });
+
+      const parsed = balldontlieStatsResponseSchema.safeParse(json);
+      if (!parsed.success) {
+        throw new AppError(
+          "invalid_payload",
+          "BALLDONTLIE game stats failed schema validation.",
+          502,
+        );
+      }
+
+      return parsed.data.data
+        .map(toGameLine)
+        .filter((g): g is PlayerGameLine => g != null)
+        .sort((a, b) => b.date.localeCompare(a.date));
     },
   };
 }

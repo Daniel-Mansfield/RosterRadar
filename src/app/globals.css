@@ -24,6 +24,10 @@
   --brand-roster: var(--white);
   --brand-radar: var(--intense-cherry);
 
+  /* Overlay / plate (not decorative brand accent) */
+  --scrim: #000000;
+  --logo-plate: #000000;
+
   /* Fit signals (status only — distinct from brand accent where possible) */
   --fit-strong: #3d9a6a;
   --fit-strong-bg: color-mix(in srgb, #3d9a6a 22%, var(--graphite));
@@ -47,6 +51,8 @@
 
 html {
   height: 100%;
+  /* Slightly larger base type scale for the home + dossier reading surface. */
+  font-size: 106.25%;
 }
 
 html,

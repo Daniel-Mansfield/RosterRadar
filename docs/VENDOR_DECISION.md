@@ -102,6 +102,18 @@ Preview used for Proof C: `roster-radar-*.vercel.app` under project `roster-rada
 4. **Before GOAT trial ends:** either keep a paid tier **or** snapshot fixtures so the live demo doesn’t cliff.  
 5. **Disclose** vendor limits and AI use in the write-up ([`AI_USAGE.md`](./AI_USAGE.md)).
 
+### GOAT verify (2026-07-27)
+`npm run verify:goat` against rotated key:
+
+| Check | Result |
+|---|---|
+| `/nba/v1/players` search | PASS |
+| `/nba/v1/players/active` | PASS |
+| `/nba/v1/season_averages/general` (2025) | PASS |
+| `/nba/v1/stats` game logs (2025) | PASS |
+
+Note: trial rate limit ≈ **5 req/min** — adapter/dossier composition must pace or batch; burst calls return 429.
+
 ---
 
 ## 7. Known debt carried from Phase 1 (not fixed in cleanup)

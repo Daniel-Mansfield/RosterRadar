@@ -8,6 +8,7 @@ import {
 } from "react";
 
 import type { PlayerSummary } from "@/domain/player";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import {
   apiErrorSchema,
   playersApiResponseSchema,
@@ -65,6 +66,13 @@ export function AcquisitionSearch({
           }
 
           const players = readPlayers(json);
+          if (players == null) {
+            setState({
+              status: "error",
+              message: "Search response failed validation.",
+            });
+            return;
+          }
           setState({ status: "ready", players });
         } catch (error) {
           if (isAbortError(error) || requestId !== requestIdRef.current) {
@@ -86,15 +94,13 @@ export function AcquisitionSearch({
 
   return (
     <section className={styles.wrap} aria-label="Search non-Nets players">
-      <label className={styles.label} htmlFor="acquisition-search">
-        Evaluate a player (not on the Nets)
-      </label>
       <input
         id="acquisition-search"
         className={styles.input}
         type="search"
         autoComplete="off"
-        placeholder="Start typing a player name…"
+        placeholder="Search a player…"
+        aria-label="Search non-Nets players"
         value={query}
         onChange={(event) => {
           const next = event.target.value;
@@ -127,8 +133,15 @@ export function AcquisitionSearch({
                 className={styles.result}
                 onClick={() => onSelectPlayer?.(player)}
               >
-                <span>
-                  {player.firstName} {player.lastName}
+                <span className={styles.resultMain}>
+                  <PlayerAvatar
+                    firstName={player.firstName}
+                    lastName={player.lastName}
+                    size={40}
+                  />
+                  <span>
+                    {player.firstName} {player.lastName}
+                  </span>
                 </span>
                 <span className={styles.resultMeta}>
                   {player.teamAbbreviation ?? "FA"}
@@ -152,7 +165,7 @@ function readErrorMessage(json: unknown): string | null {
   return parsed.success ? parsed.data.error.message : null;
 }
 
-function readPlayers(json: unknown): PlayerSummary[] {
+function readPlayers(json: unknown): PlayerSummary[] | null {
   const parsed = playersApiResponseSchema.safeParse(json);
-  return parsed.success ? parsed.data.players : [];
+  return parsed.success ? parsed.data.players : null;
 }

@@ -8,4 +8,6 @@
   --imperial-blue: #00275eff;
   --white: #fefefeff;
   --dim-grey: #747474ff;
+  /* Court panel matte behind half-court art (home). */
+  --court-matte: #001c42;
 }

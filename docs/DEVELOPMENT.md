@@ -56,14 +56,15 @@ git add -A && git commit -m "Describe the change and why."
 
 ### Vendor decision (before Phase 2 scoring)
 - [x] Research + lock ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) — BALLDONTLIE GOAT trial; NBA.com not used on Vercel
-- [ ] Confirm GOAT endpoints with rotated API key
+- [x] Confirm GOAT endpoints with rotated API key (`npm run verify:goat` — search, active players, season averages, game stats all PASS; pace ≤5 req/min on trial)
 - [ ] Plan post-trial (paid month vs fixtures) before trial ends
 
 ### Phase 2 — Vertical slice
 - [x] `NbaStatsPort` + Zod boundary (players + nets roster)
-- [ ] Pure `scoring/` + unit tests
-- [ ] `GET /api/dossier/[id]` + dossier UI in drawer
-- [ ] Wire drawer to real role-fit payload
+- [x] GOAT verify (`npm run verify:goat`)
+- [x] Pure `scoring/` + unit tests (`npm test`)
+- [x] `GET /api/dossier/[id]` + dossier UI in drawer
+- [x] Wire drawer to real role-fit payload (acquisition path first; Nets with resolved ids)
 
 ### Phase 3 — Product complete
 - [ ] Pillars, callouts, evidence, methodology

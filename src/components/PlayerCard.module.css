@@ -1,22 +1,56 @@
 .card {
+  /* Poker-like portrait: ~2.5 × 3.5 */
+  aspect-ratio: 2.5 / 3.5;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.15rem;
+  align-items: stretch;
+  gap: 0;
   width: 100%;
-  margin: 0;
-  padding: var(--space-3) var(--space-4);
+  margin: 0 auto;
+  padding: var(--space-2);
   border: 1px solid var(--border);
-  border-radius: 0.4rem;
+  border-radius: 0.65rem;
   background: var(--surface-raised);
   color: var(--content-primary);
-  text-align: left;
+  text-align: center;
   cursor: pointer;
   font: inherit;
+  box-shadow: 0 0.4rem 0.95rem color-mix(in srgb, var(--scrim) 30%, transparent);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.starter {
+  max-width: var(--starter-card-max, 9rem);
+}
+
+.sizeBench {
+  max-width: 6.75rem;
+  padding: var(--space-1);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.65rem color-mix(in srgb, var(--scrim) 28%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
 }
 
 .card:hover {
   border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow: 0 0.55rem 1.15rem color-mix(in srgb, var(--scrim) 38%, transparent);
+  transform: translateY(-2px);
+}
+
+.sizeBench:hover {
+  box-shadow: 0 0.35rem 0.8rem color-mix(in srgb, var(--scrim) 34%, transparent);
 }
 
 .card:focus-visible {
@@ -24,15 +58,56 @@
   outline-offset: 2px;
 }
 
+.photoWell {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: 0.4rem;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--surface-subtle) 80%, var(--scrim));
+}
+
+.sizeBench .photoWell {
+  border-radius: 0.3rem;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  flex: 0 0 auto;
+  min-width: 0;
+  padding: var(--space-2) var(--space-1) var(--space-1);
+}
+
+.sizeBench .body {
+  padding: var(--space-1) 0.15rem 0.1rem;
+}
+
 .name {
   font-weight: 600;
-  font-size: 0.95rem;
-  line-height: 1.25;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  /* Keep long names inside the card band */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.sizeBench .name {
+  font-size: 0.62rem;
 }
 
 .meta {
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   color: var(--content-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+}
+
+.sizeBench .meta {
+  font-size: 0.55rem;
 }

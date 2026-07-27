@@ -1,23 +1,71 @@
 .page {
-  width: min(72rem, 100% - 2rem);
+  width: min(92rem, 100% - 2rem);
   margin: 0 auto;
   padding: var(--space-5) 0 var(--space-7);
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
 }
 
 .header {
+  /* Default: stack so brand and search never collide while resizing. */
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  align-items: stretch;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.brandBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.teamMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  /* Primary mark is white ink; plate matches the logo’s black field. */
+  background: var(--logo-plate);
+}
+
+.teamMark img {
+  display: block;
+  width: 112%;
+  height: 112%;
+  /* Slight overscale crops empty SVG margin so the ball fills the plate. */
+  object-fit: cover;
 }
 
 .brand {
   margin: 0;
-  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-size: clamp(1.85rem, 4vw, 3rem);
   letter-spacing: -0.03em;
   line-height: 1.1;
+  white-space: nowrap;
+}
+
+.tagline {
+  margin: 0;
+  font-size: clamp(0.72rem, 1.1vw, 0.88rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  color: var(--content-muted);
 }
 
 .roster {
@@ -29,31 +77,43 @@
   font-weight: 300;
   font-style: italic;
   color: var(--brand-radar);
-  margin-left: 0.12em;
 }
 
-.teamLine {
-  margin: 0;
-  color: var(--content-muted);
-  font-size: 0.95rem;
+.searchSlot {
+  width: min(28rem, 100%);
+  align-self: center;
 }
 
 .main {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
 }
 
 .bench {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .benchTitle {
   margin: 0 0 var(--space-3);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--content-muted);
+  text-align: center;
+  width: 100%;
+}
+
+.benchScroll {
+  position: relative;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .benchList {
@@ -61,7 +121,64 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  gap: var(--space-3);
+  justify-items: center;
+  width: 100%;
+}
+
+.benchScrollHint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.2rem;
+  padding: 1.75rem 0 0.35rem;
+  background: linear-gradient(
+    to top,
+    var(--surface-base) 35%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.benchScrollLabel {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--content-muted);
+}
+
+.benchScrollChevron {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 1.5px solid var(--content-muted);
+  border-bottom: 1.5px solid var(--content-muted);
+  transform: rotate(45deg);
+  margin-bottom: 0.15rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .benchScrollChevron {
+    animation: benchHintPulse 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes benchHintPulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: rotate(45deg) translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(45deg) translateY(0.15rem);
+  }
 }
 
 .drawerRoot {
@@ -78,39 +195,50 @@
   border: none;
   margin: 0;
   padding: 0;
-  background: color-mix(in srgb, #000 45%, transparent);
+  background: color-mix(in srgb, var(--scrim) 55%, transparent);
   cursor: pointer;
 }
 
 .drawer {
   position: relative;
-  width: min(28rem, 100%);
+  /* Dossier is the product focal point — wide reading pane, not a narrow sheet. */
+  width: min(44rem, 100%);
   height: 100%;
   background: var(--surface-raised);
   border-left: 1px solid var(--border);
-  padding: var(--space-5);
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
   overflow: auto;
+  box-shadow: -1rem 0 2.5rem color-mix(in srgb, var(--scrim) 35%, transparent);
 }
 
 .drawerHeader {
   display: flex;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-4);
   align-items: flex-start;
+}
+
+.drawerIdentity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
 .drawerTitle {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: clamp(1.5rem, 2.5vw, 1.85rem);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .drawerSub {
-  margin: var(--space-1) 0 0;
+  margin: var(--space-2) 0 0;
   color: var(--content-muted);
-  font-size: 0.875rem;
+  font-size: 0.95rem;
 }
 
 .close {
@@ -121,6 +249,7 @@
   padding: var(--space-2) var(--space-3);
   font: inherit;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .close:hover {
@@ -133,16 +262,114 @@
 
 .placeholder {
   margin: 0;
-  padding: var(--space-4);
+  padding: var(--space-5);
   border: 1px dashed var(--border);
   border-radius: 0.5rem;
   color: var(--content-muted);
   line-height: 1.5;
+  font-size: 1.05rem;
+}
+
+@media (max-width: 48em) {
+  .drawer {
+    width: 100%;
+    padding: var(--space-5);
+  }
+}
+
+/* Wide enough for brand + centered search without overlap. */
+@media (min-width: 70em) {
+  .header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 28rem) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .brandRow {
+    grid-column: 1;
+    justify-self: start;
+    align-self: center;
+    /* Stay inside the left third so the mark never paints over search. */
+    max-width: 100%;
+  }
+
+  .searchSlot {
+    grid-column: 2;
+    width: 100%;
+    align-self: center;
+    justify-self: stretch;
+  }
 }
 
 @media (min-width: 64em) {
+  /* Fit court + bench in one viewport — no page scroll for the starting five. */
+  .page {
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: var(--space-4) 0;
+    gap: var(--space-4);
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
   .main {
-    grid-template-columns: minmax(0, 1fr) 16rem;
-    align-items: start;
+    flex: 1 1 auto;
+    min-height: 0;
+    /* Equal side gutters keep the court centered; bench sits in the right gutter. */
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: stretch;
+    column-gap: var(--space-2);
+  }
+
+  .main > .courtPane {
+    grid-column: 2;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .bench {
+    grid-column: 3;
+    justify-self: start;
+    width: 15.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 0;
+  }
+
+  .benchScroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .benchList {
+    grid-template-columns: 1fr;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    overflow: auto;
+    gap: var(--space-2);
+    align-content: start;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Legacy Edge */
+  }
+
+  .benchList::-webkit-scrollbar {
+    display: none; /* Chrome / Safari */
+  }
+
+  .drawer {
+    width: min(48rem, 52vw);
+  }
+}
+
+@media (min-width: 80em) {
+  .drawer {
+    width: min(52rem, 48vw);
   }
 }
