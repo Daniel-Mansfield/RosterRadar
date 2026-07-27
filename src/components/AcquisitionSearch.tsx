@@ -65,6 +65,13 @@ export function AcquisitionSearch({
           }
 
           const players = readPlayers(json);
+          if (players == null) {
+            setState({
+              status: "error",
+              message: "Search response failed validation.",
+            });
+            return;
+          }
           setState({ status: "ready", players });
         } catch (error) {
           if (isAbortError(error) || requestId !== requestIdRef.current) {
@@ -152,7 +159,7 @@ function readErrorMessage(json: unknown): string | null {
   return parsed.success ? parsed.data.error.message : null;
 }
 
-function readPlayers(json: unknown): PlayerSummary[] {
+function readPlayers(json: unknown): PlayerSummary[] | null {
   const parsed = playersApiResponseSchema.safeParse(json);
-  return parsed.success ? parsed.data.players : [];
+  return parsed.success ? parsed.data.players : null;
 }

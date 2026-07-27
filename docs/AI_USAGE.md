@@ -79,6 +79,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** `scripts/verify-goat.mjs`; confirmed active players + season averages + game stats on GOAT trial (paced for 5 req/min)
 - **Not used for:** Finished scoring formulas (next on branch)
 
+### 2026-07-27 — Phase 2 dossier vertical slice
+- **Tool:** Cursor agent
+- **Used for:** GOAT verify; `scoring/` compose + tests; season/game adapter methods; `/api/dossier/[id]`; drawer `DossierPanel`; R14 aliases + R15 client Zod error; seed ids for Ziaire/Ochai
+- **Not used for:** Final write-up; post-trial fixtures plan
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

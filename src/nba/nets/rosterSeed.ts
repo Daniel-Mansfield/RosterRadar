@@ -85,7 +85,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
     slot: "BENCH",
   },
   {
-    id: null,
+    id: 17896027,
     firstName: "Ziaire",
     lastName: "Williams",
     position: "F",
@@ -106,7 +106,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
     slot: "BENCH",
   },
   {
-    id: null,
+    id: 38017620,
     firstName: "Ochai",
     lastName: "Agbaji",
     position: "G",

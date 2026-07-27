@@ -1,4 +1,5 @@
-import type { NetsRoster, PlayerSummary } from "@/domain/player";
+import type { PlayerGameLine, PlayerSeasonLine } from "@/domain/dossier";
+import type { NetsRoster, PlayerId, PlayerSummary } from "@/domain/player";
 
 export type SearchPlayersInput = {
   query: string;
@@ -9,4 +10,13 @@ export type SearchPlayersInput = {
 export type NbaStatsPort = {
   searchPlayers: (input: SearchPlayersInput) => Promise<PlayerSummary[]>;
   getNetsRoster: () => Promise<NetsRoster>;
+  getPlayerSeasonLine: (
+    playerId: PlayerId,
+    season: number,
+  ) => Promise<PlayerSeasonLine | null>;
+  getPlayerRecentGames: (
+    playerId: PlayerId,
+    season: number,
+    perPage?: number,
+  ) => Promise<PlayerGameLine[]>;
 };

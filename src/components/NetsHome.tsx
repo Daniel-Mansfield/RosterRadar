@@ -8,6 +8,7 @@ import {
   type ReactElement,
 } from "react";
 
+import type { Dossier } from "@/domain/dossier";
 import {
   rosterPlayerKey,
   type NetsRoster,
@@ -15,8 +16,13 @@ import {
   type RosterPlayer,
 } from "@/domain/player";
 import { AcquisitionSearch } from "@/components/AcquisitionSearch";
+import { DossierPanel } from "@/components/DossierPanel";
 import { HalfCourt } from "@/components/HalfCourt";
 import { PlayerCard } from "@/components/PlayerCard";
+import {
+  apiErrorSchema,
+} from "@/lib/api/schemas";
+import { dossierApiResponseSchema } from "@/lib/api/dossierSchema";
 
 import styles from "./NetsHome.module.css";
 
@@ -30,7 +36,16 @@ type DrawerState =
       open: true;
       title: string;
       subtitle: string;
+      playerId: number | null;
+      dossier: DossierLoadState;
     };
+
+type DossierLoadState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "error"; message: string }
+  | { status: "ready"; dossier: Dossier }
+  | { status: "unavailable"; message: string };
 
 export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   const [drawer, setDrawer] = useState<DrawerState>({ open: false });
@@ -38,29 +53,115 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   const drawerRef = useRef<HTMLElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
+  const requestIdRef = useRef(0);
 
   function closeDrawer(): void {
     setDrawer({ open: false });
   }
 
-  function openForRosterPlayer(player: RosterPlayer): void {
+  async function loadDossierForPlayer(
+    playerId: number,
+    title: string,
+    subtitle: string,
+  ): Promise<void> {
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+
     setDrawer({
       open: true,
-      title: `${player.firstName} ${player.lastName}`,
-      subtitle: `${roster.teamName} · ${player.slot}${
-        player.position ? ` · ${player.position}` : ""
-      }`,
+      title,
+      subtitle,
+      playerId,
+      dossier: { status: "loading" },
     });
+
+    try {
+      const response = await fetch(`/api/dossier/${playerId}`);
+      const json: unknown = await response.json();
+      if (requestId !== requestIdRef.current) return;
+
+      if (!response.ok) {
+        const err = apiErrorSchema.safeParse(json);
+        const message = err.success
+          ? err.data.error.message
+          : "Could not load dossier.";
+        setDrawer({
+          open: true,
+          title,
+          subtitle,
+          playerId,
+          dossier: { status: "error", message },
+        });
+        return;
+      }
+
+      const parsed = dossierApiResponseSchema.safeParse(json);
+      if (!parsed.success) {
+        setDrawer({
+          open: true,
+          title,
+          subtitle,
+          playerId,
+          dossier: {
+            status: "error",
+            message: "Dossier response failed validation.",
+          },
+        });
+        return;
+      }
+
+      setDrawer({
+        open: true,
+        title,
+        subtitle,
+        playerId,
+        dossier: { status: "ready", dossier: parsed.data.dossier },
+      });
+    } catch {
+      if (requestId !== requestIdRef.current) return;
+      setDrawer({
+        open: true,
+        title,
+        subtitle,
+        playerId,
+        dossier: {
+          status: "error",
+          message: "Could not reach dossier API.",
+        },
+      });
+    }
+  }
+
+  function openForRosterPlayer(player: RosterPlayer): void {
+    const title = `${player.firstName} ${player.lastName}`;
+    const subtitle = `${roster.teamName} · ${player.slot}${
+      player.position ? ` · ${player.position}` : ""
+    }`;
+
+    if (player.id == null) {
+      setDrawer({
+        open: true,
+        title,
+        subtitle,
+        playerId: null,
+        dossier: {
+          status: "unavailable",
+          message:
+            "This Nets player does not have a resolved BALLDONTLIE id yet — dossier will unlock once the seed id is filled.",
+        },
+      });
+      return;
+    }
+
+    void loadDossierForPlayer(player.id, title, subtitle);
   }
 
   function openForAcquisition(player: PlayerSummary): void {
-    setDrawer({
-      open: true,
-      title: `${player.firstName} ${player.lastName}`,
-      subtitle: `Acquisition candidate · ${player.teamAbbreviation ?? "FA"}${
-        player.position ? ` · ${player.position}` : ""
-      }`,
-    });
+    const title = `${player.firstName} ${player.lastName}`;
+    const subtitle = `Acquisition candidate · ${player.teamAbbreviation ?? "FA"}${
+      player.position ? ` · ${player.position}` : ""
+    }`;
+    void loadDossierForPlayer(player.id, title, subtitle);
   }
 
   useEffect(() => {
@@ -175,10 +276,18 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
               </button>
             </div>
             <div className={styles.drawerBody}>
-              <p className={styles.placeholder}>
-                Role-fit dossier comes next — verdict, pillars, strengths and
-                risks will land here.
-              </p>
+              {drawer.dossier.status === "loading" ? (
+                <p className={styles.placeholder}>Loading role-fit dossier…</p>
+              ) : null}
+              {drawer.dossier.status === "error" ||
+              drawer.dossier.status === "unavailable" ? (
+                <p className={styles.placeholder} role="alert">
+                  {drawer.dossier.message}
+                </p>
+              ) : null}
+              {drawer.dossier.status === "ready" ? (
+                <DossierPanel dossier={drawer.dossier.dossier} />
+              ) : null}
             </div>
           </aside>
         </div>

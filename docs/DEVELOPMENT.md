@@ -61,9 +61,10 @@ git add -A && git commit -m "Describe the change and why."
 
 ### Phase 2 — Vertical slice
 - [x] `NbaStatsPort` + Zod boundary (players + nets roster)
-- [ ] Pure `scoring/` + unit tests
-- [ ] `GET /api/dossier/[id]` + dossier UI in drawer
-- [ ] Wire drawer to real role-fit payload
+- [x] GOAT verify (`npm run verify:goat`)
+- [x] Pure `scoring/` + unit tests (`npm test`)
+- [x] `GET /api/dossier/[id]` + dossier UI in drawer
+- [x] Wire drawer to real role-fit payload (acquisition path first; Nets with resolved ids)
 
 ### Phase 3 — Product complete
 - [ ] Pillars, callouts, evidence, methodology

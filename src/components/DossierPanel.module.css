@@ -1,0 +1,154 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.role {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--content-muted);
+}
+
+.fit {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 650;
+}
+
+.strong {
+  color: var(--fit-strong);
+}
+
+.conditional {
+  color: var(--fit-conditional);
+}
+
+.poor {
+  color: var(--fit-poor);
+}
+
+.verdict {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
+.meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--content-muted);
+}
+
+.sectionTitle {
+  margin: 0 0 var(--space-3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--content-muted);
+}
+
+.pillars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.pillarHead {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: var(--space-1);
+}
+
+.pillarPct {
+  font-variant-numeric: tabular-nums;
+  color: var(--content-muted);
+}
+
+.barTrack {
+  height: 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 80%, transparent);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+}
+
+.pillarRaw {
+  margin: var(--space-1) 0 0;
+  font-size: 0.75rem;
+  color: var(--content-muted);
+}
+
+.split {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (min-width: 40em) {
+  .split {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.callouts {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--content-primary);
+}
+
+.evidence {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.evidence li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 0.875rem;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.method {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-3);
+  color: var(--content-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.method summary {
+  cursor: pointer;
+  color: var(--content-primary);
+  font-weight: 600;
+}
+
+.method ul {
+  margin: var(--space-2) 0 0;
+  padding-left: 1.1rem;
+}
