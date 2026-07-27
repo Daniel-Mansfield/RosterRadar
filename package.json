@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "spike:nba-com": "node scripts/spike-nba-com.mjs"
+    "lint": "eslint"
   },
   "dependencies": {
     "next": "16.2.12",

@@ -58,7 +58,7 @@ Fresh read of current `phase-1/scaffold` (`4dc17c4`), IDENTITY/MVP expectations,
 | R17 | P2 | Drawer state drops player identity | `DrawerState` keeps title/subtitle only — Phase 2 dossier fetch has nowhere to hang `id` | **Track for Phase 2** (store `PlayerSummary` / `RosterPlayer`, guard null ids) |
 | R18 | P2 | Remaining null seed ids + newly discovered ids not committed | Probe found Ochai Agbaji `38017620` (BKN), Ziaire Williams `17896027` (BDL team LAL) | **Open — cheap to land before merge**; Cam Thomas / Nolan Traore still unresolved |
 | R19 | P2 | Duplicate starter slot lists | `STARTER_SLOTS` in seed vs `STARTER_ORDER` in `HalfCourt` | **Defer** — low risk while both are 5 identical slots |
-| R20 | P2 | Scaffold clutter | `AGENTS.md`, `CLAUDE.md`, unused `public/*.svg` | **Defer** — optional cleanup |
+| R20 | P2 | Scaffold clutter | `AGENTS.md`, `CLAUDE.md`, unused `public/*.svg` | **Fixed in cleanup** (removed with vendor-decision PR) |
 | R21 | P2 | No unit tests yet | Seed validation / name exclusion / mapping untested | **Defer to Phase 2** (scoring tests first; add adapter smoke tests if time) |
 | R22 | — | Hello-world deploy | Still unchecked in `DEVELOPMENT.md` | **Not a code-quality blocker**; do before or early in Phase 2 for demo confidence |
 
