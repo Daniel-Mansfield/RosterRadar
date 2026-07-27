@@ -50,8 +50,14 @@ git add -A && git commit -m "Describe the change and why."
 - [x] Zod + BALLDONTLIE adapter (`searchPlayers`, curated `getNetsRoster`)
 - [x] Nets home: brand, half-court, bench, drawer placeholder, non-Nets search
 - [x] Pre-merge self-review remediations ([`PHASE_1_REVIEW.md`](./PHASE_1_REVIEW.md))
-- [ ] Hello-world deploy (e.g. Vercel)
+- [x] Phase 1 merged to `main` (PR #1)
+- [x] Hello-world deploy (Vercel — see vendor section)
 - [x] `.env.local` from `.env.example` (local only; never commit)
+
+### Vendor decision (before Phase 2 scoring)
+- [x] Research + lock ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) — BALLDONTLIE GOAT trial; NBA.com not used on Vercel
+- [ ] Confirm GOAT endpoints with rotated API key
+- [ ] Plan post-trial (paid month vs fixtures) before trial ends
 
 ### Phase 2 — Vertical slice
 - [x] `NbaStatsPort` + Zod boundary (players + nets roster)

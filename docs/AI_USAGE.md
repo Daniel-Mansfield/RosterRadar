@@ -44,6 +44,36 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Second full code review against identity/MVP expectations; live BDL probe of excludeNets; updated `docs/PHASE_1_REVIEW.md` with open gate items (R14–R22)
 - **Not used for:** Applying remediations yet (awaiting go-ahead); scoring / Phase 2 implementation
 
+### 2026-07-27 — Phase 1 merged; NBA.com vendor spike planned
+- **Tool:** Cursor agent
+- **Used for:** Confirmed PR #1 merge on `main`; authored `docs/SPIKE_NBA_COM.md` pass/fail gate before Phase 2 scoring
+- **Not used for:** Running the spike yet; scoring implementation
+
+### 2026-07-27 — NBA.com spike Proof A+B executed
+- **Tool:** Cursor agent
+- **Used for:** `scripts/spike-nba-com.mjs`, temporary `/api/spike/nba-com`; local roster + career/game-log proofs (both PASS); documented results pending Vercel Proof C
+- **Not used for:** Final vendor lock; production `nba_com` adapter
+
+### 2026-07-27 — NBA.com capacity spike expanded (A/B/D/E)
+- **Tool:** Cursor agent
+- **Used for:** Extended spike for search (`commonallplayers`) + peer percentiles (`leaguedashplayerstats`); fixed diacritic search false negative; expanded `/api/spike/nba-com` capacity payload
+- **Not used for:** Vercel Proof C (awaiting account login); production adapter
+
+### 2026-07-27 — NBA.com Proof C FAIL; vendor decision locked
+- **Tool:** Cursor agent
+- **Used for:** Made repo public; Vercel preview deploy; disabled SSO protection; Proof C returned `fetch failed` from stats.nba.com on Vercel; recorded FAIL → BALLDONTLIE paid path
+- **Not used for:** Building nba_com production adapter; starting GOAT trial (human account step)
+
+### 2026-07-27 — Vendor decision doc + repo cleanup prep
+- **Tool:** Cursor agent
+- **Used for:** Authored `docs/VENDOR_DECISION.md` (absorbs spike findings); removing spike artifacts and scaffold clutter on `spike/nba-com-vendor` (PR, not merge-yet)
+- **Not used for:** GOAT endpoint verification; Phase 2 scoring
+
+### 2026-07-27 — Docs hygiene before Phase 2
+- **Tool:** Cursor agent
+- **Used for:** Synced PHASE_1_REVIEW Pass 3, BACKEND MVP, PROJECT_OUTLINE, DEVELOPMENT with `VENDOR_DECISION.md` (no new doc files)
+- **Not used for:** GOAT verify; Phase 2 implementation
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*
