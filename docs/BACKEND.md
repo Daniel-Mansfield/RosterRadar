@@ -18,7 +18,7 @@ Full product scope: [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md).
 | API surface | **Thin GET resources** | Search + dossier; compare is stretch |
 | Persistence | **None for v1** | Read-through cache only; no DB |
 | Auth | **None for v1** | Assignment non-goal |
-| Data vendor | **BALLDONTLIE NBA API** (default); **NBA.com spike under evaluation** | Documented REST + key auth today; see §10 and [`SPIKE_NBA_COM.md`](./SPIKE_NBA_COM.md) |
+| Data vendor | **BALLDONTLIE NBA API** (primary) | NBA.com spike **failed on Vercel** — see [`SPIKE_NBA_COM.md`](./SPIKE_NBA_COM.md); use paid BALLDONTLIE tier for roster/stats |
 
 ---
 
@@ -151,7 +151,7 @@ Auth, multi-tenant orgs, write DB, film URLs, salary joins, webhooks, background
 
 ---
 
-## 10. Data vendor: BALLDONTLIE (current default)
+## 10. Data vendor: BALLDONTLIE (primary)
 
 | Item | Value |
 |---|---|
@@ -161,7 +161,7 @@ Auth, multi-tenant orgs, write DB, film URLs, salary joins, webhooks, background
 | Env | `BALLDONTLIE_API_KEY` — see `.env.example` |
 | Adapter | First implementation of `NbaStatsPort` |
 
-**Vendor decision (post–Phase 1):** Free BALLDONTLIE cannot power dossier stats/roster. Before Phase 2 scoring, run the bounded NBA.com spike in [`SPIKE_NBA_COM.md`](./SPIKE_NBA_COM.md). PASS → add `nba_com` adapter (keep BALLDONTLIE fallback). FAIL → BALLDONTLIE paid trial/upgrade. Do not dual-live two primary vendors during scoring work.
+**Vendor decision (2026-07-27):** Official NBA.com stats work locally (roster, search, season, game logs, league dash) but **fail from Vercel** (`fetch failed`). Per [`SPIKE_NBA_COM.md`](./SPIKE_NBA_COM.md), do **not** use NBA.com as the production adapter. Proceed with BALLDONTLIE **paid trial/upgrade** for active roster + stats; keep curated seed as fallback.
 
 ### Tier reality (plan around this)
 Per BALLDONTLIE’s published endpoint matrix ([nba.balldontlie.io](https://nba.balldontlie.io/)):

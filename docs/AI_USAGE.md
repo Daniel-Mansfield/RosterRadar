@@ -59,6 +59,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Extended spike for search (`commonallplayers`) + peer percentiles (`leaguedashplayerstats`); fixed diacritic search false negative; expanded `/api/spike/nba-com` capacity payload
 - **Not used for:** Vercel Proof C (awaiting account login); production adapter
 
+### 2026-07-27 — NBA.com Proof C FAIL; vendor decision locked
+- **Tool:** Cursor agent
+- **Used for:** Made repo public; Vercel preview deploy; disabled SSO protection; Proof C returned `fetch failed` from stats.nba.com on Vercel; recorded FAIL → BALLDONTLIE paid path
+- **Not used for:** Building nba_com production adapter; starting GOAT trial (human account step)
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*
