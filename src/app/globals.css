@@ -11,7 +11,8 @@
 
   /* Content */
   --content-primary: var(--white);
-  --content-muted: var(--dim-grey);
+  /* Mixed up from brand dim-grey for ~AA contrast on graphite */
+  --content-muted: color-mix(in srgb, var(--dim-grey) 45%, var(--white));
   --on-accent: var(--white);
 
   /* Accent — intense cherry (exactly one brand accent) */

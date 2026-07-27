@@ -1,10 +1,21 @@
 "use client";
 
-import { useRef, useState, type ReactElement } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactElement,
+} from "react";
 
 import type { PlayerSummary } from "@/domain/player";
+import {
+  apiErrorSchema,
+  playersApiResponseSchema,
+} from "@/lib/api/schemas";
 
 import styles from "./AcquisitionSearch.module.css";
+
+const SEARCH_DEBOUNCE_MS = 280;
 
 type AcquisitionSearchProps = {
   onSelectPlayer?: (player: PlayerSummary) => void;
@@ -24,12 +35,9 @@ export function AcquisitionSearch({
   const abortRef = useRef<AbortController | null>(null);
   const requestIdRef = useRef(0);
 
-  async function runSearch(value: string): Promise<void> {
-    const trimmed = value.trim();
-    abortRef.current?.abort();
-
+  useEffect(() => {
+    const trimmed = query.trim();
     if (trimmed.length < 2) {
-      setState({ status: "idle" });
       return;
     }
 
@@ -38,34 +46,43 @@ export function AcquisitionSearch({
     const controller = new AbortController();
     abortRef.current = controller;
 
-    setState({ status: "loading" });
-    try {
-      const response = await fetch(
-        `/api/players?q=${encodeURIComponent(trimmed)}`,
-        { signal: controller.signal },
-      );
-      const json: unknown = await response.json();
-      if (requestId !== requestIdRef.current) {
-        return;
-      }
-      if (!response.ok) {
-        const message = readErrorMessage(json) ?? "Search failed.";
-        setState({ status: "error", message });
-        return;
-      }
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        setState({ status: "loading" });
+        try {
+          const response = await fetch(
+            `/api/players?q=${encodeURIComponent(trimmed)}`,
+            { signal: controller.signal },
+          );
+          const json: unknown = await response.json();
+          if (requestId !== requestIdRef.current) {
+            return;
+          }
+          if (!response.ok) {
+            const message = readErrorMessage(json) ?? "Search failed.";
+            setState({ status: "error", message });
+            return;
+          }
 
-      const players = readPlayers(json);
-      setState({ status: "ready", players });
-    } catch (error) {
-      if (isAbortError(error) || requestId !== requestIdRef.current) {
-        return;
-      }
-      setState({
-        status: "error",
-        message: "Could not reach player search.",
-      });
-    }
-  }
+          const players = readPlayers(json);
+          setState({ status: "ready", players });
+        } catch (error) {
+          if (isAbortError(error) || requestId !== requestIdRef.current) {
+            return;
+          }
+          setState({
+            status: "error",
+            message: "Could not reach player search.",
+          });
+        }
+      })();
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]);
 
   return (
     <section className={styles.wrap} aria-label="Search non-Nets players">
@@ -82,7 +99,11 @@ export function AcquisitionSearch({
         onChange={(event) => {
           const next = event.target.value;
           setQuery(next);
-          void runSearch(next);
+          if (next.trim().length < 2) {
+            abortRef.current?.abort();
+            requestIdRef.current += 1;
+            setState({ status: "idle" });
+          }
         }}
       />
 
@@ -127,26 +148,11 @@ function isAbortError(error: unknown): boolean {
 }
 
 function readErrorMessage(json: unknown): string | null {
-  if (
-    typeof json === "object" &&
-    json !== null &&
-    "error" in json &&
-    typeof (json as { error?: { message?: unknown } }).error?.message ===
-      "string"
-  ) {
-    return (json as { error: { message: string } }).error.message;
-  }
-  return null;
+  const parsed = apiErrorSchema.safeParse(json);
+  return parsed.success ? parsed.data.error.message : null;
 }
 
 function readPlayers(json: unknown): PlayerSummary[] {
-  if (
-    typeof json === "object" &&
-    json !== null &&
-    "players" in json &&
-    Array.isArray((json as { players: unknown }).players)
-  ) {
-    return (json as { players: PlayerSummary[] }).players;
-  }
-  return [];
+  const parsed = playersApiResponseSchema.safeParse(json);
+  return parsed.success ? parsed.data.players : [];
 }

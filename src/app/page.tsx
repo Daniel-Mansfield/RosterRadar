@@ -1,13 +1,14 @@
 import type { ReactElement } from "react";
 
-import { AppError } from "@/domain/player";
+import { AppError } from "@/domain/errors";
+import type { NetsRoster } from "@/domain/player";
 import { NetsHome } from "@/components/NetsHome";
-import { createBalldontlieAdapter } from "@/nba/balldontlie/client";
+import { loadNetsRoster } from "@/nba/loadNetsRoster";
 
 import styles from "./page.module.css";
 
 export default async function Home(): Promise<ReactElement> {
-  const rosterResult = await loadNetsRoster();
+  const rosterResult = await loadHomeRoster();
 
   if (!rosterResult.ok) {
     return (
@@ -27,13 +28,12 @@ export default async function Home(): Promise<ReactElement> {
 }
 
 type RosterResult =
-  | { ok: true; roster: Awaited<ReturnType<ReturnType<typeof createBalldontlieAdapter>["getNetsRoster"]>> }
+  | { ok: true; roster: NetsRoster }
   | { ok: false; code: string; message: string };
 
-async function loadNetsRoster(): Promise<RosterResult> {
+async function loadHomeRoster(): Promise<RosterResult> {
   try {
-    const nba = createBalldontlieAdapter();
-    const roster = await nba.getNetsRoster();
+    const roster = await loadNetsRoster();
     return { ok: true, roster };
   } catch (error) {
     if (error instanceof AppError) {

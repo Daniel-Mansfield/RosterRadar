@@ -1,11 +1,12 @@
-import { z } from "zod";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
-import { AppError } from "@/domain/player";
+import { toErrorResponse } from "@/lib/api/errorResponse";
+import { searchQuerySchema } from "@/lib/api/schemas";
 import { createBalldontlieAdapter } from "@/nba/balldontlie/client";
 
 const querySchema = z.object({
-  q: z.string().trim().min(2).max(64),
+  q: searchQuerySchema,
 });
 
 /**
@@ -36,26 +37,6 @@ export async function GET(request: Request): Promise<NextResponse> {
     });
     return NextResponse.json({ players });
   } catch (error) {
-    if (error instanceof AppError) {
-      return NextResponse.json(
-        {
-          error: {
-            code: error.code,
-            message: error.message,
-          },
-        },
-        { status: error.status },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        error: {
-          code: "upstream" as const,
-          message: "Unexpected server error.",
-        },
-      },
-      { status: 500 },
-    );
+    return toErrorResponse(error);
   }
 }

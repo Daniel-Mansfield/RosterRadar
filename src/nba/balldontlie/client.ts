@@ -1,12 +1,18 @@
 import { z } from "zod";
 
-import { AppError, type NetsRoster, type PlayerSummary } from "@/domain/player";
+import { AppError } from "@/domain/errors";
+import type { NetsRoster, PlayerSummary, RosterPlayer } from "@/domain/player";
+import { searchQuerySchema } from "@/lib/api/schemas";
 import type { NbaStatsPort, SearchPlayersInput } from "@/nba/port";
 import {
   BROOKLYN_NETS_ABBREVIATION,
   BROOKLYN_NETS_NAME,
   BROOKLYN_NETS_TEAM_ID,
   NETS_ROSTER_SEED,
+  NETS_SEED_NAME_KEYS,
+  STARTER_SLOTS,
+  normalizePersonName,
+  type NetsSeedEntry,
 } from "@/nba/nets/rosterSeed";
 
 import {
@@ -46,8 +52,62 @@ function toPlayerSummary(player: BalldontliePlayer): PlayerSummary {
   };
 }
 
+function seedNameKey(firstName: string, lastName: string): string {
+  return `${normalizePersonName(firstName)}|${normalizePersonName(lastName)}`;
+}
+
+/**
+ * Acquisition filter: BKN abbreviation, or a name that matches the curated
+ * Nets seed (covers null/stale team payloads for current Nets players).
+ */
 function isNetsPlayer(player: PlayerSummary): boolean {
-  return player.teamAbbreviation === BROOKLYN_NETS_ABBREVIATION;
+  if (player.teamAbbreviation === BROOKLYN_NETS_ABBREVIATION) {
+    return true;
+  }
+  return NETS_SEED_NAME_KEYS.has(
+    seedNameKey(player.firstName, player.lastName),
+  );
+}
+
+function assertValidNetsSeed(seed: readonly NetsSeedEntry[]): void {
+  const starters = seed.filter((entry) => entry.slot !== "BENCH");
+  if (starters.length !== STARTER_SLOTS.length) {
+    throw new AppError(
+      "invalid_payload",
+      `Nets seed must have exactly ${STARTER_SLOTS.length} starters.`,
+      500,
+    );
+  }
+
+  const slots = new Set(starters.map((entry) => entry.slot));
+  for (const slot of STARTER_SLOTS) {
+    if (!slots.has(slot)) {
+      throw new AppError(
+        "invalid_payload",
+        `Nets seed missing starter slot ${slot}.`,
+        500,
+      );
+    }
+  }
+
+  if (slots.size !== STARTER_SLOTS.length) {
+    throw new AppError(
+      "invalid_payload",
+      "Nets seed has duplicate starter slots.",
+      500,
+    );
+  }
+}
+
+function seedToRosterPlayer(entry: NetsSeedEntry): RosterPlayer {
+  return {
+    id: entry.id,
+    firstName: entry.firstName,
+    lastName: entry.lastName,
+    position: entry.position,
+    teamAbbreviation: BROOKLYN_NETS_ABBREVIATION,
+    slot: entry.slot,
+  };
 }
 
 async function balldontlieFetch(
@@ -94,24 +154,16 @@ async function balldontlieFetch(
 export function createBalldontlieAdapter(): NbaStatsPort {
   return {
     async searchPlayers(input: SearchPlayersInput): Promise<PlayerSummary[]> {
-      const query = input.query.trim();
-      if (query.length < 2) {
-        throw new AppError(
-          "validation_error",
-          "Search query must be at least 2 characters.",
-          400,
-        );
-      }
-      if (query.length > 64) {
-        throw new AppError(
-          "validation_error",
-          "Search query must be at most 64 characters.",
-          400,
-        );
+      const parsedQuery = searchQuerySchema.safeParse(input.query);
+      if (!parsedQuery.success) {
+        const message =
+          parsedQuery.error.issues[0]?.message ??
+          "Invalid search query.";
+        throw new AppError("validation_error", message, 400);
       }
 
       const json = await balldontlieFetch("/nba/v1/players", {
-        search: query,
+        search: parsedQuery.data,
         per_page: "15",
       });
 
@@ -133,14 +185,8 @@ export function createBalldontlieAdapter(): NbaStatsPort {
 
     async getNetsRoster(): Promise<NetsRoster> {
       // Seed-backed: see rosterSeed.ts for why we don't use team_ids listing.
-      const players = NETS_ROSTER_SEED.map((entry, index) => ({
-        id: entry.id ?? -(index + 1),
-        firstName: entry.firstName,
-        lastName: entry.lastName,
-        position: entry.position,
-        teamAbbreviation: BROOKLYN_NETS_ABBREVIATION,
-        slot: entry.slot,
-      }));
+      assertValidNetsSeed(NETS_ROSTER_SEED);
+      const players = NETS_ROSTER_SEED.map(seedToRosterPlayer);
 
       return {
         teamId: BROOKLYN_NETS_TEAM_ID,

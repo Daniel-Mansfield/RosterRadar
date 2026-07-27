@@ -11,10 +11,17 @@ import type { CourtSlot, PlayerId } from "@/domain/player";
  * and hydrate display from this seed. Update ids when resolving against the API.
  *
  * Starter set approximates a common 2025–26 Nets group; not a live depth chart.
+ *
+ * Id resolution notes (2026-07-26 self-review):
+ * - Prefer real BDL ids; leave `null` when unresolved — never invent synthetic ids.
+ * - Nolan Traore: search returned a different Traore; keep null until confirmed.
+ * - Nic Claxton: BDL lists as "Nicolas Claxton" (id 666508); team field may lag.
  */
 export const BROOKLYN_NETS_TEAM_ID = 3;
 export const BROOKLYN_NETS_ABBREVIATION = "BKN" as const;
 export const BROOKLYN_NETS_NAME = "Brooklyn Nets";
+
+export const STARTER_SLOTS = ["PG", "SG", "SF", "PF", "C"] as const;
 
 export type NetsSeedEntry = {
   /** BALLDONTLIE player id when known; null until resolved. */
@@ -28,7 +35,7 @@ export type NetsSeedEntry = {
 export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   // Starters
   {
-    id: null,
+    id: 1057266813,
     firstName: "Egor",
     lastName: "Demin",
     position: "G",
@@ -56,7 +63,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
     slot: "PF",
   },
   {
-    id: null,
+    id: 666508,
     firstName: "Nic",
     lastName: "Claxton",
     position: "C",
@@ -71,7 +78,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
     slot: "BENCH",
   },
   {
-    id: null,
+    id: 666743,
     firstName: "Terance",
     lastName: "Mann",
     position: "G",
@@ -85,14 +92,14 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
     slot: "BENCH",
   },
   {
-    id: null,
+    id: 17896038,
     firstName: "Day'Ron",
     lastName: "Sharpe",
     position: "C",
     slot: "BENCH",
   },
   {
-    id: null,
+    id: 56677722,
     firstName: "Jalen",
     lastName: "Wilson",
     position: "F",
@@ -106,24 +113,36 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
     slot: "BENCH",
   },
   {
-    id: null,
+    id: 1057280779,
     firstName: "Danny",
     lastName: "Wolf",
     position: "F",
     slot: "BENCH",
   },
   {
-    id: null,
+    id: 1057279425,
     firstName: "Drake",
     lastName: "Powell",
     position: "G",
     slot: "BENCH",
   },
   {
-    id: null,
+    id: 1057279760,
     firstName: "Ben",
     lastName: "Saraf",
     position: "G",
     slot: "BENCH",
   },
 ] as const;
+
+/** Lowercased "firstname|lastname" keys for acquisition-search exclusion. */
+export const NETS_SEED_NAME_KEYS: ReadonlySet<string> = new Set(
+  NETS_ROSTER_SEED.map(
+    (entry) =>
+      `${normalizePersonName(entry.firstName)}|${normalizePersonName(entry.lastName)}`,
+  ),
+);
+
+export function normalizePersonName(value: string): string {
+  return value.toLowerCase().replace(/[^a-z]/g, "");
+}
