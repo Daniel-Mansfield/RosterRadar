@@ -109,6 +109,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Literal card styling; curated ESPN athlete ids on Nets seed; `PlayerAvatar` with initials fallback (Option B, not full C)
 - **Not used for:** BDL→NBA id headshot pipeline for acquisition search
 
+### 2026-07-27 — Post-merge Phase 2 docs + CI
+- **Tool:** Cursor agent
+- **Used for:** README/DEVELOPMENT/PROJECT_OUTLINE sync after PR #3 merge; GitHub Actions `npm test` + `tsc`; Vercel env key for preview/production
+- **Not used for:** Choosing paid vs fixtures post-trial path (still open)
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

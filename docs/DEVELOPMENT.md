@@ -57,7 +57,7 @@ git add -A && git commit -m "Describe the change and why."
 ### Vendor decision (before Phase 2 scoring)
 - [x] Research + lock ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) — BALLDONTLIE GOAT trial; NBA.com not used on Vercel
 - [x] Confirm GOAT endpoints with rotated API key (`npm run verify:goat` — search, active players, season averages, game stats all PASS; pace ≤5 req/min on trial)
-- [ ] Plan post-trial (paid month vs fixtures) before trial ends
+- [ ] **Decide post-trial path before GOAT ends** — paid month vs demo fixtures (still open; blocks long-lived demos when trial expires)
 
 ### Phase 2 — Vertical slice
 - [x] `NbaStatsPort` + Zod boundary (players + nets roster)
@@ -65,11 +65,16 @@ git add -A && git commit -m "Describe the change and why."
 - [x] Pure `scoring/` + unit tests (`npm test`)
 - [x] `GET /api/dossier/[id]` + dossier UI in drawer
 - [x] Wire drawer to real role-fit payload (acquisition path first; Nets with resolved ids)
+- [x] Phase 2 merged to `main` (PR #3) — review log: [`PHASE_2_REVIEW.md`](./PHASE_2_REVIEW.md)
+- [x] Vercel preview/production have `BALLDONTLIE_API_KEY` (set post-merge when dossier opened blank)
 
-### Phase 3 — Product complete
-- [ ] Pillars, callouts, evidence, methodology
-- [ ] Loading / empty / error / thin-sample states
-- [ ] Responsive polish + demo fixtures
+### Phase 3 — Product complete (harden what shipped)
+Much of the dossier UI already landed in Phase 2. Phase 3 is completion/polish, not a greenfield rebuild:
+- [x] Pillars, callouts, evidence, methodology (shipped in dossier panel)
+- [x] Loading / error / thin-sample surfaces (drawer + dossier confidence)
+- [ ] Empty / edge-case polish (null seed ids, rate-limit UX under trial, search empty states)
+- [ ] Responsive polish pass + **demo fixtures** (or paid tier) for reliable demos
+- [ ] Close residual debt as needed: P2-7 drawer hook, P2-9 `inert`, P2-10 null BDL ids ([`PHASE_2_REVIEW.md`](./PHASE_2_REVIEW.md))
 
 ### Phase 4 — Ship
 - [ ] Stretch only if ahead (compare / role toggle)

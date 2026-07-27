@@ -30,11 +30,12 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 - Design system: [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md)
 - Development phases: [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
 - Phase 1 review log: [`docs/PHASE_1_REVIEW.md`](docs/PHASE_1_REVIEW.md)
+- Phase 2 review log: [`docs/PHASE_2_REVIEW.md`](docs/PHASE_2_REVIEW.md)
 - AI disclosure log: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
 - Cursor rules: [`.cursor/rules/`](.cursor/rules/)
 
 ## Status
-Phase 1 merged. Vendor decision locked (BALLDONTLIE GOAT trial; NBA.com not used on Vercel). Next: verify GOAT endpoints → Phase 2 dossier/scoring.
+Phase 2 merged (`phase-2/dossier-slice` → `main`, PR #3): role-fit dossiers, scoring, caching, Nets home polish. Vendor: BALLDONTLIE GOAT trial (NBA.com not used on Vercel). Next: Phase 3 harden/fixtures + post-trial vendor plan.
 
 ## Setup
-Copy `.env.example` → `.env.local` and set `BALLDONTLIE_API_KEY`. Never commit secrets.
+Copy `.env.example` → `.env.local` and set `BALLDONTLIE_API_KEY`. Never commit secrets. For Vercel, set the same key on Production/Preview (Dashboard → Settings → Environment Variables).

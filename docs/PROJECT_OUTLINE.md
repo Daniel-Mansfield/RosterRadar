@@ -28,7 +28,7 @@ Source: project brief provided by Daniel (NBA web app assignment).
 ### 2.1 What we’re building
 A **Brooklyn Nets–anchored** scouting experience:
 
-1. Home = Nets roster on a half-court (name-only cards) + bench list
+1. Home = Nets roster on a half-court (portrait cards; curated Nets headshots) + bench list
 2. Click a Nets player → right drawer = **role-fit dossier**
 3. Search **non-Nets** players → same drawer dossier (acquisition candidates)
 4. Dossier: role, fit grade, recommendation, pillars, strengths/risks, evidence
@@ -36,7 +36,7 @@ A **Brooklyn Nets–anchored** scouting experience:
 Identity detail: [`IDENTITY.md`](./IDENTITY.md). Visual tokens: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).
 
 ### 2.2 Non-goals (v1)
-Auth, multi-team picker, film, tracking, salary/cap, DnD trade simulation, team +/- projections, player headshots, social, live in-game tools.
+Auth, multi-team picker, film, tracking, salary/cap, DnD trade simulation, team +/- projections, **full** headshot pipeline for arbitrary search results (Nets use curated ESPN ids only — see IDENTITY), social, live in-game tools.
 
 ### 2.3 Inspiration & domain references (framing only — do not copy proprietary models)
 
@@ -70,7 +70,7 @@ CTG/BBall Index inform **philosophy and UX**, not data or proprietary formulas. 
 ## 4. MVP features
 
 ### Must-have
-1. **Nets home** — half-court starters + bench; name-only cards; brand wordmark
+1. **Nets home** — half-court starters + bench; portrait cards with curated headshots (initials fallback); brand wordmark
 2. **Dossier drawer** — role, fit grade, verdict, Strong/Conditional/Poor, confidence
 3. **Role pillars (4–6)** — peer percentiles
 4. **Callouts** — 2 strengths + 2 risks
