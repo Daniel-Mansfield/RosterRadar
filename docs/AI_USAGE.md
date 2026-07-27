@@ -39,6 +39,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Pre-merge code review; domain/error split; Zod client boundaries; search debounce; drawer a11y; muted contrast; seed id resolution (partial); `docs/PHASE_1_REVIEW.md`
 - **Not used for:** Scoring formulas; inventing unresolved BDL ids
 
+### 2026-07-27 — Phase 1 Pass 2 pre-merge re-review
+- **Tool:** Cursor agent
+- **Used for:** Second full code review against identity/MVP expectations; live BDL probe of excludeNets; updated `docs/PHASE_1_REVIEW.md` with open gate items (R14–R22)
+- **Not used for:** Applying remediations yet (awaiting go-ahead); scoring / Phase 2 implementation
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*
