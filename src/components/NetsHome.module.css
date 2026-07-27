@@ -1,0 +1,144 @@
+.page {
+  width: min(72rem, 100% - 2rem);
+  margin: 0 auto;
+  padding: var(--space-5) 0 var(--space-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.brand {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.roster {
+  font-weight: 700;
+  color: var(--brand-roster);
+}
+
+.radar {
+  font-weight: 300;
+  font-style: italic;
+  color: var(--brand-radar);
+  margin-left: 0.12em;
+}
+
+.teamLine {
+  margin: 0;
+  color: var(--content-muted);
+  font-size: 0.95rem;
+}
+
+.main {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.benchTitle {
+  margin: 0 0 var(--space-3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--content-muted);
+}
+
+.benchList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.drawerRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: color-mix(in srgb, #000 45%, transparent);
+  cursor: pointer;
+}
+
+.drawer {
+  position: relative;
+  width: min(28rem, 100%);
+  height: 100%;
+  background: var(--surface-raised);
+  border-left: 1px solid var(--border);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  overflow: auto;
+}
+
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.drawerTitle {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.drawerSub {
+  margin: var(--space-1) 0 0;
+  color: var(--content-muted);
+  font-size: 0.875rem;
+}
+
+.close {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--content-primary);
+  border-radius: 0.35rem;
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  cursor: pointer;
+}
+
+.close:hover {
+  border-color: var(--accent);
+}
+
+.drawerBody {
+  flex: 1;
+}
+
+.placeholder {
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px dashed var(--border);
+  border-radius: 0.5rem;
+  color: var(--content-muted);
+  line-height: 1.5;
+}
+
+@media (min-width: 64em) {
+  .main {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    align-items: start;
+  }
+}

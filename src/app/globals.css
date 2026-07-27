@@ -1,0 +1,95 @@
+@import "../styles/palette.css";
+
+:root {
+  /* Semantic mapping of brand palette — docs/DESIGN_SYSTEM.md */
+
+  /* Surfaces (dark shell) */
+  --surface-base: var(--graphite);
+  --surface-subtle: var(--imperial-blue);
+  --surface-raised: color-mix(in srgb, var(--graphite) 70%, var(--white) 8%);
+  --border: color-mix(in srgb, var(--dim-grey) 55%, transparent);
+
+  /* Content */
+  --content-primary: var(--white);
+  --content-muted: var(--dim-grey);
+  --on-accent: var(--white);
+
+  /* Accent — intense cherry (exactly one brand accent) */
+  --accent: var(--intense-cherry);
+  --accent-hover: color-mix(in srgb, var(--intense-cherry) 85%, var(--white));
+  --accent-subtle: color-mix(in srgb, var(--intense-cherry) 22%, var(--graphite));
+
+  /* Brand wordmark helpers */
+  --brand-roster: var(--white);
+  --brand-radar: var(--intense-cherry);
+
+  /* Fit signals (status only — distinct from brand accent where possible) */
+  --fit-strong: #3d9a6a;
+  --fit-strong-bg: color-mix(in srgb, #3d9a6a 22%, var(--graphite));
+  --fit-conditional: #d4a017;
+  --fit-conditional-bg: color-mix(in srgb, #d4a017 22%, var(--graphite));
+  --fit-poor: #e85a5a;
+  --fit-poor-bg: color-mix(in srgb, #e85a5a 22%, var(--graphite));
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  height: 100%;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  color: var(--content-primary);
+  background: var(--surface-base);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--accent);
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

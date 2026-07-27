@@ -45,17 +45,18 @@ git add -A && git commit -m "Describe the change and why."
 - [x] Planning baseline **committed** to git
 
 ### Phase 1 — Runnable skeleton
-- [ ] Next.js + TypeScript scaffold (strict tsconfig per rules)
-- [ ] Design tokens in global CSS
-- [ ] Zod + BALLDONTLIE adapter spike (one real fetch → domain type)
+- [x] Next.js + TypeScript scaffold (strict tsconfig per rules)
+- [x] Design tokens in global CSS (Daniel palette)
+- [x] Zod + BALLDONTLIE adapter (`searchPlayers`, curated `getNetsRoster`)
+- [x] Nets home: brand, half-court, bench, drawer placeholder, non-Nets search
 - [ ] Hello-world deploy (e.g. Vercel)
-- [ ] `.env.local` from `.env.example` (local only; never commit)
+- [x] `.env.local` from `.env.example` (local only; never commit)
 
 ### Phase 2 — Vertical slice
-- [ ] `NbaStatsPort` + Zod boundary complete
+- [x] `NbaStatsPort` + Zod boundary (players + nets roster)
 - [ ] Pure `scoring/` + unit tests
-- [ ] `GET /api/players` + `GET /api/dossier/[id]`
-- [ ] Search → dossier hero (verdict visible)
+- [ ] `GET /api/dossier/[id]` + dossier UI in drawer
+- [ ] Wire drawer to real role-fit payload
 
 ### Phase 3 — Product complete
 - [ ] Pillars, callouts, evidence, methodology

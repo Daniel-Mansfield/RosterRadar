@@ -1,7 +1,12 @@
 # Dependencies
 node_modules/
 .pnp
-.pnp.js
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # Build
 .next/
@@ -9,9 +14,8 @@ out/
 build/
 dist/
 *.tsbuildinfo
-next-env.d.ts
 
-# Env / secrets
+# Env / secrets — keep .env.example committable
 .env
 .env*.local
 !.env.example
@@ -20,7 +24,6 @@ next-env.d.ts
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 .pnpm-debug.log*
 
 # OS / editor

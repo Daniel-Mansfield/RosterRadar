@@ -168,10 +168,13 @@ Per BALLDONTLIE’s published endpoint matrix ([nba.balldontlie.io](https://nba.
 |---|---|
 | Player search (`/nba/v1/players`) | Free tier |
 | Teams / games | Free tier |
-| Per-game player stats | Paid (e.g. ALL-STAR+) |
+| Per-game player stats / active roster | Paid (e.g. ALL-STAR+) |
 | Season averages endpoint | Higher tier (e.g. GOAT) |
 
-**MVP approach:** Use players + game stats the account can access; if season-average endpoints are unavailable, **aggregate from game logs in our adapter/scoring** (document the method). Keep `NbaStatsPort` swappable if we must change vendors.
+**MVP approach (locked):**
+- **Nets roster:** curated seed in `src/nba/nets/rosterSeed.ts` (free tier cannot reliably list *current* active roster by team — `team_ids` returns historical associations; `/players/active` returns 401 on free).
+- **Acquisition search:** live `/nba/v1/players?search=` with `excludeNets`.
+- **Stats for scoring:** when endpoints are unavailable, aggregate from accessible data or document paid-tier upgrade; keep `NbaStatsPort` swappable.
 
 ### Spike checklist (Phase 1)
 1. Create account → copy key into `.env.local` (never commit)

@@ -26,17 +26,17 @@ Source: project brief provided by Daniel (NBA web app assignment).
 ## 2. Product definition
 
 ### 2.1 What we’re building
-A **scouting dossier** for a single NBA player:
+A **Brooklyn Nets–anchored** scouting experience:
 
-1. Search player
-2. Detect / select role
-3. Show fit grade + recommendation
-4. Show role-specific pillars (percentiles)
-5. Show strengths / risks
-6. Show supporting evidence (recent form + key stats)
+1. Home = Nets roster on a half-court (name-only cards) + bench list
+2. Click a Nets player → right drawer = **role-fit dossier**
+3. Search **non-Nets** players → same drawer dossier (acquisition candidates)
+4. Dossier: role, fit grade, recommendation, pillars, strengths/risks, evidence
+
+Identity detail: [`IDENTITY.md`](./IDENTITY.md). Visual tokens: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).
 
 ### 2.2 Non-goals (v1)
-Auth/teams, film, tracking integrations, salary/cap, full roster mapper, social features, live in-game tools.
+Auth, multi-team picker, film, tracking, salary/cap, DnD trade simulation, team +/- projections, player headshots, social, live in-game tools.
 
 ### 2.3 Inspiration & domain references (framing only — do not copy proprietary models)
 
@@ -63,20 +63,20 @@ CTG/BBall Index inform **philosophy and UX**, not data or proprietary formulas. 
 **Job-to-be-done:**  
 “Given Player X, tell me what role they play, how they grade in that role, and whether they’re a strong / conditional / poor roster fit — with evidence.”
 
-**Demo success:** Search → recommendation visible in ≤ 30 seconds without scrolling past the hero.
+**Demo success:** Open app → Nets court visible → open a dossier (roster click or non-Nets search) with recommendation in the drawer without hunting through tables.
 
 ---
 
 ## 4. MVP features
 
 ### Must-have
-1. **Player search** — typeahead / select from API results
-2. **Dossier hero** — identity, role chip, fit grade, one-sentence verdict, Strong/Conditional/Poor fit, confidence/sample badge
+1. **Nets home** — half-court starters + bench; name-only cards; brand wordmark
+2. **Dossier drawer** — role, fit grade, verdict, Strong/Conditional/Poor, confidence
 3. **Role pillars (4–6)** — peer percentiles
 4. **Callouts** — 2 strengths + 2 risks
 5. **Evidence strip** — L10 vs season / key supporting stats
-6. **Methodology drawer** — collapsed explanation of role + grade
-7. **Loading / empty / error states**
+6. **Non-Nets player search** — results open dossier in drawer (no trade execute)
+7. **Methodology** + loading/empty/error/thin-sample states
 
 ### Stretch (only if ahead)
 8. Compare two players on same role axes
