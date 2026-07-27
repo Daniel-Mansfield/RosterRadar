@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type ReactElement } from "react";
 
 import type { PlayerSummary } from "@/domain/player";
 
@@ -18,23 +18,36 @@ type SearchState =
 
 export function AcquisitionSearch({
   onSelectPlayer,
-}: AcquisitionSearchProps): React.ReactElement {
+}: AcquisitionSearchProps): ReactElement {
   const [query, setQuery] = useState("");
   const [state, setState] = useState<SearchState>({ status: "idle" });
+  const abortRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
 
   async function runSearch(value: string): Promise<void> {
     const trimmed = value.trim();
+    abortRef.current?.abort();
+
     if (trimmed.length < 2) {
       setState({ status: "idle" });
       return;
     }
 
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setState({ status: "loading" });
     try {
       const response = await fetch(
         `/api/players?q=${encodeURIComponent(trimmed)}`,
+        { signal: controller.signal },
       );
       const json: unknown = await response.json();
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
       if (!response.ok) {
         const message = readErrorMessage(json) ?? "Search failed.";
         setState({ status: "error", message });
@@ -43,7 +56,10 @@ export function AcquisitionSearch({
 
       const players = readPlayers(json);
       setState({ status: "ready", players });
-    } catch {
+    } catch (error) {
+      if (isAbortError(error) || requestId !== requestIdRef.current) {
+        return;
+      }
       setState({
         status: "error",
         message: "Could not reach player search.",
@@ -104,6 +120,10 @@ export function AcquisitionSearch({
       ) : null}
     </section>
   );
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "AbortError";
 }
 
 function readErrorMessage(json: unknown): string | null {

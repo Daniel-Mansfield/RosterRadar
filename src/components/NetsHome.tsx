@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactElement } from "react";
 
 import type { NetsRoster, PlayerSummary, RosterPlayer } from "@/domain/player";
 import { AcquisitionSearch } from "@/components/AcquisitionSearch";
@@ -21,7 +21,7 @@ type DrawerState =
       subtitle: string;
     };
 
-export function NetsHome({ roster }: NetsHomeProps): React.ReactElement {
+export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   const [drawer, setDrawer] = useState<DrawerState>({ open: false });
 
   function openForRosterPlayer(player: RosterPlayer): void {

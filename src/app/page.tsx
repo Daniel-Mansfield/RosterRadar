@@ -1,10 +1,12 @@
+import type { ReactElement } from "react";
+
 import { AppError } from "@/domain/player";
 import { NetsHome } from "@/components/NetsHome";
 import { createBalldontlieAdapter } from "@/nba/balldontlie/client";
 
 import styles from "./page.module.css";
 
-export default async function Home(): Promise<React.ReactElement> {
+export default async function Home(): Promise<ReactElement> {
   const rosterResult = await loadNetsRoster();
 
   if (!rosterResult.ok) {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { StrictMode } from "react";
+import { StrictMode, type ReactElement, type ReactNode } from "react";
 
 import "./globals.css";
 
@@ -23,8 +23,8 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
-}>): React.ReactElement {
+  children: ReactNode;
+}>): ReactElement {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>

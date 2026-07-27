@@ -1,3 +1,5 @@
+import type { ReactElement } from "react";
+
 import type { RosterPlayer } from "@/domain/player";
 import { PlayerCard } from "@/components/PlayerCard";
 
@@ -21,7 +23,7 @@ type HalfCourtProps = {
 export function HalfCourt({
   starters,
   onSelectPlayer,
-}: HalfCourtProps): React.ReactElement {
+}: HalfCourtProps): ReactElement {
   const bySlot = new Map(starters.map((player) => [player.slot, player]));
 
   return (

@@ -43,6 +43,10 @@
   gap: var(--space-4);
 }
 
+.bench {
+  min-width: 0;
+}
+
 .benchTitle {
   margin: 0 0 var(--space-3);
   font-size: 0.75rem;

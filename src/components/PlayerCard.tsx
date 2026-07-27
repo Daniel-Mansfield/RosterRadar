@@ -1,3 +1,5 @@
+import type { ReactElement } from "react";
+
 import type { RosterPlayer } from "@/domain/player";
 
 import styles from "./PlayerCard.module.css";
@@ -10,7 +12,7 @@ type PlayerCardProps = {
 export function PlayerCard({
   player,
   onSelect,
-}: PlayerCardProps): React.ReactElement {
+}: PlayerCardProps): ReactElement {
   const label = `${player.firstName} ${player.lastName}`;
 
   return (
