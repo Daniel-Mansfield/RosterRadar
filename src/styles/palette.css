@@ -1,0 +1,11 @@
+/* Brand palette — Daniel (RosterRadar identity)
+   Prefer semantic tokens in components (--surface-*, --accent, etc.)
+   Source: docs/DESIGN_SYSTEM.md · docs/IDENTITY.md */
+
+:root {
+  --graphite: #28292aff;
+  --intense-cherry: #d21143ff;
+  --imperial-blue: #00275eff;
+  --white: #fefefeff;
+  --dim-grey: #747474ff;
+}

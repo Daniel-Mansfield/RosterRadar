@@ -1,0 +1,113 @@
+.court {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: var(--space-3);
+  min-height: 22rem;
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background:
+    radial-gradient(
+      ellipse 45% 35% at 50% 12%,
+      color-mix(in srgb, var(--white) 8%, transparent),
+      transparent 70%
+    ),
+    var(--surface-subtle);
+  overflow: hidden;
+}
+
+.paint {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: min(42%, 9rem);
+  height: 38%;
+  transform: translateX(-50%);
+  border: 1px solid color-mix(in srgb, var(--white) 18%, transparent);
+  border-top: none;
+  border-radius: 0 0 0.25rem 0.25rem;
+  pointer-events: none;
+}
+
+.ftCircle {
+  position: absolute;
+  left: 50%;
+  top: 28%;
+  width: min(28%, 6rem);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border: 1px solid color-mix(in srgb, var(--white) 14%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hoop {
+  position: absolute;
+  left: 50%;
+  top: 0.35rem;
+  width: 1.25rem;
+  height: 0.55rem;
+  transform: translateX(-50%);
+  border: 2px solid color-mix(in srgb, var(--accent) 70%, var(--white));
+  border-radius: 0 0 0.5rem 0.5rem;
+  pointer-events: none;
+}
+
+.slotLabel {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--content-muted);
+}
+
+.empty {
+  padding: var(--space-3);
+  border: 1px dashed var(--border);
+  border-radius: 0.4rem;
+  color: var(--content-muted);
+  text-align: center;
+}
+
+.slotPG {
+  grid-column: 2;
+  grid-row: 3;
+  z-index: 1;
+}
+
+.slotSG {
+  grid-column: 1;
+  grid-row: 2;
+  z-index: 1;
+}
+
+.slotSF {
+  grid-column: 3;
+  grid-row: 2;
+  z-index: 1;
+}
+
+.slotPF {
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 1;
+  padding-top: var(--space-4);
+}
+
+.slotC {
+  grid-column: 3;
+  grid-row: 1;
+  z-index: 1;
+  padding-top: var(--space-4);
+}
+
+@media (min-width: 48em) {
+  .court {
+    min-height: 26rem;
+    padding: var(--space-6);
+    gap: var(--space-4);
+  }
+}

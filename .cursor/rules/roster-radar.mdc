@@ -15,15 +15,14 @@ Role-aware NBA **scouting dossiers** for team decision-makers — verdict first,
 - AI OK if disclosed; concept and scoring must be original
 
 ## MVP (must ship)
-1. Player search
-2. Dossier hero: role, fit grade, one-sentence verdict, Strong/Conditional/Poor fit, confidence
-3. 4–6 role pillars as peer percentiles
-4. 2 strengths + 2 risks (plain language)
-5. Evidence strip (e.g. L10 vs season)
-6. Collapsed methodology + loading/empty/error states
+1. Brooklyn Nets home: half-court + bench, name-only cards, Roster/*Radar* brand
+2. Click Nets player → dossier drawer (role, fit grade, verdict, Strong/Conditional/Poor, confidence)
+3. 4–6 role pillars as peer percentiles; 2 strengths + 2 risks; evidence strip
+4. Search **non-Nets** players → same dossier drawer (acquisition evaluate; no DnD trade)
+5. Collapsed methodology + loading/empty/error states
 
 ## Non-goals (v1)
-Auth/teams, film, tracking, salary/cap, full roster mapper, social, live in-game tools.
+Auth, multi-team picker, film, tracking, salary/cap, DnD trade sim, team +/- projections, headshots, social, live tools.
 
 ## UX
 - Search → Dossier only; progressive disclosure (NN/g)

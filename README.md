@@ -24,14 +24,16 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 
 ## Project docs
 - Full outline: [`docs/PROJECT_OUTLINE.md`](docs/PROJECT_OUTLINE.md)
+- Identity / drawing board: [`docs/IDENTITY.md`](docs/IDENTITY.md)
 - Backend design: [`docs/BACKEND.md`](docs/BACKEND.md)
 - Design system: [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md)
 - Development phases: [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
+- Phase 1 review log: [`docs/PHASE_1_REVIEW.md`](docs/PHASE_1_REVIEW.md)
 - AI disclosure log: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
 - Cursor rules: [`.cursor/rules/`](.cursor/rules/)
 
 ## Status
-Phase 0 (foundation docs) complete pending git commit. App scaffolding = Phase 1.
+Phase 1 in progress on branch `phase-1/scaffold`: Next.js app + BALLDONTLIE player-search spike working locally. Deploy to Vercel still open.
 
 ## Setup (after Phase 1 scaffold)
 Copy `.env.example` → `.env.local` and set `BALLDONTLIE_API_KEY`.
