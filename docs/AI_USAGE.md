@@ -74,6 +74,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Synced PHASE_1_REVIEW Pass 3, BACKEND MVP, PROJECT_OUTLINE, DEVELOPMENT with `VENDOR_DECISION.md` (no new doc files)
 - **Not used for:** GOAT verify; Phase 2 implementation
 
+### 2026-07-27 — Phase 2 kickoff: GOAT verify PASS
+- **Tool:** Cursor agent
+- **Used for:** `scripts/verify-goat.mjs`; confirmed active players + season averages + game stats on GOAT trial (paced for 5 req/min)
+- **Not used for:** Finished scoring formulas (next on branch)
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

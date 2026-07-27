@@ -56,7 +56,7 @@ git add -A && git commit -m "Describe the change and why."
 
 ### Vendor decision (before Phase 2 scoring)
 - [x] Research + lock ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) — BALLDONTLIE GOAT trial; NBA.com not used on Vercel
-- [ ] Confirm GOAT endpoints with rotated API key
+- [x] Confirm GOAT endpoints with rotated API key (`npm run verify:goat` — search, active players, season averages, game stats all PASS; pace ≤5 req/min on trial)
 - [ ] Plan post-trial (paid month vs fixtures) before trial ends
 
 ### Phase 2 — Vertical slice
