@@ -57,7 +57,7 @@ Inspired by Alistair Cockburn’s **Ports and Adapters** (hexagonal architecture
 
 ```
 src/
-  domain/           # shared types (Player, Role, Dossier, AppError)
+  domain/           # shared types (Player, Role, Dossier) + AppError
   nba/              # NbaStatsPort + vendor adapter(s) + Zod schemas
   scoring/          # pure: roles, percentiles, fit, callouts
   app/

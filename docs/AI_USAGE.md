@@ -34,6 +34,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Drawing board → Nets-only home, non-Nets acquisition search, brand palette wiring, outline updates
 - **Not used for:** DnD trade simulation (explicitly cut from v1)
 
+### 2026-07-26 — Phase 1 self-review remediations
+- **Tool:** Cursor agent
+- **Used for:** Pre-merge code review; domain/error split; Zod client boundaries; search debounce; drawer a11y; muted contrast; seed id resolution (partial); `docs/PHASE_1_REVIEW.md`
+- **Not used for:** Scoring formulas; inventing unresolved BDL ids
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

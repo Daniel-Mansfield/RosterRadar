@@ -31,7 +31,7 @@ Raw brand variables live in `src/styles/palette.css`. Components should use **se
 | `--surface-raised` | graphite mixed lighter | Cards, drawer surface |
 | `--border` | dim-grey (soft) | Dividers, card edges |
 | `--content-primary` | white | Primary text, headings, grade |
-| `--content-muted` | dim-grey | Labels, captions |
+| `--content-muted` | dim-grey mixed toward white | Labels, captions (AA on graphite) |
 | `--on-accent` | white | Text on cherry buttons/chips |
 | `--brand-roster` | white | “Roster” wordmark |
 | `--brand-radar` | intense cherry | “*Radar*” wordmark |
