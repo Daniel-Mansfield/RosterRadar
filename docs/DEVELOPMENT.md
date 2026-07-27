@@ -50,8 +50,13 @@ git add -A && git commit -m "Describe the change and why."
 - [x] Zod + BALLDONTLIE adapter (`searchPlayers`, curated `getNetsRoster`)
 - [x] Nets home: brand, half-court, bench, drawer placeholder, non-Nets search
 - [x] Pre-merge self-review remediations ([`PHASE_1_REVIEW.md`](./PHASE_1_REVIEW.md))
-- [ ] Hello-world deploy (e.g. Vercel)
+- [x] Phase 1 merged to `main` (PR #1)
+- [ ] Hello-world deploy (e.g. Vercel) — also required for NBA.com spike Proof C
 - [x] `.env.local` from `.env.example` (local only; never commit)
+
+### Vendor decision (before Phase 2 scoring)
+- [ ] Bounded NBA.com spike ([`SPIKE_NBA_COM.md`](./SPIKE_NBA_COM.md)) — PASS → `nba_com` adapter; FAIL → BALLDONTLIE paid trial/upgrade
+- [ ] Record decision in spike results + `BACKEND.md`
 
 ### Phase 2 — Vertical slice
 - [x] `NbaStatsPort` + Zod boundary (players + nets roster)

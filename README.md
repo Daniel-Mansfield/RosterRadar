@@ -29,6 +29,7 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 - Design system: [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md)
 - Development phases: [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
 - Phase 1 review log: [`docs/PHASE_1_REVIEW.md`](docs/PHASE_1_REVIEW.md)
+- Vendor spike (NBA.com): [`docs/SPIKE_NBA_COM.md`](docs/SPIKE_NBA_COM.md)
 - AI disclosure log: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
 - Cursor rules: [`.cursor/rules/`](.cursor/rules/)
 

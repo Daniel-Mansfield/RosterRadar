@@ -44,6 +44,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Second full code review against identity/MVP expectations; live BDL probe of excludeNets; updated `docs/PHASE_1_REVIEW.md` with open gate items (R14–R22)
 - **Not used for:** Applying remediations yet (awaiting go-ahead); scoring / Phase 2 implementation
 
+### 2026-07-27 — Phase 1 merged; NBA.com vendor spike planned
+- **Tool:** Cursor agent
+- **Used for:** Confirmed PR #1 merge on `main`; authored `docs/SPIKE_NBA_COM.md` pass/fail gate before Phase 2 scoring
+- **Not used for:** Running the spike yet; scoring implementation
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*
