@@ -1,6 +1,6 @@
 # Spike: Official NBA.com stats vs BALLDONTLIE
 
-**Status:** Ready to run (Phase 1 merged `f3fddb4`)  
+**Status:** In progress — Proof A + B **PASS** locally; Proof C (Vercel) **not run**  
 **Goal:** Decide with evidence whether RosterRadar should add an `nba_com` adapter or stay on BALLDONTLIE (paid tier if needed).  
 **Time box:** 2–4 hours hard stop. Do not start Phase 2 scoring until this spike records a PASS or FAIL.
 
@@ -46,8 +46,8 @@ Pick one known player (e.g. resolved BDL id mapped later; for spike use NBA pers
 - **Pass if:** both return numeric stats we could feed into pillars / L10 vs season later
 
 ### Proof C — Deployed: same calls from Vercel
-- Minimal Route Handler or script invoked via a preview deployment (even a throwaway `GET /api/spike/nba-com`).
-- **Pass if:** Proof A and B succeed from the deployed environment within the time box (not only `localhost`).
+- Minimal Route Handler: `GET /api/spike/nba-com`
+- **Pass if:** roster fetch succeeds from the **deployed** environment (not only `localhost` / `next start` on a laptop).
 
 If Proof C hangs, 403s, or returns Akamai/challenge HTML → **FAIL**.
 
@@ -63,13 +63,24 @@ If Proof C hangs, 403s, or returns Akamai/challenge HTML → **FAIL**.
 
 ---
 
-## How to run (suggested order)
+## How to run
 
-1. Branch from `main`: `spike/nba-com-vendor` (this branch).
-2. Local Node `fetch` script under `scripts/spike-nba-com.mjs` (no secrets required for NBA.com).
-3. Record raw outcomes in **Results** below (status codes, 3–5 sample names, whether body looks like JSON).
-4. If A+B pass, add the smallest possible spike route and deploy a Vercel preview — or run Proof C against an existing project deploy.
-5. Fill **Decision**, commit this doc, merge the docs PR (or spike branch), then proceed.
+```bash
+# Proof A + B (local)
+npm run spike:nba-com
+
+# Spike route (local smoke — not Proof C)
+npm run build && npm run start
+# then: curl -s localhost:3000/api/spike/nba-com
+
+# Proof C — after Vercel project is linked:
+# Deploy this branch / preview, then:
+# curl -s https://<preview>.vercel.app/api/spike/nba-com
+```
+
+Artifacts:
+- `scripts/spike-nba-com.mjs`
+- `src/app/api/spike/nba-com/route.ts` (temporary; remove after decision)
 
 ---
 
@@ -77,17 +88,20 @@ If Proof C hangs, 403s, or returns Akamai/challenge HTML → **FAIL**.
 
 | Proof | Ran? | HTTP / outcome | Notes |
 |---|---|---|---|
-| A — Roster (local) | ☐ | | |
-| B — Season + game log (local) | ☐ | | |
-| C — Same on Vercel | ☐ | | |
+| A — Roster (local) | ✅ | **200 / PASS** | `commonteamroster` season `2025-26`, **18** players. Sample: Josh Minott, Ziaire Williams, Danny Wolf, Drake Powell, Egor Dëmin, Terance Mann… Looks far more current than our curated seed. |
+| B — Season + game log (local) | ✅ | **200 / PASS** | `playercareerstats` + `playergamelog` for Minott (`1631169`). Season row + **49** games in 2025-26 log (L10-capable). |
+| C — Same on Vercel | ☐ | **NOT RUN** | Spike route works on local `next start` (`ok:true`, 18 players). **Vercel preview still required** for the real gate. |
 
-**Date:**  
-**Operator:**  
-**Decision:** ☐ PASS · ☐ FAIL · ☐ PARTIAL→FAIL  
+**Date:** 2026-07-27  
+**Operator:** Cursor agent + Daniel  
+**Decision:** ☐ PASS · ☐ FAIL · ☐ PARTIAL→FAIL — **blocked on Proof C**
+
+**Local smoke (not Proof C):** `GET /api/spike/nba-com` via `next start` → `ok: true`, `playerCount: 18`.
 
 **Follow-up committed to:**
-- ☐ `nba_com` adapter next  
-- ☐ BALLDONTLIE GOAT trial / ALL-STAR upgrade next  
+- ☐ `nba_com` adapter next (only if Proof C passes)
+- ☐ BALLDONTLIE GOAT trial / ALL-STAR upgrade next (if Proof C fails)
+- ☐ Finish hello-world Vercel deploy, then re-hit `/api/spike/nba-com`
 
 ---
 

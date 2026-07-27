@@ -49,6 +49,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Confirmed PR #1 merge on `main`; authored `docs/SPIKE_NBA_COM.md` pass/fail gate before Phase 2 scoring
 - **Not used for:** Running the spike yet; scoring implementation
 
+### 2026-07-27 — NBA.com spike Proof A+B executed
+- **Tool:** Cursor agent
+- **Used for:** `scripts/spike-nba-com.mjs`, temporary `/api/spike/nba-com`; local roster + career/game-log proofs (both PASS); documented results pending Vercel Proof C
+- **Not used for:** Final vendor lock; production `nba_com` adapter
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*
