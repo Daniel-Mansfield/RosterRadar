@@ -1,6 +1,6 @@
 # Spike: Official NBA.com stats vs BALLDONTLIE
 
-**Status:** In progress — Proof A + B **PASS** locally; Proof C (Vercel) **not run**  
+**Status:** Local capacities **PASS** (A/B/D/E). Proof C (Vercel) **not run** — decision still gated.  
 **Goal:** Decide with evidence whether RosterRadar should add an `nba_com` adapter or stay on BALLDONTLIE (paid tier if needed).  
 **Time box:** 2–4 hours hard stop. Do not start Phase 2 scoring until this spike records a PASS or FAIL.
 
@@ -16,106 +16,88 @@ Architecture already supports a swap: keep `NbaStatsPort`; only the adapter chan
 
 ---
 
-## Decision rule (write this down before coding)
+## Decision rule
 
 | Result | Action |
 |---|---|
 | **PASS** | Implement `src/nba/nbaCom/` adapter; keep BALLDONTLIE + seed as fallback; `NBA_DATA_PROVIDER` env switch |
-| **FAIL** | Stop NBA.com work; start BALLDONTLIE **GOAT 48h trial** (or ALL-STAR if game-log aggregation is enough); keep seed fallback |
-| **PARTIAL** | Local works, Vercel fails → treat as **FAIL for primary vendor** unless we accept a non-serverless proxy (out of scope for 10-day MVP) |
+| **FAIL** | Stop NBA.com work; start BALLDONTLIE **GOAT 48h trial** (or ALL-STAR); keep seed fallback |
+| **PARTIAL** | Local works, Vercel fails → **FAIL for primary vendor** (no proxy workarounds in 10-day MVP) |
 
-**PASS requires all three proofs below.** Missing the deploy proof = not PASS.
-
----
-
-## Proofs
-
-### Proof A — Local: Nets roster (or equivalent)
-- Call an NBA.com team roster endpoint for Brooklyn (team id typically `1610612751`).
-- Normalize to our domain shape mentally: names + positions enough to replace/augment seed.
-- **Pass if:** HTTP 200, parseable players, looks like a current-ish NBA roster (not empty / not HTML block page).
-
-Suggested starting points (unofficial; names drift):
-- `commonteamroster` (stats.nba.com) for current season
-- Confirm season string format the endpoint expects (e.g. `2025-26`)
-
-### Proof B — Local: one player season + recent games
-Pick one known player (e.g. resolved BDL id mapped later; for spike use NBA person id from roster).
-- Season averages **or** league dash row for that player/season
-- Player game log — enough rows to derive last ~10 games
-- **Pass if:** both return numeric stats we could feed into pillars / L10 vs season later
-
-### Proof C — Deployed: same calls from Vercel
-- Minimal Route Handler: `GET /api/spike/nba-com`
-- **Pass if:** roster fetch succeeds from the **deployed** environment (not only `localhost` / `next start` on a laptop).
-
-If Proof C hangs, 403s, or returns Akamai/challenge HTML → **FAIL**.
+**Full PASS requires Proof C.** Local capacity proofs alone are not enough to lock the vendor.
 
 ---
 
-## Out of scope (do not do in this spike)
+## Capacities we need (mapped to proofs)
 
-- Full `NbaStatsPort` implementation / PR of production adapter
-- Deleting BALLDONTLIE or the seed
-- Scoring formulas or dossier UI
-- Proxies, residential IPs, Puppeteer, TLS impersonation “to make Vercel work”
-- Multi-day vendor shopping
+| Product need | Endpoint(s) | Proof |
+|---|---|---|
+| Current Nets roster | `commonteamroster` | A |
+| Season averages | `playercareerstats` | B |
+| L10 / recent form | `playergamelog` | B |
+| Acquisition search | `commonallplayers` + local name filter | D |
+| Peer percentiles | `leaguedashplayerstats` | E |
+| Same calls from live host | `GET /api/spike/nba-com` on Vercel | C |
 
 ---
 
 ## How to run
 
 ```bash
-# Proof A + B (local)
+# Local capacity suite (A, B, D, E)
 npm run spike:nba-com
 
-# Spike route (local smoke — not Proof C)
+# Spike route smoke (still local — not Proof C)
 npm run build && npm run start
-# then: curl -s localhost:3000/api/spike/nba-com
+curl -s localhost:3000/api/spike/nba-com
 
-# Proof C — after Vercel project is linked:
-# Deploy this branch / preview, then:
-# curl -s https://<preview>.vercel.app/api/spike/nba-com
+# Proof C — requires Vercel login + preview deploy of this branch
+npx vercel login
+npx vercel          # link project / deploy preview
+curl -s https://<preview>.vercel.app/api/spike/nba-com
 ```
 
 Artifacts:
 - `scripts/spike-nba-com.mjs`
-- `src/app/api/spike/nba-com/route.ts` (temporary; remove after decision)
+- `src/app/api/spike/nba-com/route.ts` (temporary)
 
 ---
 
 ## Results log
 
-| Proof | Ran? | HTTP / outcome | Notes |
+| Proof | Ran? | Outcome | Notes |
 |---|---|---|---|
-| A — Roster (local) | ✅ | **200 / PASS** | `commonteamroster` season `2025-26`, **18** players. Sample: Josh Minott, Ziaire Williams, Danny Wolf, Drake Powell, Egor Dëmin, Terance Mann… Looks far more current than our curated seed. |
-| B — Season + game log (local) | ✅ | **200 / PASS** | `playercareerstats` + `playergamelog` for Minott (`1631169`). Season row + **49** games in 2025-26 log (L10-capable). |
-| C — Same on Vercel | ☐ | **NOT RUN** | Spike route works on local `next start` (`ok:true`, 18 players). **Vercel preview still required** for the real gate. |
+| A — Roster | ✅ | **PASS** | `2025-26` Nets roster, **18** players (Minott, Ziaire, Wolf, Powell, Dëmin, …) — clearly more current than seed |
+| B — Season + game log | ✅ | **PASS** | Career season row + **49** game logs for Minott — L10-ready |
+| D — Player search | ✅ | **PASS** | `commonallplayers` = **582** players; name filter finds Tatum / Dončić / Curry. **Adapter must normalize diacritics** (`doncic` → Dončić) |
+| E — League dash / percentiles | ✅ | **PASS** | **582** league rows; pillar fields present: PTS, AST, REB, STL, BLK, FG3M, FG3_PCT, FT_PCT, TOV, PLUS_MINUS |
+| C — Vercel | ☐ | **NOT RUN** | CLI not authenticated yet. Spike route expanded to report roster + leagueDash + playerDirectory |
 
 **Date:** 2026-07-27  
 **Operator:** Cursor agent + Daniel  
-**Decision:** ☐ PASS · ☐ FAIL · ☐ PARTIAL→FAIL — **blocked on Proof C**
+**Decision:** ☐ PASS · ☐ FAIL · ☐ PARTIAL→FAIL — **blocked on Proof C only**
 
-**Local smoke (not Proof C):** `GET /api/spike/nba-com` via `next start` → `ok: true`, `playerCount: 18`.
+**Local summary:** `localCapacitiesReady: true`
 
-**Follow-up committed to:**
-- ☐ `nba_com` adapter next (only if Proof C passes)
-- ☐ BALLDONTLIE GOAT trial / ALL-STAR upgrade next (if Proof C fails)
-- ☐ Finish hello-world Vercel deploy, then re-hit `/api/spike/nba-com`
+**Follow-up:**
+- ☐ Authenticate Vercel (`npx vercel login`) → deploy this branch → hit `/api/spike/nba-com`
+- ☐ If C passes → `nba_com` adapter
+- ☐ If C fails → BALLDONTLIE GOAT trial / ALL-STAR
 
 ---
 
-## If PASS — next implementation slice
+## Adapter notes (if we proceed)
 
-1. `src/nba/nbaCom/` with Zod at boundary  
-2. `NBA_DATA_PROVIDER=nba_com|balldontlie`  
-3. `getNetsRoster` from NBA.com; keep seed fallback on error  
-4. Extend port for season + recent games when Phase 2 starts  
-5. Disclose unofficial NBA.com use in write-up / `AI_USAGE.md`
+1. Use **NBA person ids** (not BALLDONTLIE ids) when `nba_com` is primary — or maintain a mapping table.
+2. Name search: NFD diacritic strip before substring match.
+3. Exclude Nets via `TEAM_ID === 1610612751` / abbreviation `BKN` from directory rows.
+4. Keep seed fallback if roster fetch fails at runtime.
+5. Disclose unofficial NBA.com use in write-up / `AI_USAGE.md`.
 
-## If FAIL — next implementation slice
+---
+
+## If FAIL after Proof C
 
 1. Start BALLDONTLIE GOAT 48h trial  
-2. Confirm `/players/active`, `/stats`, season averages access with our key  
-3. Extend BALLDONTLIE adapter; shrink reliance on seed where live data works  
-4. Do **not** keep poking NBA.com in parallel during Phase 2
+2. Confirm active players + stats + season averages  
+3. Extend BALLDONTLIE adapter; do not keep dual-primary vendors during Phase 2

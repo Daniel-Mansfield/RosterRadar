@@ -54,6 +54,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** `scripts/spike-nba-com.mjs`, temporary `/api/spike/nba-com`; local roster + career/game-log proofs (both PASS); documented results pending Vercel Proof C
 - **Not used for:** Final vendor lock; production `nba_com` adapter
 
+### 2026-07-27 — NBA.com capacity spike expanded (A/B/D/E)
+- **Tool:** Cursor agent
+- **Used for:** Extended spike for search (`commonallplayers`) + peer percentiles (`leaguedashplayerstats`); fixed diacritic search false negative; expanded `/api/spike/nba-com` capacity payload
+- **Not used for:** Vercel Proof C (awaiting account login); production adapter
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

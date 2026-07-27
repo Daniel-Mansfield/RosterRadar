@@ -1,8 +1,14 @@
 /**
- * Bounded NBA.com stats spike (Proof A + B).
- * Usage: node scripts/spike-nba-com.mjs
+ * Bounded NBA.com stats spike — capacities RosterRadar needs.
+ * Usage: npm run spike:nba-com
  *
- * No API key. Uses public stats.nba.com endpoints with browser-like headers.
+ * Proofs:
+ *   A — Nets roster (commonteamroster)
+ *   B — Season averages + game log (playercareerstats, playergamelog)
+ *   D — Player directory / search (commonallplayers) for acquisition search
+ *   E — League-wide season stats (leaguedashplayerstats) for peer percentiles
+ *
+ * Proof C (Vercel) is separate — hit GET /api/spike/nba-com on a preview deploy.
  * See docs/SPIKE_NBA_COM.md.
  */
 
@@ -82,88 +88,84 @@ async function nbaGet(path, params) {
 }
 
 async function proofA() {
-  console.log("\n=== Proof A: Nets roster (local) ===");
+  console.log("\n=== Proof A: Nets roster ===");
   for (const season of SEASON_CANDIDATES) {
     const res = await nbaGet("/stats/commonteamroster", {
       TeamID: NETS_TEAM_ID,
       Season: season,
     });
-
     console.log(
-      `season=${season} status=${res.status} ok=${res.ok} ms=${res.ms} html=${Boolean(res.looksLikeHtml)}`,
+      `season=${season} status=${res.status} ok=${res.ok} ms=${res.ms}`,
     );
     if (!res.ok) {
       console.log(`  preview: ${res.preview}`);
-      if (res.error) console.log(`  error: ${res.error}`);
       continue;
     }
-
     const rows = resultSetToRows(res.json, "CommonTeamRoster") ?? [];
-    const sample = rows.slice(0, 8).map((r) => ({
+    const sample = rows.slice(0, 6).map((r) => ({
       id: r.PLAYER_ID,
       name: r.PLAYER,
-      num: r.NUM,
       pos: r.POSITION,
-      height: r.HEIGHT,
     }));
-    console.log(`  players=${rows.length}`);
-    console.log("  sample:", JSON.stringify(sample, null, 2));
+    console.log(`  players=${rows.length}`, JSON.stringify(sample));
     return {
       pass: rows.length > 0,
       season,
       playerCount: rows.length,
       sample,
       firstPlayerId: rows[0]?.PLAYER_ID ?? null,
+      netsIds: new Set(rows.map((r) => r.PLAYER_ID)),
     };
   }
-  return { pass: false, season: null, playerCount: 0, sample: [], firstPlayerId: null };
+  return {
+    pass: false,
+    season: null,
+    playerCount: 0,
+    sample: [],
+    firstPlayerId: null,
+    netsIds: new Set(),
+  };
 }
 
 async function proofB(playerId) {
-  console.log("\n=== Proof B: season averages + game log (local) ===");
+  console.log("\n=== Proof B: season averages + game log ===");
   if (playerId == null) {
-    console.log("  skipped — no player id from Proof A");
     return { pass: false, reason: "no_player_id" };
   }
 
   let seasonOk = false;
   let gameLogOk = false;
   let seasonSample = null;
-  let gameLogSample = null;
+  let gameLogCount = 0;
   let usedSeason = null;
 
-  for (const season of SEASON_CANDIDATES) {
-    const career = await nbaGet("/stats/playercareerstats", {
-      PlayerID: playerId,
-      PerMode: "PerGame",
-    });
-    console.log(
-      `playercareerstats player=${playerId} status=${career.status} ok=${career.ok} ms=${career.ms}`,
-    );
-    if (career.ok) {
-      const seasonTotals =
-        resultSetToRows(career.json, "SeasonTotalsRegularSeason") ?? [];
-      const match =
-        seasonTotals.find((r) => String(r.SEASON_ID).includes(season.slice(2, 4)) || String(r.SEASON_ID) === season) ??
-        seasonTotals[seasonTotals.length - 1];
-      if (match) {
-        seasonOk = true;
-        usedSeason = String(match.SEASON_ID);
-        seasonSample = {
-          season: match.SEASON_ID,
-          team: match.TEAM_ABBREVIATION,
-          gp: match.GP,
-          pts: match.PTS,
-          reb: match.REB,
-          ast: match.AST,
-          min: match.MIN,
-        };
-        console.log("  season sample:", JSON.stringify(seasonSample));
-      }
-    } else {
-      console.log(`  preview: ${career.preview}`);
+  const career = await nbaGet("/stats/playercareerstats", {
+    PlayerID: playerId,
+    PerMode: "PerGame",
+  });
+  console.log(
+    `playercareerstats status=${career.status} ok=${career.ok} ms=${career.ms}`,
+  );
+  if (career.ok) {
+    const seasonTotals =
+      resultSetToRows(career.json, "SeasonTotalsRegularSeason") ?? [];
+    const match = seasonTotals[seasonTotals.length - 1];
+    if (match) {
+      seasonOk = true;
+      usedSeason = String(match.SEASON_ID);
+      seasonSample = {
+        season: match.SEASON_ID,
+        team: match.TEAM_ABBREVIATION,
+        gp: match.GP,
+        pts: match.PTS,
+        reb: match.REB,
+        ast: match.AST,
+      };
+      console.log("  season:", JSON.stringify(seasonSample));
     }
+  }
 
+  for (const season of SEASON_CANDIDATES) {
     const log = await nbaGet("/stats/playergamelog", {
       PlayerID: playerId,
       Season: season,
@@ -172,27 +174,21 @@ async function proofB(playerId) {
     console.log(
       `playergamelog season=${season} status=${log.status} ok=${log.ok} ms=${log.ms}`,
     );
-    if (log.ok) {
-      const games = resultSetToRows(log.json, "PlayerGameLog") ?? [];
-      const last10 = games.slice(0, 10).map((g) => ({
-        date: g.GAME_DATE,
-        matchup: g.MATCHUP,
-        min: g.MIN,
-        pts: g.PTS,
-        reb: g.REB,
-        ast: g.AST,
-      }));
-      if (games.length > 0) {
-        gameLogOk = true;
-        usedSeason = usedSeason ?? season;
-        gameLogSample = { count: games.length, last10 };
-        console.log(`  games=${games.length}`);
-        console.log("  last few:", JSON.stringify(last10.slice(0, 3)));
-        break;
-      }
-      console.log("  empty game log for season");
-    } else {
-      console.log(`  preview: ${log.preview}`);
+    if (!log.ok) continue;
+    const games = resultSetToRows(log.json, "PlayerGameLog") ?? [];
+    if (games.length > 0) {
+      gameLogOk = true;
+      gameLogCount = games.length;
+      usedSeason = usedSeason ?? season;
+      console.log(
+        `  games=${games.length} latest=`,
+        JSON.stringify({
+          date: games[0]?.GAME_DATE,
+          pts: games[0]?.PTS,
+          min: games[0]?.MIN,
+        }),
+      );
+      break;
     }
   }
 
@@ -203,31 +199,202 @@ async function proofB(playerId) {
     seasonOk,
     gameLogOk,
     seasonSample,
-    gameLogSample,
+    gameLogCount,
   };
 }
 
+/** Strip diacritics so "doncic" matches "Dončić". */
+function normalizeName(value) {
+  return String(value)
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase();
+}
+
+/** Acquisition search capacity: filter a player directory by name. */
+async function proofD(netsIds) {
+  console.log("\n=== Proof D: player directory / name search ===");
+  let rows = [];
+  let seasonUsed = null;
+
+  for (const season of SEASON_CANDIDATES) {
+    const res = await nbaGet("/stats/commonallplayers", {
+      LeagueID: "00",
+      Season: season,
+      IsOnlyCurrentSeason: 1,
+    });
+    console.log(
+      `commonallplayers season=${season} status=${res.status} ok=${res.ok} ms=${res.ms}`,
+    );
+    if (!res.ok) {
+      console.log(`  preview: ${res.preview}`);
+      continue;
+    }
+    rows = resultSetToRows(res.json, "CommonAllPlayers") ?? [];
+    if (rows.length > 0) {
+      seasonUsed = season;
+      break;
+    }
+  }
+
+  if (rows.length === 0) {
+    return { pass: false, count: 0, queries: {} };
+  }
+
+  const queries = ["tatum", "doncic", "curry"];
+  const byQuery = {};
+  for (const query of queries) {
+    const needle = normalizeName(query);
+    const matches = rows
+      .filter((r) => normalizeName(r.DISPLAY_FIRST_LAST ?? "").includes(needle))
+      .slice(0, 5)
+      .map((r) => ({
+        id: r.PERSON_ID,
+        name: r.DISPLAY_FIRST_LAST,
+        team: r.TEAM_ABBREVIATION,
+        rosterStatus: r.ROSTERSTATUS,
+      }));
+    const nonNets = matches.filter((m) => !netsIds.has(m.id));
+    byQuery[query] = { matches, nonNetsCount: nonNets.length };
+    console.log(
+      `  query="${query}" hits=${matches.length} nonNets=${nonNets.length}`,
+      JSON.stringify(matches),
+    );
+  }
+
+  const anyHits = queries.some((q) => byQuery[q].matches.length > 0);
+  return {
+    pass: rows.length > 100 && anyHits,
+    season: seasonUsed,
+    count: rows.length,
+    queries: byQuery,
+    note: "ASCII queries need diacritic-insensitive match (Dončić)",
+  };
+}
+
+/** Peer-percentile capacity: league-wide per-player season stats. */
+async function proofE() {
+  console.log("\n=== Proof E: league dash (peer percentiles) ===");
+  for (const season of SEASON_CANDIDATES) {
+    const res = await nbaGet("/stats/leaguedashplayerstats", {
+      College: "",
+      Conference: "",
+      Country: "",
+      DateFrom: "",
+      DateTo: "",
+      Division: "",
+      DraftPick: "",
+      DraftYear: "",
+      GameScope: "",
+      GameSegment: "",
+      Height: "",
+      ISTRound: "",
+      LastNGames: 0,
+      LeagueID: "00",
+      Location: "",
+      MeasureType: "Base",
+      Month: 0,
+      OpponentTeamID: 0,
+      Outcome: "",
+      PORound: 0,
+      PaceAdjust: "N",
+      PerMode: "PerGame",
+      Period: 0,
+      PlayerExperience: "",
+      PlayerPosition: "",
+      PlusMinus: "N",
+      Rank: "N",
+      Season: season,
+      SeasonSegment: "",
+      SeasonType: "Regular Season",
+      ShotClockRange: "",
+      StarterBench: "",
+      TeamID: 0,
+      VsConference: "",
+      VsDivision: "",
+      Weight: "",
+    });
+    console.log(
+      `leaguedashplayerstats season=${season} status=${res.status} ok=${res.ok} ms=${res.ms}`,
+    );
+    if (!res.ok) {
+      console.log(`  preview: ${res.preview}`);
+      continue;
+    }
+    const rows = resultSetToRows(res.json, "LeagueDashPlayerStats") ?? [];
+    const sample = rows.slice(0, 3).map((r) => ({
+      id: r.PLAYER_ID,
+      name: r.PLAYER_NAME,
+      team: r.TEAM_ABBREVIATION,
+      gp: r.GP,
+      min: r.MIN,
+      pts: r.PTS,
+      ast: r.AST,
+      reb: r.REB,
+    }));
+    // Fields useful for role pillars later
+    const headers = res.json?.resultSets?.[0]?.headers ?? [];
+    const pillarish = [
+      "PTS",
+      "AST",
+      "REB",
+      "STL",
+      "BLK",
+      "FG3M",
+      "FG3_PCT",
+      "FT_PCT",
+      "TOV",
+      "PLUS_MINUS",
+    ].filter((h) => headers.includes(h));
+    console.log(`  players=${rows.length} pillarFields=`, pillarish.join(","));
+    console.log("  sample:", JSON.stringify(sample));
+    return {
+      pass: rows.length > 100,
+      season,
+      playerCount: rows.length,
+      pillarFields: pillarish,
+      sample,
+    };
+  }
+  return { pass: false, season: null, playerCount: 0, pillarFields: [], sample: [] };
+}
+
 async function main() {
-  console.log("RosterRadar NBA.com spike — Proof A + B");
+  console.log("RosterRadar NBA.com capacity spike");
   console.log(new Date().toISOString());
 
   const a = await proofA();
   const b = await proofB(a.firstPlayerId);
+  const d = await proofD(a.netsIds ?? new Set());
+  const e = await proofE();
 
   const summary = {
-    proofA: a.pass ? "PASS" : "FAIL",
-    proofB: b.pass ? "PASS" : "FAIL",
-    proofC: "NOT_RUN",
-    localReadyForAdapter: a.pass && b.pass,
+    proofA_roster: a.pass ? "PASS" : "FAIL",
+    proofB_seasonGameLog: b.pass ? "PASS" : "FAIL",
+    proofD_playerSearch: d.pass ? "PASS" : "FAIL",
+    proofE_leagueDashPercentiles: e.pass ? "PASS" : "FAIL",
+    proofC_vercel: "NOT_RUN",
+    localCapacitiesReady: a.pass && b.pass && d.pass && e.pass,
   };
+
   console.log("\n=== Summary ===");
   console.log(JSON.stringify(summary, null, 2));
-
-  // Machine-readable blob for docs update
   console.log("\n=== RESULT_JSON ===");
-  console.log(JSON.stringify({ a, b, summary }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        a: { ...a, netsIds: undefined },
+        b,
+        d,
+        e,
+        summary,
+      },
+      null,
+      2,
+    ),
+  );
 
-  process.exit(a.pass && b.pass ? 0 : 1);
+  process.exit(summary.localCapacitiesReady ? 0 : 1);
 }
 
 main().catch((error) => {
