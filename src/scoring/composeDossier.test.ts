@@ -7,7 +7,6 @@ import {
   confidenceFromSample,
   detectRole,
   fitFromPillars,
-  parseMinutes,
   percentileFromRank,
 } from "@/scoring/composeDossier";
 
@@ -55,16 +54,6 @@ describe("percentileFromRank", () => {
 
   it("defaults null ranks to 50", () => {
     assert.equal(percentileFromRank(null), 50);
-  });
-});
-
-describe("parseMinutes", () => {
-  it("parses clock strings", () => {
-    assert.ok(Math.abs(parseMinutes("32:30") - 32.5) < 0.001);
-  });
-
-  it("treats 00 as zero", () => {
-    assert.equal(parseMinutes("00"), 0);
   });
 });
 

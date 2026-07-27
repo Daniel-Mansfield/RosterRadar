@@ -15,7 +15,8 @@ import {
   normalizePersonName,
   type NetsSeedEntry,
 } from "@/nba/nets/rosterSeed";
-import { parseMinutes } from "@/scoring/composeDossier";
+import { parseMinutes } from "@/nba/parseMinutes";
+import { isEspnAthleteId } from "@/nba/headshot";
 
 import {
   balldontliePlayersResponseSchema,
@@ -111,11 +112,32 @@ function assertValidNetsSeed(seed: readonly NetsSeedEntry[]): void {
       500,
     );
   }
+
+  const espnIds = new Set<number>();
+  for (const entry of seed) {
+    if (entry.espnAthleteId == null) continue;
+    if (!isEspnAthleteId(entry.espnAthleteId)) {
+      throw new AppError(
+        "invalid_payload",
+        `Nets seed has invalid espnAthleteId for ${entry.firstName} ${entry.lastName}.`,
+        500,
+      );
+    }
+    if (espnIds.has(entry.espnAthleteId)) {
+      throw new AppError(
+        "invalid_payload",
+        `Nets seed has duplicate espnAthleteId ${entry.espnAthleteId}.`,
+        500,
+      );
+    }
+    espnIds.add(entry.espnAthleteId);
+  }
 }
 
 function seedToRosterPlayer(entry: NetsSeedEntry): RosterPlayer {
   return {
     id: entry.id,
+    espnAthleteId: entry.espnAthleteId,
     firstName: entry.firstName,
     lastName: entry.lastName,
     position: entry.position,
@@ -194,7 +216,7 @@ async function balldontlieFetch(
       headers: {
         Authorization: config.BALLDONTLIE_API_KEY,
       },
-      next: { revalidate: 60 },
+      cache: "no-store",
     });
   } catch {
     throw new AppError("upstream", "Failed to reach BALLDONTLIE API.", 503);
@@ -202,9 +224,9 @@ async function balldontlieFetch(
 
   if (response.status === 429) {
     throw new AppError(
-      "upstream",
-      "BALLDONTLIE rate limit hit. Try again shortly.",
-      503,
+      "rate_limited",
+      "BALLDONTLIE trial rate limit reached (about 5 requests per minute). Wait ~60 seconds, then try again. Search and each dossier open use multiple API calls.",
+      429,
     );
   }
 
@@ -293,7 +315,7 @@ export function createBalldontlieAdapter(): NbaStatsPort {
     async getPlayerRecentGames(
       playerId: PlayerId,
       season: number,
-      perPage = 25,
+      perPage = 30,
     ): Promise<PlayerGameLine[]> {
       const json = await balldontlieFetch("/nba/v1/stats", {
         "player_ids[]": [String(playerId)],

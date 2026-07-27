@@ -28,17 +28,17 @@ export function HalfCourt({
 
   return (
     <section className={styles.court} aria-label="Brooklyn Nets starting five">
-      <div className={styles.paint} aria-hidden="true" />
-      <div className={styles.ftCircle} aria-hidden="true" />
-      <div className={styles.hoop} aria-hidden="true" />
-
       {STARTER_ORDER.map((slot) => {
         const player = bySlot.get(slot);
         return (
           <div key={slot} className={slotClass[slot]}>
             <span className={styles.slotLabel}>{slot}</span>
             {player ? (
-              <PlayerCard player={player} onSelect={onSelectPlayer} />
+              <PlayerCard
+                player={player}
+                onSelect={onSelectPlayer}
+                size="starter"
+              />
             ) : (
               <div className={styles.empty}>—</div>
             )}

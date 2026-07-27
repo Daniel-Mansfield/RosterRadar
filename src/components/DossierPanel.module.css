@@ -1,27 +1,105 @@
 .wrap {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
 }
+
+/* —— Hero scoreboard (verdict first) —— */
 
 .hero {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+
+.heroTop {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-5);
+}
+
+.heroPortrait {
+  flex: 0 0 auto;
+  width: 6.75rem;
+  aspect-ratio: 2.5 / 3.5;
+  border-radius: 0.55rem;
+  overflow: hidden;
+  box-shadow: 0 0.35rem 0.9rem color-mix(in srgb, var(--scrim) 28%, transparent);
+}
+
+.heroCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-3);
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .role {
   margin: 0;
   font-size: 0.75rem;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--content-muted);
 }
 
-.fit {
+@media (min-width: 40em) {
+  .heroPortrait {
+    width: 7.5rem;
+  }
+}
+
+.scoreboard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.grade {
   margin: 0;
-  font-size: 1.15rem;
-  font-weight: 650;
+  font-size: clamp(3rem, 8vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.scoreMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.fitBadge {
+  margin: 0;
+  display: inline-flex;
+  align-self: flex-start;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 0.3rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  background: var(--surface-subtle);
+}
+
+.fitBadge.strong {
+  background: var(--fit-strong-bg);
+  color: var(--fit-strong);
+}
+
+.fitBadge.conditional {
+  background: var(--fit-conditional-bg);
+  color: var(--fit-conditional);
+}
+
+.fitBadge.poor {
+  background: var(--fit-poor-bg);
+  color: var(--fit-poor);
 }
 
 .strong {
@@ -38,67 +116,101 @@
 
 .verdict {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: clamp(1.15rem, 2vw, 1.35rem);
   line-height: 1.45;
+  max-width: 42rem;
 }
 
 .meta {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--content-muted);
+  line-height: 1.4;
 }
 
 .sectionTitle {
   margin: 0 0 var(--space-3);
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--content-muted);
 }
+
+/* —— Pillar score rows —— */
 
 .pillars {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
+}
+
+.pillar {
+  min-width: 0;
 }
 
 .pillarHead {
   display: flex;
   justify-content: space-between;
-  font-size: 0.9rem;
-  margin-bottom: var(--space-1);
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.pillarLabel {
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .pillarPct {
+  font-size: 1.05rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--content-muted);
+  color: var(--content-primary);
 }
 
 .barTrack {
-  height: 0.45rem;
+  height: 0.65rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--border) 80%, transparent);
+  background: color-mix(in srgb, var(--border) 85%, transparent);
   overflow: hidden;
 }
 
 .barFill {
   height: 100%;
-  background: var(--accent);
   border-radius: inherit;
+  background: var(--content-muted);
+}
+
+.barMid {
+  background: var(--content-muted);
+}
+
+.barStrong {
+  background: var(--fit-strong);
+}
+
+.barPoor {
+  background: var(--fit-poor);
 }
 
 .pillarRaw {
   margin: var(--space-1) 0 0;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--content-muted);
 }
 
+.peerHint {
+  opacity: 0.85;
+}
+
+/* —— Callout columns —— */
+
 .split {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
 }
 
 @media (min-width: 40em) {
@@ -108,16 +220,6 @@
 }
 
 .callouts {
-  margin: 0;
-  padding-left: 1.1rem;
-  display: grid;
-  gap: var(--space-2);
-  font-size: 0.9rem;
-  line-height: 1.45;
-  color: var(--content-primary);
-}
-
-.evidence {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -125,21 +227,88 @@
   gap: var(--space-2);
 }
 
-.evidence li {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-3);
-  font-size: 0.875rem;
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--border);
+.callouts li {
+  margin: 0;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--surface-subtle) 55%, transparent);
+  border-left: 3px solid var(--border);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--content-primary);
 }
+
+.calloutStrength {
+  border-left-color: var(--fit-strong);
+}
+
+.calloutRisk {
+  border-left-color: var(--fit-poor);
+}
+
+/* —— Evidence comparison strip —— */
+
+.evidenceTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.evidenceTable th,
+.evidenceTable td {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: baseline;
+}
+
+.evidenceTable thead th {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--content-muted);
+  padding-top: 0;
+}
+
+.evidenceTable tbody th {
+  font-weight: 500;
+  color: var(--content-primary);
+}
+
+.evidenceTable td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  width: 5.5rem;
+  padding-left: var(--space-4);
+}
+
+.evidenceTable td:nth-child(2) {
+  color: var(--content-primary);
+  font-weight: 600;
+}
+
+.evidenceTable td:nth-child(3) {
+  color: var(--content-muted);
+}
+
+.evidenceTable thead th:not(:first-child) {
+  text-align: right;
+  width: 5.5rem;
+}
+
+.evidenceUnit {
+  font-size: 0.8em;
+}
+
+/* —— Methodology (collapsed) —— */
 
 .method {
   border-top: 1px solid var(--border);
-  padding-top: var(--space-3);
+  padding-top: var(--space-4);
   color: var(--content-muted);
-  font-size: 0.8rem;
-  line-height: 1.45;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 .method summary {

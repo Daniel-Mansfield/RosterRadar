@@ -2,6 +2,7 @@ export type AppErrorCode =
   | "validation_error"
   | "not_found"
   | "upstream"
+  | "rate_limited"
   | "invalid_payload"
   | "config_error";
 

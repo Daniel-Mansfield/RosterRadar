@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "verify:goat": "node scripts/verify-goat.mjs",
-    "test": "tsx --test src/scoring/composeDossier.test.ts"
+    "test": "tsx --test src/scoring/composeDossier.test.ts src/nba/parseMinutes.test.ts src/lib/cache/ttlCache.test.ts src/nba/cachedPort.test.ts src/nba/headshot.test.ts"
   },
   "dependencies": {
     "next": "16.2.12",

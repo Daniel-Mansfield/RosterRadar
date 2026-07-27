@@ -84,6 +84,31 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** GOAT verify; `scoring/` compose + tests; season/game adapter methods; `/api/dossier/[id]`; drawer `DossierPanel`; R14 aliases + R15 client Zod error; seed ids for Ziaire/Ochai
 - **Not used for:** Final write-up; post-trial fixtures plan
 
+### 2026-07-27 — Phase 2 standards QA
+- **Tool:** Cursor agent
+- **Used for:** Layering fix (`parseMinutes` out of scoring); `rate_limited` error; `thinSample`; `docs/PHASE_2_REVIEW.md`
+- **Not used for:** Response cache; UI/UX polish pass
+
+### 2026-07-27 — Application TTL cache
+- **Tool:** Cursor agent
+- **Used for:** `ttlCache` + `createCachedNbaPort` + dossier cache; docs BACKEND §6
+- **Not used for:** Redis / shared store; UI/UX polish
+
+### 2026-07-27 — Cache QA pass
+- **Tool:** Cursor agent
+- **Used for:** Shared LRU store; Zod-normalized search keys; aligned `perPage`; expiry/LRU/port tests
+- **Not used for:** Redis; UI/UX polish
+
+### 2026-07-27 — UI polish + UI QA
+- **Tool:** Cursor agent
+- **Used for:** Header/search layout; Leetify-style dossier; responsive search; UI QA (tokens, evidence table, fit class typing)
+- **Not used for:** Drawer hook extract; seed-id completion
+
+### 2026-07-27 — Player card chrome + Nets headshots
+- **Tool:** Cursor agent
+- **Used for:** Literal card styling; curated ESPN athlete ids on Nets seed; `PlayerAvatar` with initials fallback (Option B, not full C)
+- **Not used for:** BDL→NBA id headshot pipeline for acquisition search
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

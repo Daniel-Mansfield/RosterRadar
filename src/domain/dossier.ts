@@ -56,6 +56,8 @@ export type Dossier = {
   };
   confidence: {
     level: ConfidenceLevel;
+    /** True when sample is too thin for a high-confidence read (first-class outcome). */
+    thinSample: boolean;
     gamesPlayed: number;
     minutesPerGame: number;
   };

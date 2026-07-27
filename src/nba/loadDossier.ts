@@ -1,13 +1,16 @@
 import type { Dossier } from "@/domain/dossier";
 import { AppError } from "@/domain/errors";
 import type { PlayerId } from "@/domain/player";
-import { createBalldontlieAdapter } from "@/nba/balldontlie/client";
+import { getNbaResponseCache, getNbaStatsPort } from "@/nba/getNbaStatsPort";
 import { composeDossierFromLines } from "@/scoring/composeDossier";
 
 const DEFAULT_SEASON = 2025;
+/** Matches dossier evidence window; keep aligned with cachedPort default. */
+const RECENT_GAMES_PAGE = 30;
 
 /**
  * Build a role-fit dossier for a BALLDONTLIE player id (acquisition path).
+ * Composed dossiers share the process-local NBA response cache (TTL).
  */
 export async function loadDossier(
   playerId: PlayerId,
@@ -17,7 +20,16 @@ export async function loadDossier(
     throw new AppError("validation_error", "Player id must be a positive integer.", 400);
   }
 
-  const nba = createBalldontlieAdapter();
+  return getNbaResponseCache().getOrSet(`dossier:${playerId}:${season}`, () =>
+    buildDossier(playerId, season),
+  );
+}
+
+async function buildDossier(
+  playerId: PlayerId,
+  season: number,
+): Promise<Dossier> {
+  const nba = getNbaStatsPort();
 
   let line = await nba.getPlayerSeasonLine(playerId, season);
   let usedSeason = season;
@@ -35,7 +47,11 @@ export async function loadDossier(
     );
   }
 
-  const games = await nba.getPlayerRecentGames(playerId, usedSeason, 30);
+  const games = await nba.getPlayerRecentGames(
+    playerId,
+    usedSeason,
+    RECENT_GAMES_PAGE,
+  );
 
   return composeDossierFromLines({
     line: { ...line, season: usedSeason },

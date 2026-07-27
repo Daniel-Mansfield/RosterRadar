@@ -18,7 +18,7 @@
 - Dark branded shell (`--graphite` base; see palette)
 - Wordmark: **Roster** (`--brand-roster` / white, bold) + ***Radar*** (`--brand-radar` / intense cherry, thin italic)
 - Roster as a **basketball half-court**: starting five as cards in positional spots; **bench** as a side list
-- Player cards: **name only** (no photos in v1)
+- Player cards: **name + headshot** on Nets roster (curated ESPN ids); initials fallback; acquisition search uses initials (no photo pipeline)
 - Click **Nets** card → **right drawer = role-fit scouting dossier**
 
 ### Player search (acquisition candidates)
@@ -28,7 +28,7 @@
 
 ### Explicitly out of v1
 - Team search / other franchises as home targets
-- Player headshots
+- Full BDL→NBA headshot pipeline for arbitrary search results (Nets use curated ESPN ids only)
 - Drag-and-drop trades onto the court
 - Projected team +/- from a simulated trade
 
@@ -66,7 +66,7 @@ Preserved for history; superseded by §1 where they conflict.
 |---|---|
 | Dark brand + Roster / *Radar* wordmark | Core identity |
 | Nets-only home as half-court roster | Scope cut that still feels like “Roster” |
-| Name-only player cards | Ships without image pipeline |
+| Name-only player cards | **Updated:** Nets cards use curated ESPN headshots + initials fallback; search uses initials |
 | Drawer = role-fit dossier | Assignment MVP + your interaction model |
 | Player search near the roster | Non-Nets only — acquisition evaluation |
 | Bench list + starters on court | Readable roster structure |
@@ -107,6 +107,7 @@ Preserved for history; superseded by §1 where they conflict.
 | Date | Decision |
 |---|---|
 | 2026-07-26 | Vision captured; hybrid court + dossier proposed |
-| 2026-07-26 | **Lock:** Nets-only home; no team search; drawer = role-fit dossier; no photos v1 |
+| 2026-07-27 | **Update:** Nets player cards use curated ESPN headshots (Option B) + card chrome; full BDL→NBA photo pipeline still deferred |
+| 2026-07-27 | Half-court background: local PNG from Signs by SI half-court graphic (`public/nets-halfcourt.png`); panel `aspect-ratio` matches source |
 | 2026-07-26 | **Lock:** Player search = **non-Nets only** (acquisition candidates → dossier drawer) |
 | 2026-07-26 | **Lock:** Brand palette (graphite / intense cherry / imperial blue / white / dim grey) |

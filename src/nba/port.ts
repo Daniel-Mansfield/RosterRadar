@@ -17,6 +17,7 @@ export type NbaStatsPort = {
   getPlayerRecentGames: (
     playerId: PlayerId,
     season: number,
+    /** Default 30 — matches dossier evidence window. */
     perPage?: number,
   ) => Promise<PlayerGameLine[]>;
 };

@@ -1,113 +1,112 @@
 .court {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1.05fr 1fr;
   grid-template-rows: auto auto auto;
-  gap: var(--space-3);
-  min-height: 22rem;
-  padding: var(--space-5) var(--space-4) var(--space-4);
+  align-content: space-between;
+  justify-items: center;
+  column-gap: 0;
+  row-gap: 0.15rem;
+  width: 100%;
+  min-height: 0;
+  /* Extra side padding pulls wing cards toward center. */
+  padding: var(--space-3) 11%;
   border: 1px solid var(--border);
   border-radius: 0.75rem;
-  background:
-    radial-gradient(
-      ellipse 45% 35% at 50% 12%,
-      color-mix(in srgb, var(--white) 8%, transparent),
-      transparent 70%
-    ),
-    var(--surface-subtle);
+  background-color: var(--court-matte);
+  background-image: url("/nets-halfcourt.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  /* Inset the graphic so cards sit over a slightly smaller court. */
+  background-size: 82%;
   overflow: hidden;
-}
-
-.paint {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: min(42%, 9rem);
-  height: 38%;
-  transform: translateX(-50%);
-  border: 1px solid color-mix(in srgb, var(--white) 18%, transparent);
-  border-top: none;
-  border-radius: 0 0 0.25rem 0.25rem;
-  pointer-events: none;
-}
-
-.ftCircle {
-  position: absolute;
-  left: 50%;
-  top: 28%;
-  width: min(28%, 6rem);
-  aspect-ratio: 1;
-  transform: translateX(-50%);
-  border: 1px solid color-mix(in srgb, var(--white) 14%, transparent);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.hoop {
-  position: absolute;
-  left: 50%;
-  top: 0.35rem;
-  width: 1.25rem;
-  height: 0.55rem;
-  transform: translateX(-50%);
-  border: 2px solid color-mix(in srgb, var(--accent) 70%, var(--white));
-  border-radius: 0 0 0.5rem 0.5rem;
-  pointer-events: none;
+  box-sizing: border-box;
 }
 
 .slotLabel {
-  display: block;
-  margin-bottom: var(--space-1);
-  font-size: 0.65rem;
+  display: inline-block;
+  margin-bottom: 0.2rem;
+  padding: 0.12rem 0.45rem;
+  font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: var(--content-muted);
+  color: var(--white);
+  text-align: center;
+  /* Small plate so white text stays readable on light hardwood. */
+  background: color-mix(in srgb, var(--court-matte) 82%, transparent);
+  border-radius: 0.25rem;
 }
 
 .empty {
-  padding: var(--space-3);
-  border: 1px dashed var(--border);
+  padding: var(--space-2);
+  border: 1px dashed color-mix(in srgb, var(--graphite) 45%, transparent);
   border-radius: 0.4rem;
-  color: var(--content-muted);
+  color: color-mix(in srgb, var(--graphite) 75%, transparent);
   text-align: center;
+  width: min(100%, var(--starter-card-max, 9rem));
+  margin: 0 auto;
+}
+
+.slotPG,
+.slotSG,
+.slotSF,
+.slotPF,
+.slotC {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  min-width: 0;
+  width: 100%;
 }
 
 .slotPG {
   grid-column: 2;
   grid-row: 3;
-  z-index: 1;
 }
 
 .slotSG {
   grid-column: 1;
   grid-row: 2;
-  z-index: 1;
 }
 
 .slotSF {
   grid-column: 3;
   grid-row: 2;
-  z-index: 1;
 }
 
 .slotPF {
   grid-column: 1;
   grid-row: 1;
-  z-index: 1;
-  padding-top: var(--space-4);
 }
 
 .slotC {
   grid-column: 3;
   grid-row: 1;
-  z-index: 1;
-  padding-top: var(--space-4);
 }
 
-@media (min-width: 48em) {
+/* Desktop: size court to remaining viewport height; width follows art ratio. */
+@media (min-width: 64em) {
   .court {
-    min-height: 26rem;
-    padding: var(--space-6);
-    gap: var(--space-4);
+    --starter-card-max: clamp(7.5rem, 16dvh, 10.25rem);
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: 1153 / 1166;
+    justify-self: center;
+    align-self: center;
+    padding: var(--space-3) 12%;
+    column-gap: 0;
+    row-gap: 0.1rem;
+  }
+}
+
+@media (max-width: 63.98em) {
+  .court {
+    /* Stacked layout can scroll; keep a readable court height. */
+    aspect-ratio: 1153 / 1166;
+    max-height: min(36rem, 70dvh);
+    padding: var(--space-3) 8%;
   }
 }

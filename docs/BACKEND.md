@@ -90,7 +90,8 @@ Use stable machine codes the UI can map to empty/error/confidence states:
 |---|---|---|
 | `validation_error` | 400 | Bad query/params |
 | `not_found` | 404 | Unknown player |
-| `thin_sample` | 200 with low confidence *or* dedicated flag | Too few minutes — still return dossier when possible |
+| `thin_sample` | 200 with `confidence.thinSample` | Too few minutes — still return dossier when possible |
+| `rate_limited` | 429 | Vendor rate limit (trial ≈ 5 req/min) |
 | `upstream` | 502/503 | Vendor API failure |
 | `invalid_payload` | 502 | Vendor response failed schema |
 
@@ -117,10 +118,14 @@ Aligned with [OWASP Input Validation](https://cheatsheetseries.owasp.org/cheatsh
 
 Per [Next.js Route Handlers](https://nextjs.org/docs/app/getting-started/route-handlers): handlers are **not cached by default**; opt in deliberately for safe `GET`s.
 
-- Short TTL / `revalidate` for vendor fetches to respect rate limits.
-- Cache **normalized** domain data when helpful — never use cache to hide bad normalization.
-- Adapter isolates upstream flakiness; optional seeded demo players for offline/demo (document clearly).
-- No retries that mask root causes (see root-cause-first rule); limited, explicit backoff only if the vendor documents it.
+- **Application read-through cache** (`src/lib/cache/ttlCache.ts` + `createCachedNbaPort` + shared store via `getNbaResponseCache`): ~10 minute TTL on normalized domain values after Zod — search, season lines, recent games, composed dossiers, Nets roster. One `maxEntries` budget (LRU).
+- In-flight coalescing (singleflight) so concurrent identical keys share one upstream call.
+- Failures (`rate_limited`, `upstream`, etc.) are **not** cached.
+- Process-local only (warm Node / serverless instance memory) — not Redis; cold starts start empty.
+- Vendor `fetch` uses `cache: "no-store"`; the app cache is the deliberate layer (avoids fighting Next Data Cache + `Authorization` headers).
+- Adapter isolates upstream flakiness; curated Nets seed remains the roster fallback.
+- No retries that mask root causes (see root-cause-first rule).
+- Cached values are **read-only** by contract (shared references); do not mutate port/dossier results.
 
 ---
 

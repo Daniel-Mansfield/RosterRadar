@@ -18,6 +18,11 @@ export type RosterPlayer = {
    * Never call dossier/stats APIs with a null id.
    */
   id: PlayerId | null;
+  /**
+   * ESPN athlete id for Nets headshots when curated; `null` → initials avatar.
+   * Not used for BALLDONTLIE calls.
+   */
+  espnAthleteId: number | null;
   firstName: string;
   lastName: string;
   position: string | null;

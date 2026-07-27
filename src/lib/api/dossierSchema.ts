@@ -27,6 +27,7 @@ export const dossierSchema = z.object({
   }),
   confidence: z.object({
     level: z.enum(["high", "medium", "low"]),
+    thinSample: z.boolean(),
     gamesPlayed: z.number(),
     minutesPerGame: z.number(),
   }),

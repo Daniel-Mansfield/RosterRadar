@@ -18,23 +18,23 @@ export const PEER_POOL_SIZE = 500;
 
 export const MIN_MINUTES_FOR_GAME = 5;
 
-const ROLE_LABELS: Record<RoleId, string> = {
+const ROLE_LABELS = {
   primary_creator: "Primary creator",
   wing_scorer: "Wing scorer",
   spacer: "Spacer / shooter",
   connector: "Connector",
   paint_anchor: "Paint anchor",
   versatile_forward: "Versatile forward",
-};
+} as const satisfies Record<RoleId, string>;
 
-const PILLAR_LABELS: Record<PillarId, string> = {
+const PILLAR_LABELS = {
   scoring: "Scoring",
   playmaking: "Playmaking",
   rebounding: "Rebounding",
   spacing: "Spacing",
   disruption: "Disruption",
   workload: "Workload",
-};
+} as const satisfies Record<PillarId, string>;
 
 export function percentileFromRank(
   rank: number | null,
@@ -46,22 +46,6 @@ export function percentileFromRank(
   const clamped = Math.min(rank, poolSize);
   const pct = (100 * (poolSize - clamped)) / (poolSize - 1);
   return Math.max(0, Math.min(99, Math.round(pct)));
-}
-
-export function parseMinutes(value: string | number | null | undefined): number {
-  if (value == null) return 0;
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  const raw = String(value).trim();
-  if (!raw || raw === "00" || raw === "0") return 0;
-  if (raw.includes(":")) {
-    const [m, s] = raw.split(":");
-    const minutes = Number(m);
-    const seconds = Number(s);
-    if (!Number.isFinite(minutes)) return 0;
-    return minutes + (Number.isFinite(seconds) ? seconds / 60 : 0);
-  }
-  const asNum = Number(raw);
-  return Number.isFinite(asNum) ? asNum : 0;
 }
 
 export function detectRole(line: PlayerSeasonLine): RoleId {
@@ -272,6 +256,7 @@ export function composeDossierFromLines(input: {
     },
     confidence: {
       level: confidenceLevel,
+      thinSample: confidenceLevel === "low",
       gamesPlayed: line.gamesPlayed,
       minutesPerGame: line.minutes,
     },
@@ -286,6 +271,7 @@ export function composeDossierFromLines(input: {
         "Percentiles are derived from BALLDONTLIE league ranks mapped onto an assumed peer pool.",
         "Role labels are RosterRadar heuristics from scoring/playmaking/rebounding/spacing mix — not official positions.",
         "Last-10 evidence ignores games under the minimum minutes threshold (DNPs / traces).",
+        "Upstream season/search reads use a short process-local TTL cache (~10 min) to respect vendor rate limits.",
       ],
     },
   };

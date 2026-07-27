@@ -25,7 +25,7 @@ Full design + citations: `docs/BACKEND.md`.
 
 ## API
 - v1: `GET /api/players?q=` and `GET /api/dossier/[playerId]`.
-- Typed error codes: `validation_error`, `not_found`, `upstream`, `invalid_payload`; thin sample is explicit in the dossier.
+- Typed error codes: `validation_error`, `not_found`, `upstream`, `rate_limited`, `invalid_payload`; thin sample is explicit in the dossier (`confidence.thinSample`).
 - Vendor types never appear in route responses.
 
 ## Forbidden
