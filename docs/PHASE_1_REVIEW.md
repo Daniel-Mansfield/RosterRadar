@@ -52,15 +52,15 @@ Fresh read of current `phase-1/scaffold` (`4dc17c4`), IDENTITY/MVP expectations,
 
 | ID | Severity | Finding | Evidence | Disposition |
 |---|---|---|---|---|
-| R14 | **P1** | **Acquisition filter misses nickname aliases** — seed stores “Nic Claxton” but BDL returns “Nicolas Claxton” (`nicolas\|claxton` ≠ `nic\|claxton`). With BDL team `CHI`, he is **not** excluded and appears as an acquisition candidate. | Live probe 2026-07-27: search `Claxton` → Nicolas Claxton `excluded:false` | **Open — fix before merge** (alias keys and/or known BDL ids in exclude set) |
-| R15 | P1 | Client Zod failure treated as empty results | `readPlayers` returns `[]` on parse fail → UI shows “No non-Nets players matched” instead of an error | **Open — prefer fix before merge** (set error state when `!playersApiResponseSchema.success`) |
+| R14 | **P1** | **Acquisition filter misses nickname aliases** — seed stores “Nic Claxton” but BDL returns “Nicolas Claxton” (`nicolas\|claxton` ≠ `nic\|claxton`). With BDL team `CHI`, he is **not** excluded and appears as an acquisition candidate. | Live probe 2026-07-27: search `Claxton` → Nicolas Claxton `excluded:false` | **Open → Phase 2** (see Pass 3) |
+| R15 | P1 | Client Zod failure treated as empty results | `readPlayers` returns `[]` on parse fail → UI shows “No non-Nets players matched” instead of an error | **Open → Phase 2** (see Pass 3) |
 | R16 | P1 | Drawer focus trap does not cover backdrop; no `inert` on background | Tab cycle only inside `aside`; mouse/screen-reader can still reach page content behind `aria-modal` | **Accepted for Phase 1** — Escape + Close + backdrop click work; harden in Phase 3 polish |
 | R17 | P2 | Drawer state drops player identity | `DrawerState` keeps title/subtitle only — Phase 2 dossier fetch has nowhere to hang `id` | **Track for Phase 2** (store `PlayerSummary` / `RosterPlayer`, guard null ids) |
-| R18 | P2 | Remaining null seed ids + newly discovered ids not committed | Probe found Ochai Agbaji `38017620` (BKN), Ziaire Williams `17896027` (BDL team LAL) | **Open — cheap to land before merge**; Cam Thomas / Nolan Traore still unresolved |
+| R18 | P2 | Remaining null seed ids + newly discovered ids not committed | Probe found Ochai Agbaji `38017620` (BKN), Ziaire Williams `17896027` (BDL team LAL) | **Open → Phase 2** (resolve with GOAT / active players) |
 | R19 | P2 | Duplicate starter slot lists | `STARTER_SLOTS` in seed vs `STARTER_ORDER` in `HalfCourt` | **Defer** — low risk while both are 5 identical slots |
-| R20 | P2 | Scaffold clutter | `AGENTS.md`, `CLAUDE.md`, unused `public/*.svg` | **Fixed in cleanup** (removed with vendor-decision PR) |
-| R21 | P2 | No unit tests yet | Seed validation / name exclusion / mapping untested | **Defer to Phase 2** (scoring tests first; add adapter smoke tests if time) |
-| R22 | — | Hello-world deploy | Still unchecked in `DEVELOPMENT.md` | **Not a code-quality blocker**; do before or early in Phase 2 for demo confidence |
+| R20 | P2 | Scaffold clutter | `AGENTS.md`, `CLAUDE.md`, unused `public/*.svg` | **Fixed** (vendor-decision cleanup PR) |
+| R21 | P2 | No unit tests yet | Seed validation / name exclusion / mapping untested | **Defer to Phase 2** (scoring tests first) |
+| R22 | — | Hello-world deploy | Vercel preview | **Done** (see [`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) |
 
 ### Seed id status (Pass 2)
 
@@ -94,31 +94,34 @@ Fresh read of current `phase-1/scaffold` (`4dc17c4`), IDENTITY/MVP expectations,
 
 ---
 
-## Pre-merge recommendation (Pass 2)
+## Pass 2 pre-merge note (historical)
 
-**Do not merge until R14 is fixed** — it violates the locked identity rule “search = non-Nets only” for a starter on our curated roster.
-
-**Strongly prefer also before merge:** R15 (honest parse errors), R18 (commit known Agbaji / Ziaire ids).
-
-**Safe to merge with documented debt:** R16, R17, R19–R22.
-
-### Suggested merge gate checklist
-- [ ] R14 — exclude by BDL id and/or nickname aliases (`nic`/`nicolas`, etc.)
-- [ ] R15 — Zod parse failure → error state, not empty list
-- [ ] R18 — write probed ids into `rosterSeed.ts`
-- [ ] Re-run `npm run lint` && `npm run build`
-- [ ] Smoke: search `Claxton` does **not** list Nicolas; court + drawer + search still work
+Pass 2 originally gated Phase 1 merge on R14. Phase 1 **did** merge with R14 open. **Pass 3** below is the current carry-forward list — do not treat the old “do not merge until R14” text as active.
 
 ---
 
-## Deferred (explicitly not blocking after gate)
-- Full focus-trap / `inert` backdrop (R16)
-- Drawer payload with player id (R17) — Phase 2
-- Unit tests (R21)
-- Vercel hello deploy (R22)
-- Scaffold file cleanup (R20)
+## Pass 3 — 2026-07-27 (pre–Phase 2 / vendor-decision PR)
+
+After vendor research + cleanup (`VENDOR_DECISION.md`). Lint/build green. No new code findings beyond syncing dispositions.
+
+### Active debt → Phase 2 (do early)
+
+| ID | Action |
+|---|---|
+| R14 | Alias / id-based `excludeNets` (Nic/Nicolas Claxton) |
+| R15 | Client Zod failure → error state, not empty list |
+| R18 | Fill null seed ids (Ziaire `17896027`, Ochai `38017620`, Cam, Nolan) when GOAT allows |
+| R17 | Drawer must hold player id for dossier fetch |
+| Trial | Before GOAT ends: paid tier **or** fixtures |
+
+### Closed in cleanup
+R20 (scaffold clutter), R22 (Vercel hello deploy).
+
+### Still deferred
+R16 (full dialog inert), R19 (DRY starter slots), R21 (tests with scoring).
 
 ## How to use this doc
-1. Before blaming UI for wrong search results, check **R14** and the seed table.
-2. When Phase 2 dossiers 404, check **null ids** — never call BALLDONTLIE with `null`.
-3. Append **Pass 3+** sections rather than rewriting history when re-reviewing.
+1. Wrong search results → **R14** + seed table.
+2. Dossier 404 → **null ids** — never call BALLDONTLIE with `null`.
+3. Vendor/hosting why → [`VENDOR_DECISION.md`](./VENDOR_DECISION.md).
+4. Append Pass 4+ rather than rewriting history.

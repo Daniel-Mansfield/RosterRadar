@@ -158,14 +158,15 @@ Client renders opinionated UI
 ```
 
 ### Data source (locked)
-**BALLDONTLIE NBA API** — [docs](https://docs.balldontlie.io/). API key via `BALLDONTLIE_API_KEY`. Adapter: first `NbaStatsPort` implementation.
+**BALLDONTLIE NBA API** — [docs](https://docs.balldontlie.io/). API key via `BALLDONTLIE_API_KEY`. Adapter: `NbaStatsPort`.
 
-**Tier note:** Free tier covers players/teams/games; per-game stats and season averages often require paid tiers. MVP plan: use accessible endpoints; aggregate season-like metrics from game logs if needed. Details: [`BACKEND.md` §10](./BACKEND.md).
+**Decision record:** [`VENDOR_DECISION.md`](./VENDOR_DECISION.md) (why not NBA.com on Vercel; GOAT trial for Phase 2; seed fallback).
 
 | Option | Status |
 |---|---|
-| BALLDONTLIE (chosen) | Documented REST + key auth; watch tier limits |
-| NBA stats endpoints | Fallback via new adapter if needed (richer, more fragile) |
+| BALLDONTLIE (chosen) | Cloud-friendly REST + key; GOAT for roster/stats during Phase 2 |
+| NBA.com `stats.nba.com` | Richer locally; **rejected** as Vercel runtime primary |
+| Fixtures snapshot | Backup if trial ends without paid tier |
 
 ---
 

@@ -69,6 +69,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Authored `docs/VENDOR_DECISION.md` (absorbs spike findings); removing spike artifacts and scaffold clutter on `spike/nba-com-vendor` (PR, not merge-yet)
 - **Not used for:** GOAT endpoint verification; Phase 2 scoring
 
+### 2026-07-27 — Docs hygiene before Phase 2
+- **Tool:** Cursor agent
+- **Used for:** Synced PHASE_1_REVIEW Pass 3, BACKEND MVP, PROJECT_OUTLINE, DEVELOPMENT with `VENDOR_DECISION.md` (no new doc files)
+- **Not used for:** GOAT verify; Phase 2 implementation
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

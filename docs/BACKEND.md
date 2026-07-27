@@ -173,16 +173,18 @@ Per BALLDONTLIE’s published endpoint matrix ([nba.balldontlie.io](https://nba.
 | Per-game player stats / active roster | Paid (e.g. ALL-STAR+) |
 | Season averages endpoint | Higher tier (e.g. GOAT) |
 
-**MVP approach (locked):**
-- **Nets roster:** curated seed in `src/nba/nets/rosterSeed.ts` (free tier cannot reliably list *current* active roster by team — `team_ids` returns historical associations; `/players/active` returns 401 on free).
-- **Acquisition search:** live `/nba/v1/players?search=` with `excludeNets`.
-- **Stats for scoring:** when endpoints are unavailable, aggregate from accessible data or document paid-tier upgrade; keep `NbaStatsPort` swappable.
+**MVP approach (locked — see [`VENDOR_DECISION.md`](./VENDOR_DECISION.md)):**
+- **Vendor:** BALLDONTLIE primary (GOAT trial for Phase 2 stats/roster endpoints).
+- **Nets roster:** prefer live/active when the key allows; **curated seed** remains fallback (`rosterSeed.ts`).
+- **Acquisition search:** live `/nba/v1/players?search=` with `excludeNets` (harden aliases — review R14).
+- **Stats for scoring:** use GOAT season averages / game stats while available; plan paid month or fixtures before trial ends.
+- **Not on Vercel runtime:** official NBA.com `stats.nba.com` adapter (local-only research if ever needed).
 
-### Spike checklist (Phase 1)
-1. Create account → copy key into `.env.local` (never commit)
+### Phase 1 checklist (done)
+1. Account → `.env.local` key (never commit; rotate if exposed)
 2. `GET /nba/v1/players?search=…` → Zod → `PlayerSummary`
-3. Confirm which stats endpoints the key’s tier allows
-4. Record tier limits in the write-up / AI log if relevant
+3. Confirm tier entitlements when upgrading (GOAT trial)
+4. Record limits in write-up / [`VENDOR_DECISION.md`](./VENDOR_DECISION.md) / AI log
 
 ---
 

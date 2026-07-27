@@ -55,8 +55,7 @@ git add -A && git commit -m "Describe the change and why."
 - [x] `.env.local` from `.env.example` (local only; never commit)
 
 ### Vendor decision (before Phase 2 scoring)
-- [x] Bounded NBA.com vs BALLDONTLIE research ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) — NBA.com FAIL on Vercel; BALLDONTLIE GOAT trial path
-- [x] Hello-world deploy (Vercel)
+- [x] Research + lock ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) — BALLDONTLIE GOAT trial; NBA.com not used on Vercel
 - [ ] Confirm GOAT endpoints with rotated API key
 - [ ] Plan post-trial (paid month vs fixtures) before trial ends
 
