@@ -51,8 +51,17 @@ Verified in-browser: shuffle re-rolls the five picks; forced offline (CDP) → e
 
 Keyboard-nav audit of search results: rows are real buttons, so Tab/Shift-Tab + Enter work today. Full ARIA combobox semantics (arrow keys, `aria-activedescendant`) deferred — meaningful scope for marginal gain at this list size.
 
+### Mobile / responsive pass (2026-07-28, `phase-3/mobile-pass`)
+
+| ID | Issue | Fix |
+|---|---|---|
+| P3-11 | Stacked (<64em) layout: court `aspect-ratio` + `max-height` made the panel shorter than three card rows; `overflow: hidden` clipped the PG card to a sliver | Dropped the aspect-ratio / max-height lock so height follows the card rows; court art uses `background-size: cover`; added stacked `row-gap` |
+| P3-18 | Radar stretch (`height: 100%`, `space-between`, growing rows) was desktop-gutter logic applied at every width | Scoped stretch styles to `min-width: 64em`; stacked layout keeps natural-height, `flex-start` rows |
+
+Verified: PG (Egor Demin) fully inside the court at 390×844 and 768×1024; drawer opens full-width on phone with scroll; desktop radar still fills the court-height column (770px = court height at 1512w).
+
 ### Residual / later
 
 | ID | Issue | Notes |
 |---|---|---|
-| P3-11 | Stacked (<64em) layout: court `overflow: hidden` clips the PG card; only its top sliver is visible/clickable | Found during P3-8 browser pass; fix in the planned mobile/responsive pass |
+| — | Full ARIA combobox for search (arrow keys / `aria-activedescendant`) | Deferred from UI polish; Tab/Enter already work |

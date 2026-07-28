@@ -104,9 +104,11 @@
 
 @media (max-width: 63.98em) {
   .court {
-    /* Stacked layout can scroll; keep a readable court height. */
-    aspect-ratio: 1153 / 1166;
-    max-height: min(36rem, 70dvh);
+    /* Height follows the card rows (P3-11: an aspect-ratio lock here made
+       the panel shorter than three rows of cards, and overflow: hidden
+       silently clipped the PG row). The art covers the panel instead. */
+    background-size: cover;
     padding: var(--space-3) 8%;
+    row-gap: var(--space-3);
   }
 }
