@@ -41,12 +41,14 @@ export function OnTheRadar({
       <ul className={styles.list}>
         {picks.map((candidate) => (
           <li key={candidate.id}>
+            {/* No aria-label: the visible content (name, team, angle) is the
+                accessible name, prefixed with a hidden action verb. */}
             <button
               type="button"
               className={styles.row}
               onClick={() => onSelectCandidate(candidate)}
-              aria-label={`Open dossier for ${candidate.firstName} ${candidate.lastName}`}
             >
+              <span className={styles.srOnly}>Open dossier for </span>
               <PlayerAvatar
                 firstName={candidate.firstName}
                 lastName={candidate.lastName}

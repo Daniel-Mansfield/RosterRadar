@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "verify:goat": "node scripts/verify-goat.mjs",
-    "test": "tsx --test src/scoring/composeDossier.test.ts src/nba/parseMinutes.test.ts src/lib/cache/ttlCache.test.ts src/nba/cachedPort.test.ts src/nba/headshot.test.ts src/nba/nets/rosterSeed.test.ts src/nba/radar/radarPool.test.ts"
+    "verify:radar": "tsx scripts/verify-radar.mts",
+    "test": "tsx --test $(find src -name '*.test.ts' | sort)"
   },
   "dependencies": {
     "next": "16.2.12",
