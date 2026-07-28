@@ -38,6 +38,8 @@ type UseDossierDrawerResult = {
   openDossier: (identity: DrawerIdentity) => void;
   /** Open the drawer in the terminal "unavailable" state (no fetch). */
   showUnavailable: (identity: DrawerIdentity, message: string) => void;
+  /** Re-fire the fetch for the currently open, errored dossier. */
+  retryDossier: () => void;
   closeDrawer: () => void;
   /** Attach to the dialog element — scopes the focus trap. */
   drawerRef: RefObject<HTMLElement | null>;
@@ -136,6 +138,26 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     void loadDossier(identity, identity.playerId);
   }
 
+  function retryDossier(): void {
+    // Only an errored fetch is retryable; "unavailable" has no id to fetch.
+    if (
+      !drawer.open ||
+      drawer.dossier.status !== "error" ||
+      drawer.playerId == null
+    ) {
+      return;
+    }
+    // The retry button unmounts on the loading transition; park focus on the
+    // stable close button so keyboard focus doesn't drop to <body>.
+    closeButtonRef.current?.focus();
+    const { title, subtitle, firstName, lastName, playerId, espnAthleteId } =
+      drawer;
+    void loadDossier(
+      { title, subtitle, firstName, lastName, playerId, espnAthleteId },
+      playerId,
+    );
+  }
+
   useEffect(() => {
     if (!drawer.open) {
       return;
@@ -193,6 +215,7 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     drawer,
     openDossier,
     showUnavailable,
+    retryDossier,
     closeDrawer,
     drawerRef,
     closeButtonRef,

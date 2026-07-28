@@ -12,6 +12,7 @@ import {
 import type { RadarCandidate } from "@/nba/radar/radarPool";
 import { AcquisitionSearch } from "@/components/AcquisitionSearch";
 import { DossierPanel } from "@/components/DossierPanel";
+import { DossierSkeleton } from "@/components/DossierSkeleton";
 import { HalfCourt } from "@/components/HalfCourt";
 import { NetsMark } from "@/components/NetsMark";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
@@ -41,6 +42,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     drawer,
     openDossier,
     showUnavailable,
+    retryDossier,
     closeDrawer,
     drawerRef,
     closeButtonRef,
@@ -238,14 +240,25 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
               </button>
             </div>
             <div className={styles.drawerBody}>
-              {drawer.dossier.status === "loading" ? (
-                <p className={styles.placeholder}>Loading role-fit dossier…</p>
-              ) : null}
+              {drawer.dossier.status === "loading" ? <DossierSkeleton /> : null}
               {drawer.dossier.status === "error" ||
               drawer.dossier.status === "unavailable" ? (
-                <p className={styles.placeholder} role="alert">
-                  {drawer.dossier.message}
-                </p>
+                <div className={styles.placeholder}>
+                  {/* Alert on the message only: keeps the announcement clean
+                      instead of reading the retry button label as part of it. */}
+                  <p className={styles.placeholderMessage} role="alert">
+                    {drawer.dossier.message}
+                  </p>
+                  {drawer.dossier.status === "error" ? (
+                    <button
+                      type="button"
+                      className={styles.retry}
+                      onClick={retryDossier}
+                    >
+                      Try again
+                    </button>
+                  ) : null}
+                </div>
               ) : null}
               {drawer.dossier.status === "ready" ? (
                 <DossierPanel
