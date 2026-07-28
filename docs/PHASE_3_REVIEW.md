@@ -55,8 +55,9 @@ Keyboard-nav audit of search results: rows are real buttons, so Tab/Shift-Tab + 
 
 | ID | Issue | Fix |
 |---|---|---|
-| P3-11 | Stacked (<64em) layout: court `aspect-ratio` + `max-height` made the panel shorter than three card rows; `overflow: hidden` clipped the PG card to a sliver | Dropped the aspect-ratio / max-height lock so height follows the card rows; court art uses `background-size: cover`; added stacked `row-gap` |
+| P3-11 | Stacked (<64em) layout: court `aspect-ratio` + `max-height` made the panel shorter than three card rows; `overflow: hidden` clipped the PG card to a sliver | Height follows card rows (no aspect-ratio lock on stacked). Court art uses `background-size: cover` as the mobile-first base — may crop painted spots slightly; preferred over clipping the PG. Desktop (≥64em) resets to inset `82%` + aspect-ratio |
 | P3-18 | Radar stretch (`height: 100%`, `space-between`, growing rows) was desktop-gutter logic applied at every width | Scoped stretch styles to `min-width: 64em`; stacked layout keeps natural-height, `flex-start` rows |
+| P3-19 | HalfCourt stacked overrides lived in `max-width: 63.98em` (inverted vs mobile-first rule) | Base = stacked (`cover`, row-gap); desktop enhancements under `min-width: 64em` only |
 
 Verified: PG (Egor Demin) fully inside the court at 390×844 and 768×1024; drawer opens full-width on phone with scroll; desktop radar still fills the court-height column (770px = court height at 1512w).
 
