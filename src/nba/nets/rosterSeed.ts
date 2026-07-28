@@ -13,9 +13,12 @@ import type { CourtSlot, PlayerId } from "@/domain/player";
  *
  * Starter set approximates a common 2025–26 Nets group; not a live depth chart.
  *
- * Id resolution notes (2026-07-26 self-review):
+ * Id resolution notes (2026-07-28, verified against live BDL search):
  * - Prefer real BDL ids; leave `null` when unresolved — never invent synthetic ids.
- * - Nolan Traore: search returned a different Traore; keep null until confirmed.
+ * - Nolan Traore: BDL stores "Nolan Traoré" (accented) — search "Traore" misses him;
+ *   found via search "Nolan" (id 1057275262, BKN).
+ * - Cam Thomas: BDL lists as "Cam Thomas" (id 17896048) with team MIL; our curated
+ *   roster keeps him on the Nets bench and id-based exclusion still applies.
  * - Nic Claxton: BDL lists as "Nicolas Claxton" (id 666508); team field may lag.
  */
 export const BROOKLYN_NETS_TEAM_ID = 3;
@@ -49,7 +52,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
     slot: "PG",
   },
   {
-    id: null,
+    id: 1057275262,
     espnAthleteId: 5279130,
     firstName: "Nolan",
     lastName: "Traore",
@@ -82,7 +85,7 @@ export const NETS_ROSTER_SEED: readonly NetsSeedEntry[] = [
   },
   // Bench
   {
-    id: null,
+    id: 17896048,
     espnAthleteId: 4432174,
     firstName: "Cam",
     lastName: "Thomas",
@@ -164,5 +167,9 @@ export const NETS_SEED_NAME_KEYS: ReadonlySet<string> = new Set(
 );
 
 export function normalizePersonName(value: string): string {
-  return value.toLowerCase().replace(/[^a-z]/g, "");
+  return value
+    .normalize("NFD") // decompose accents so "Traoré" → "Traore" + combining mark
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z]/g, "");
 }
