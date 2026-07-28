@@ -23,12 +23,6 @@
   color: var(--content-primary);
 }
 
-.radarWord {
-  font-weight: 300;
-  font-style: italic;
-  color: var(--brand-radar);
-}
-
 .shuffle {
   display: inline-flex;
   align-items: center;
