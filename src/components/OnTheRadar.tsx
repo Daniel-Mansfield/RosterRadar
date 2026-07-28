@@ -81,7 +81,7 @@ export function OnTheRadar({
                 firstName={candidate.firstName}
                 lastName={candidate.lastName}
                 espnAthleteId={candidate.espnAthleteId}
-                size={56}
+                size={60}
                 shape="rounded"
               />
               <span className={styles.rowBody}>
