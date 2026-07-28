@@ -15,8 +15,20 @@ import {
   type PlayerSummary,
   type RosterPlayer,
 } from "@/domain/player";
+import dynamic from "next/dynamic";
+
+import type { RadarCandidate } from "@/nba/radar/radarPool";
 import { AcquisitionSearch } from "@/components/AcquisitionSearch";
 import { DossierPanel } from "@/components/DossierPanel";
+
+/**
+ * Client-only: the radar shortlist is shuffled per page load, so its markup
+ * is intentionally nondeterministic and must be excluded from SSR.
+ */
+const OnTheRadar = dynamic(
+  () => import("@/components/OnTheRadar").then((mod) => mod.OnTheRadar),
+  { ssr: false },
+);
 import { HalfCourt } from "@/components/HalfCourt";
 import { NetsMark } from "@/components/NetsMark";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
@@ -167,6 +179,17 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     });
   }
 
+  function openForRadarCandidate(candidate: RadarCandidate): void {
+    void loadDossierForPlayer({
+      title: `${candidate.firstName} ${candidate.lastName}`,
+      subtitle: `On the Radar · ${candidate.teamAbbreviation} · ${candidate.position}`,
+      firstName: candidate.firstName,
+      lastName: candidate.lastName,
+      playerId: candidate.id,
+      espnAthleteId: candidate.espnAthleteId,
+    });
+  }
+
   useEffect(() => {
     const list = benchListRef.current;
     if (!list) {
@@ -294,6 +317,11 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             ) : null}
           </div>
         </aside>
+
+        {/* Last in DOM (stacked layouts show team first); column 1 on wide screens. */}
+        <div className={styles.radarPane}>
+          <OnTheRadar onSelectCandidate={openForRadarCandidate} />
+        </div>
       </div>
 
       {drawer.open ? (
