@@ -147,6 +147,9 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     ) {
       return;
     }
+    // The retry button unmounts on the loading transition; park focus on the
+    // stable close button so keyboard focus doesn't drop to <body>.
+    closeButtonRef.current?.focus();
     const { title, subtitle, firstName, lastName, playerId, espnAthleteId } =
       drawer;
     void loadDossier(

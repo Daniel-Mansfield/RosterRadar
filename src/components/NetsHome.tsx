@@ -243,8 +243,10 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
               {drawer.dossier.status === "loading" ? <DossierSkeleton /> : null}
               {drawer.dossier.status === "error" ||
               drawer.dossier.status === "unavailable" ? (
-                <div className={styles.placeholder} role="alert">
-                  <p className={styles.placeholderMessage}>
+                <div className={styles.placeholder}>
+                  {/* Alert on the message only: keeps the announcement clean
+                      instead of reading the retry button label as part of it. */}
+                  <p className={styles.placeholderMessage} role="alert">
                     {drawer.dossier.message}
                   </p>
                   {drawer.dossier.status === "error" ? (
