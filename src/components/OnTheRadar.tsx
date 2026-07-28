@@ -44,7 +44,7 @@ export function OnTheRadar({
     <aside className={styles.radar} aria-labelledby={headingId}>
       <div className={styles.headerRow}>
         <h2 id={headingId} className={styles.title}>
-          On the Radar
+          On the <span className={styles.radarWord}>Radar</span>
         </h2>
         <button
           type="button"
