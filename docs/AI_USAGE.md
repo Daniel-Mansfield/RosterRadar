@@ -134,6 +134,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Radar panel weighting (full-column layout, upsized rows) + shuffle button; drawer "Try again" via `retryDossier()` (verified with forced-offline browser test); search placeholder fix; keyboard-nav audit of search results
 - **Not used for:** Deciding to defer full combobox semantics (recommended to user, their call)
 
+### 2026-07-28 — Phase 3 mobile / responsive pass
+- **Tool:** Cursor agent (continued after prior session interrupted mid-task)
+- **Used for:** P3-11 stacked court PG clip (aspect-ratio lock → height follows cards + `background-size: cover`); scoped On the Radar stretch styles to ≥64em so stacked layout stays compact; phone/tablet/desktop verification
+- **Not used for:** Reordering stacked sections (court → bench → radar remains intentional: team first)
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

@@ -6,19 +6,20 @@
   align-content: space-between;
   justify-items: center;
   column-gap: 0;
-  row-gap: 0.15rem;
+  /* Stacked default: height follows card rows (P3-11). Cover fills the
+     taller panel; art may crop slightly vs painted spots — preferred over
+     clipping the PG card under aspect-ratio + overflow:hidden. */
+  row-gap: var(--space-3);
   width: 100%;
   min-height: 0;
-  /* Extra side padding pulls wing cards toward center. */
-  padding: var(--space-3) 11%;
+  padding: var(--space-3) 8%;
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   background-color: var(--court-matte);
   background-image: url("/nets-halfcourt.png");
   background-repeat: no-repeat;
   background-position: center;
-  /* Inset the graphic so cards sit over a slightly smaller court. */
-  background-size: 82%;
+  background-size: cover;
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -96,17 +97,10 @@
     aspect-ratio: 1153 / 1166;
     justify-self: center;
     align-self: center;
+    /* Inset the graphic so cards sit over a slightly smaller court. */
+    background-size: 82%;
     padding: var(--space-3) 12%;
     column-gap: 0;
     row-gap: 0.1rem;
-  }
-}
-
-@media (max-width: 63.98em) {
-  .court {
-    /* Stacked layout can scroll; keep a readable court height. */
-    aspect-ratio: 1153 / 1166;
-    max-height: min(36rem, 70dvh);
-    padding: var(--space-3) 8%;
   }
 }

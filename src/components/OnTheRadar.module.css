@@ -1,6 +1,7 @@
 .radar {
   min-width: 0;
-  height: 100%;
+  /* Stacked layouts: natural height. Wide layout fills the court column. */
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -87,21 +88,36 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  flex: 1 1 auto;
-  min-height: 0;
   display: flex;
   flex-direction: column;
-  /* Fallback for very tall viewports once rows hit their max height. */
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: var(--space-3);
 }
 
 .item {
   display: flex;
-  /* Rows grow to share the column height: bigger cards, no dead space. */
-  flex: 1 1 auto;
-  min-height: 0;
-  max-height: 9.5rem;
+  flex: 0 0 auto;
+}
+
+/* Wide layout: fill the court-height gutter (paired with NetsHome ≥64em). */
+@media (min-width: 64em) {
+  .radar {
+    height: 100%;
+  }
+
+  .list {
+    flex: 1 1 auto;
+    min-height: 0;
+    /* Fallback for very tall viewports once rows hit their max height. */
+    justify-content: space-between;
+  }
+
+  .item {
+    /* Rows grow to share the column height: bigger cards, no dead space. */
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 9.5rem;
+  }
 }
 
 .row {
