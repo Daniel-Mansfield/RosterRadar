@@ -1,64 +1,53 @@
 "use client";
 
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type ReactElement,
-} from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
+import dynamic from "next/dynamic";
 
-import type { Dossier } from "@/domain/dossier";
 import {
   rosterPlayerKey,
   type NetsRoster,
   type PlayerSummary,
   type RosterPlayer,
 } from "@/domain/player";
+import type { RadarCandidate } from "@/nba/radar/radarPool";
 import { AcquisitionSearch } from "@/components/AcquisitionSearch";
 import { DossierPanel } from "@/components/DossierPanel";
 import { HalfCourt } from "@/components/HalfCourt";
 import { NetsMark } from "@/components/NetsMark";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PlayerCard } from "@/components/PlayerCard";
-import { apiErrorSchema } from "@/lib/api/schemas";
-import { dossierApiResponseSchema } from "@/lib/api/dossierSchema";
+import {
+  useDossierDrawer,
+  type DrawerIdentity,
+} from "@/components/useDossierDrawer";
 
 import styles from "./NetsHome.module.css";
+
+/**
+ * Client-only: the radar shortlist is shuffled per page load, so its markup
+ * is intentionally nondeterministic and must be excluded from SSR.
+ */
+const OnTheRadar = dynamic(
+  () => import("@/components/OnTheRadar").then((mod) => mod.OnTheRadar),
+  { ssr: false },
+);
 
 type NetsHomeProps = {
   roster: NetsRoster;
 };
 
-type DrawerIdentity = {
-  title: string;
-  subtitle: string;
-  firstName: string;
-  lastName: string;
-  playerId: number | null;
-  /** Curated ESPN headshot id when known (Nets seed); null for search. */
-  espnAthleteId: number | null;
-};
-
-type DossierLoadState =
-  | { status: "loading" }
-  | { status: "error"; message: string }
-  | { status: "ready"; dossier: Dossier }
-  | { status: "unavailable"; message: string };
-
-type DrawerState =
-  | { open: false }
-  | ({ open: true } & DrawerIdentity & { dossier: DossierLoadState });
-
 export function NetsHome({ roster }: NetsHomeProps): ReactElement {
-  const [drawer, setDrawer] = useState<DrawerState>({ open: false });
+  const {
+    drawer,
+    openDossier,
+    showUnavailable,
+    closeDrawer,
+    drawerRef,
+    closeButtonRef,
+    titleId,
+  } = useDossierDrawer();
   const [benchCanScrollMore, setBenchCanScrollMore] = useState(false);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const drawerRef = useRef<HTMLElement>(null);
   const benchListRef = useRef<HTMLUListElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-  const titleId = useId();
-  const requestIdRef = useRef(0);
 
   function updateBenchScrollHint(): void {
     const list = benchListRef.current;
@@ -68,66 +57,6 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     }
     const remaining = list.scrollHeight - list.scrollTop - list.clientHeight;
     setBenchCanScrollMore(list.scrollHeight > list.clientHeight + 2 && remaining > 8);
-  }
-
-  function closeDrawer(): void {
-    // Invalidate in-flight dossier fetches so a late response cannot reopen the drawer.
-    requestIdRef.current += 1;
-    setDrawer({ open: false });
-  }
-
-  function showDrawer(
-    identity: DrawerIdentity,
-    dossier: DossierLoadState,
-  ): void {
-    setDrawer({ open: true, ...identity, dossier });
-  }
-
-  async function loadDossierForPlayer(identity: DrawerIdentity): Promise<void> {
-    if (identity.playerId == null) {
-      throw new Error("loadDossierForPlayer requires a resolved player id.");
-    }
-
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
-    const playerId = identity.playerId;
-
-    showDrawer(identity, { status: "loading" });
-
-    try {
-      const response = await fetch(`/api/dossier/${playerId}`);
-      const json: unknown = await response.json();
-      if (requestId !== requestIdRef.current) return;
-
-      if (!response.ok) {
-        const err = apiErrorSchema.safeParse(json);
-        const message = err.success
-          ? err.data.error.message
-          : "Could not load dossier.";
-        showDrawer(identity, { status: "error", message });
-        return;
-      }
-
-      const parsed = dossierApiResponseSchema.safeParse(json);
-      if (!parsed.success) {
-        showDrawer(identity, {
-          status: "error",
-          message: "Dossier response failed validation.",
-        });
-        return;
-      }
-
-      showDrawer(identity, {
-        status: "ready",
-        dossier: parsed.data.dossier,
-      });
-    } catch {
-      if (requestId !== requestIdRef.current) return;
-      showDrawer(identity, {
-        status: "error",
-        message: "Could not reach dossier API.",
-      });
-    }
   }
 
   function openForRosterPlayer(player: RosterPlayer): void {
@@ -143,19 +72,18 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     };
 
     if (player.id == null) {
-      showDrawer(identity, {
-        status: "unavailable",
-        message:
-          "This Nets player does not have a resolved BALLDONTLIE id yet — dossier will unlock once the seed id is filled.",
-      });
+      showUnavailable(
+        identity,
+        "This Nets player does not have a resolved BALLDONTLIE id yet — dossier will unlock once the seed id is filled.",
+      );
       return;
     }
 
-    void loadDossierForPlayer(identity);
+    openDossier(identity);
   }
 
   function openForAcquisition(player: PlayerSummary): void {
-    void loadDossierForPlayer({
+    openDossier({
       title: `${player.firstName} ${player.lastName}`,
       subtitle: `Acquisition candidate · ${player.teamAbbreviation ?? "FA"}${
         player.position ? ` · ${player.position}` : ""
@@ -164,6 +92,17 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       lastName: player.lastName,
       playerId: player.id,
       espnAthleteId: null,
+    });
+  }
+
+  function openForRadarCandidate(candidate: RadarCandidate): void {
+    openDossier({
+      title: `${candidate.firstName} ${candidate.lastName}`,
+      subtitle: `On the Radar · ${candidate.teamAbbreviation} · ${candidate.position}`,
+      firstName: candidate.firstName,
+      lastName: candidate.lastName,
+      playerId: candidate.id,
+      espnAthleteId: candidate.espnAthleteId,
     });
   }
 
@@ -190,59 +129,6 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       observer.disconnect();
     };
   }, [roster.bench.length]);
-
-  useEffect(() => {
-    if (!drawer.open) {
-      return;
-    }
-
-    previousFocusRef.current =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-
-    closeButtonRef.current?.focus();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    function onKeyDown(event: KeyboardEvent): void {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closeDrawer();
-        return;
-      }
-
-      if (event.key !== "Tab" || !drawerRef.current) {
-        return;
-      }
-
-      const focusable = getFocusableElements(drawerRef.current);
-      if (focusable.length === 0) {
-        return;
-      }
-
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (!first || !last) {
-        return;
-      }
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    }
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previousOverflow;
-      previousFocusRef.current?.focus();
-    };
-  }, [drawer.open]);
 
   return (
     <div className={styles.page}>
@@ -294,6 +180,11 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             ) : null}
           </div>
         </aside>
+
+        {/* Last in DOM (stacked layouts show team first); column 1 on wide screens. */}
+        <div className={styles.radarPane}>
+          <OnTheRadar onSelectCandidate={openForRadarCandidate} />
+        </div>
       </div>
 
       {drawer.open ? (
@@ -367,13 +258,5 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
         </div>
       ) : null}
     </div>
-  );
-}
-
-function getFocusableElements(root: HTMLElement): HTMLElement[] {
-  const selector =
-    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-  return Array.from(root.querySelectorAll<HTMLElement>(selector)).filter(
-    (el) => !el.hasAttribute("disabled") && el.tabIndex !== -1,
   );
 }

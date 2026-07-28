@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import type { PlayerSeasonLine } from "@/domain/dossier";
 import {
   buildPillars,
+  composeDossierFromLines,
   confidenceFromSample,
   detectRole,
   fitFromPillars,
@@ -95,6 +96,47 @@ describe("detectRole", () => {
       "paint_anchor",
     );
   });
+
+  it("keeps the paint label for bigs whose assist rank is incidental (P3-10)", () => {
+    // Kessler shape: playmaking ~74th pct clears the absolute creator
+    // threshold, but rebounding ~99th dwarfs it — the paint read must win.
+    assert.equal(
+      detectRole(
+        line({
+          ranks: {
+            points: 100, // ~80th pct
+            assists: 130, // ~74th pct
+            rebounds: 5, // ~99th pct
+            steals: 100,
+            blocks: 20,
+            fg3a: 450,
+            minutes: 80,
+          },
+        }),
+      ),
+      "paint_anchor",
+    );
+  });
+
+  it("still calls elite dual bigs creators when playmaking stands up", () => {
+    // Jokić shape: playmaking ~97th vs rebounding ~98th — within the margin.
+    assert.equal(
+      detectRole(
+        line({
+          ranks: {
+            points: 50, // ~90th pct
+            assists: 15, // ~97th pct
+            rebounds: 10, // ~98th pct
+            steals: 100,
+            blocks: 100,
+            fg3a: 200,
+            minutes: 20,
+          },
+        }),
+      ),
+      "primary_creator",
+    );
+  });
 });
 
 describe("fitFromPillars", () => {
@@ -115,6 +157,61 @@ describe("fitFromPillars", () => {
     const fit = fitFromPillars(pillars);
     assert.equal(fit.recommendation, "strong");
     assert.ok(fit.grade >= 65);
+  });
+
+  it("caps strong at conditional on thin samples, keeping the grade honest (P3-10)", () => {
+    const pillars = buildPillars(
+      line({
+        ranks: {
+          points: 20,
+          assists: 20,
+          rebounds: 20,
+          steals: 20,
+          blocks: 20,
+          fg3a: 20,
+          minutes: 20,
+        },
+      }),
+    );
+    const fit = fitFromPillars(pillars, { thinSample: true });
+    assert.equal(fit.recommendation, "conditional");
+    assert.ok(fit.grade >= 65);
+  });
+});
+
+describe("composeDossierFromLines", () => {
+  it("marks thin-sample dossiers preliminary end to end (P3-10)", () => {
+    const dossier = composeDossierFromLines({
+      line: line({
+        gamesPlayed: 5,
+        minutes: 30.8,
+        ranks: {
+          points: 100,
+          assists: 130,
+          rebounds: 5,
+          steals: 100,
+          blocks: 20,
+          fg3a: 450,
+          minutes: 80,
+        },
+      }),
+      games: [],
+      teamAbbreviation: "LAL",
+    });
+    assert.equal(dossier.role.id, "paint_anchor");
+    assert.equal(dossier.confidence.thinSample, true);
+    assert.notEqual(dossier.fit.recommendation, "strong");
+    assert.match(dossier.fit.verdict, /preliminary/i);
+  });
+
+  it("leaves full samples untempered", () => {
+    const dossier = composeDossierFromLines({
+      line: line(),
+      games: [],
+      teamAbbreviation: "BOS",
+    });
+    assert.equal(dossier.confidence.thinSample, false);
+    assert.doesNotMatch(dossier.fit.verdict, /preliminary/i);
   });
 });
 

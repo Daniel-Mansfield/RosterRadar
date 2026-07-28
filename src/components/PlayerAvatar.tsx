@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties, type ReactElement } from "react";
+import { useState, type CSSProperties, type ReactElement } from "react";
 
 import { espnNbaHeadshotUrl, isEspnAthleteId, playerInitials } from "@/nba/headshot";
 
@@ -35,14 +35,13 @@ export function PlayerAvatar({
   className,
   shape = "card",
 }: PlayerAvatarProps): ReactElement {
-  const [failed, setFailed] = useState(false);
+  // Track which id failed (not a boolean): a new id self-invalidates the
+  // flag, so no reset effect is needed when the player changes.
+  const [failedId, setFailedId] = useState<number | null>(null);
   const initials = playerInitials(firstName, lastName);
-  const showImage = isEspnAthleteId(espnAthleteId) && !failed;
+  const showImage =
+    isEspnAthleteId(espnAthleteId) && espnAthleteId !== failedId;
   const label = `${firstName} ${lastName}`;
-
-  useEffect(() => {
-    setFailed(false);
-  }, [espnAthleteId, firstName, lastName]);
 
   const frameStyle: CSSProperties | undefined = fill
     ? undefined
@@ -69,7 +68,7 @@ export function PlayerAvatar({
           height={fill ? undefined : size}
           loading="lazy"
           decoding="async"
-          onError={() => setFailed(true)}
+          onError={() => setFailedId(espnAthleteId)}
         />
       ) : (
         <span className={styles.initials} title={label}>

@@ -114,6 +114,21 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** README/DEVELOPMENT/PROJECT_OUTLINE sync after PR #3 merge; GitHub Actions `npm test` + `tsc`; Vercel env key for preview/production
 - **Not used for:** Choosing paid vs fixtures post-trial path (still open)
 
+### 2026-07-28 — Seed id resolution (Phase 3, PR #5)
+- **Tool:** Cursor agent
+- **Used for:** Live BDL search to resolve Traore/Thomas ids; diacritic folding in `normalizePersonName`; rosterSeed tests
+- **Not used for:** Vendor tier decision (user chose one month of GOAT)
+
+### 2026-07-28 — "On the Radar" panel (Phase 3)
+- **Tool:** Cursor agent
+- **Used for:** Drafting the 14-candidate pool (user approved names; ids/teams verified against live BDL + ESPN search); `OnTheRadar` component with per-load shuffle (client-only via `next/dynamic`); pool/pick tests; `PlayerAvatar` failed-id refactor surfaced by lint
+- **Not used for:** Editorial final say on candidate angles (open for user review)
+
+### 2026-07-28 — Phase 3 improvements + scoring v1.1
+- **Tool:** Cursor agent
+- **Used for:** Radar row a11y names; `verify:radar` freshness script; `useDossierDrawer` extraction (+ latent unavailable-race fix); test auto-discovery; role-inference dominance margin + thin-sample recommendation cap (`rr-role-fit-v1.1`) with tests
+- **Not used for:** Choosing the dominance margin semantics (user-reviewable editorial threshold)
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

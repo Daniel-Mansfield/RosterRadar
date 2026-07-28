@@ -96,6 +96,12 @@
   align-items: center;
 }
 
+.radarPane {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
 .benchTitle {
   margin: 0 0 var(--space-3);
   font-size: 0.8rem;
@@ -340,6 +346,17 @@
     flex-direction: column;
     align-items: center;
     min-height: 0;
+  }
+
+  /* Mirror of the bench: radar shortlist fills the left court gutter. */
+  .radarPane {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    width: 15.5rem;
+    min-height: 0;
+    /* Scrollbar only when a short viewport would otherwise clip rows. */
+    overflow-y: auto;
   }
 
   .benchScroll {
