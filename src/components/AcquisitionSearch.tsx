@@ -99,7 +99,7 @@ export function AcquisitionSearch({
         className={styles.input}
         type="search"
         autoComplete="off"
-        placeholder="Search a player…"
+        placeholder="Search non-Nets players…"
         aria-label="Search non-Nets players"
         value={query}
         onChange={(event) => {

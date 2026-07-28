@@ -129,6 +129,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** Radar row a11y names; `verify:radar` freshness script; `useDossierDrawer` extraction (+ latent unavailable-race fix); test auto-discovery; role-inference dominance margin + thin-sample recommendation cap (`rr-role-fit-v1.1`) with tests
 - **Not used for:** Choosing the dominance margin semantics (user-reviewable editorial threshold)
 
+### 2026-07-28 — Phase 3 UI polish
+- **Tool:** Cursor agent
+- **Used for:** Radar panel weighting (full-column layout, upsized rows) + shuffle button; drawer "Try again" via `retryDossier()` (verified with forced-offline browser test); search placeholder fix; keyboard-nav audit of search results
+- **Not used for:** Deciding to defer full combobox semantics (recommended to user, their call)
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

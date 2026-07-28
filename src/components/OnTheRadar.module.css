@@ -1,14 +1,22 @@
 .radar {
   min-width: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   width: 100%;
 }
 
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
 .title {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-align: center;
@@ -21,9 +29,55 @@
   color: var(--brand-radar);
 }
 
+.shuffle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--content-muted);
+  cursor: pointer;
+}
+
+.shuffle:hover {
+  border-color: var(--accent);
+  color: var(--content-primary);
+}
+
+.shuffle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.shuffleIcon {
+  width: 0.85rem;
+  height: 0.85rem;
+  fill: currentColor;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The svg is keyed on shuffle count, so each click replays the spin. */
+  .shuffleIcon {
+    animation: radarSpin 450ms ease;
+  }
+}
+
+@keyframes radarSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .subtitle {
   margin: 0.2rem 0 var(--space-3);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   letter-spacing: 0.04em;
   text-align: center;
   color: var(--content-muted);
@@ -33,9 +87,17 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  /* Fill the court-height column: rows share the leftover space evenly. */
+  justify-content: space-between;
   gap: var(--space-2);
+}
+
+.item {
+  display: flex;
 }
 
 .row {
@@ -43,7 +105,7 @@
   align-items: center;
   gap: var(--space-3);
   width: 100%;
-  padding: var(--space-2);
+  padding: var(--space-3);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
   background: var(--surface-raised);
@@ -92,18 +154,18 @@
 .rowBody {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 0.15rem;
   min-width: 0;
 }
 
 .name {
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 600;
   line-height: 1.25;
 }
 
 .meta {
-  font-size: 0.66rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -111,8 +173,8 @@
 }
 
 .angle {
-  font-size: 0.7rem;
-  line-height: 1.3;
+  font-size: 0.75rem;
+  line-height: 1.35;
   color: var(--content-muted);
   display: -webkit-box;
   -webkit-box-orient: vertical;

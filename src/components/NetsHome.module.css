@@ -276,6 +276,30 @@
   font-size: 1.05rem;
 }
 
+.placeholderMessage {
+  margin: 0;
+}
+
+.retry {
+  margin-top: var(--space-4);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--content-primary);
+  border-radius: 0.35rem;
+  padding: var(--space-2) var(--space-4);
+  font: inherit;
+  cursor: pointer;
+}
+
+.retry:hover {
+  border-color: var(--accent);
+}
+
+.retry:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 @media (max-width: 48em) {
   .drawer {
     width: 100%;

@@ -41,6 +41,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     drawer,
     openDossier,
     showUnavailable,
+    retryDossier,
     closeDrawer,
     drawerRef,
     closeButtonRef,
@@ -243,9 +244,20 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
               ) : null}
               {drawer.dossier.status === "error" ||
               drawer.dossier.status === "unavailable" ? (
-                <p className={styles.placeholder} role="alert">
-                  {drawer.dossier.message}
-                </p>
+                <div className={styles.placeholder} role="alert">
+                  <p className={styles.placeholderMessage}>
+                    {drawer.dossier.message}
+                  </p>
+                  {drawer.dossier.status === "error" ? (
+                    <button
+                      type="button"
+                      className={styles.retry}
+                      onClick={retryDossier}
+                    >
+                      Try again
+                    </button>
+                  ) : null}
+                </div>
               ) : null}
               {drawer.dossier.status === "ready" ? (
                 <DossierPanel
