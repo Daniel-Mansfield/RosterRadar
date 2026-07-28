@@ -27,9 +27,18 @@ Self-review of `phase-3/on-the-radar` before PR.
 
 Manual pass after P3-8 (all through the hook): court open → ready; Escape close + scroll-lock release; radar keyboard-focused open → ready → Close → focus restored to origin row; bench open (Cam Thomas, validates resolved seed id) → backdrop close; search "Kessler" → select → ready from server cache. Plus 30/30 tests, `tsc`, eslint.
 
+### Scoring pass (2026-07-28, `rr-role-fit-v1.1`)
+
+| ID | Issue | Fix |
+|---|---|---|
+| P3-10a | Role inference: first-match creator branch used absolute thresholds only, so bigs with incidental assist ranks (~3 apg ≈ 70th pct league-wide) out-ranked their dominant paint profile (Kessler: playmaking 73 vs rebounding 98 → "Primary creator") | Creator read now requires playmaking to stand up to rebounding (`CREATOR_DOMINANCE_MARGIN` 15); elite dual bigs (Jokić shape, 97 vs 98) still read creator. Also unified pillar percentiles into one `pillarPercentiles()` source used by both `detectRole` and `buildPillars` so they cannot drift |
+| P3-10b | "Strong fit — build around" rendered beside "low confidence · thin sample · 5 GP" | Thin samples cap the recommendation at Conditional (grade stays honest) and the verdict appends "Thin sample — treat as a preliminary read" |
+| P3-12 | `openDossier` contract check threw inside the fire-and-forget async task (unhandled rejection) | Null-id check moved to the synchronous wrapper; `loadDossier` takes `playerId: number` |
+
+Verified: Kessler (5 GP) now "Paint anchor · Conditional 75 · preliminary"; Cam Thomas (42 GP) unchanged shape "Wing scorer · poor 44 · high confidence". 35/35 tests (5 new: dominance margin both directions, thin-sample cap, compose end-to-end both paths).
+
 ### Residual / later
 
 | ID | Issue | Notes |
 |---|---|---|
-| P3-10 | Scoring labeled a 5-GP center "Primary Creator" (Kessler dossier) | Pre-existing role-inference behavior, not radar-specific; check thin-sample role assignment in scoring pass |
 | P3-11 | Stacked (<64em) layout: court `overflow: hidden` clips the PG card; only its top sliver is visible/clickable | Found during P3-8 browser pass; fix in the planned mobile/responsive pass |

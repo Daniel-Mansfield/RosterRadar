@@ -82,14 +82,12 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     showDrawer(identity, { status: "unavailable", message });
   }
 
-  async function loadDossier(identity: DrawerIdentity): Promise<void> {
-    if (identity.playerId == null) {
-      throw new Error("openDossier requires a resolved player id.");
-    }
-
+  async function loadDossier(
+    identity: DrawerIdentity,
+    playerId: number,
+  ): Promise<void> {
     const requestId = requestIdRef.current + 1;
     requestIdRef.current = requestId;
-    const playerId = identity.playerId;
 
     showDrawer(identity, { status: "loading" });
 
@@ -130,7 +128,12 @@ export function useDossierDrawer(): UseDossierDrawerResult {
   }
 
   function openDossier(identity: DrawerIdentity): void {
-    void loadDossier(identity);
+    if (identity.playerId == null) {
+      // Synchronous throw: a contract violation should fail loudly at the
+      // call site, not as an unhandled rejection inside the fetch task.
+      throw new Error("openDossier requires a resolved player id.");
+    }
+    void loadDossier(identity, identity.playerId);
   }
 
   useEffect(() => {
