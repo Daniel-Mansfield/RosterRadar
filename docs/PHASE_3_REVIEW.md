@@ -44,7 +44,8 @@ Verified: Kessler (5 GP) now "Paint anchor · Conditional 75 · preliminary"; Ca
 | P3-13 | Radar panel felt under-weighted next to the court: rows hugged the top of a court-height column | Panel fills the column (`height: 100%`, list `space-between`); rows upsized (56px avatars, larger type/padding) |
 | P3-14 | Radar shortlist only rotated on reload | Header shuffle button re-runs `pickRadarCandidates` (static pool — no API cost); spin animation gated behind `prefers-reduced-motion: no-preference` |
 | P3-15 | Drawer error state was a dead end — a transient failure (offline, 429) forced close + reopen | `useDossierDrawer` exposes `retryDossier()`; "Try again" renders only for `error` (not `unavailable`, which has no id). Closes the Phase 2 "rate-limit UX" residual |
-| P3-16 | Search placeholder said "Search a player…" though only non-Nets players are searchable | "Search non-Nets players…" — matches the region's accessible name |
+| P3-16 | Search placeholder said "Search a player…" though only non-Nets players are searchable | "Search non-Nets players…" — matches the region's accessible name. Later simplified to "Search players…" per user preference; aria-label keeps the full description |
+| P3-17 | Drawer loading state was a plain text line | `DossierSkeleton` echoes the hero + pillars layout (quiet grey bones, shimmer gated behind `prefers-reduced-motion: no-preference`, `role="status"` with hidden loading text) |
 
 Verified in-browser: shuffle re-rolls the five picks; forced offline (CDP) → error + Try again → network restored → retry loads the dossier end-to-end.
 

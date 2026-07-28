@@ -12,6 +12,7 @@ import {
 import type { RadarCandidate } from "@/nba/radar/radarPool";
 import { AcquisitionSearch } from "@/components/AcquisitionSearch";
 import { DossierPanel } from "@/components/DossierPanel";
+import { DossierSkeleton } from "@/components/DossierSkeleton";
 import { HalfCourt } from "@/components/HalfCourt";
 import { NetsMark } from "@/components/NetsMark";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
@@ -239,9 +240,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
               </button>
             </div>
             <div className={styles.drawerBody}>
-              {drawer.dossier.status === "loading" ? (
-                <p className={styles.placeholder}>Loading role-fit dossier…</p>
-              ) : null}
+              {drawer.dossier.status === "loading" ? <DossierSkeleton /> : null}
               {drawer.dossier.status === "error" ||
               drawer.dossier.status === "unavailable" ? (
                 <div className={styles.placeholder} role="alert">
