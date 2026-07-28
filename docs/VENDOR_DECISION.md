@@ -13,6 +13,7 @@
 |---|---|
 | **Primary NBA data vendor** | [BALLDONTLIE](https://docs.balldontlie.io/) behind `NbaStatsPort` |
 | **Tier for Phase 2 build** | **GOAT trial** (then decide paid month vs fixtures before trial ends) |
+| **Post-trial path (decided 2026-07-28)** | **One paid month of GOAT ($39.99)** covering the demo window; caching + `rate_limited` handling as safety net; fixtures remain the documented fallback. Season averages are GOAT-only, so ALL-STAR was never sufficient. BDL has no headshot data at any tier — headshots stay ESPN-CDN-based |
 | **Roster fallback** | Curated seed (`src/nba/nets/rosterSeed.ts`) when live roster is unavailable or fails |
 | **Official NBA.com (`stats.nba.com`)** | **Not** the production adapter on Vercel — excellent locally, blocked from cloud |
 | **Public host** | Vercel (Next.js). Repo is **public** (Hobby + private repo blocked some deploys) |
@@ -137,6 +138,7 @@ See also [`PHASE_1_REVIEW.md`](./PHASE_1_REVIEW.md) Pass 2:
 | 2026-07-27 | Evaluated NBA.com vs paid BALLDONTLIE vs fixtures vs hosting tradeoffs |
 | 2026-07-27 | NBA.com local capacities PASS; Vercel Proof C FAIL |
 | 2026-07-27 | Locked BALLDONTLIE GOAT trial path; documented here; spike code removed |
+| 2026-07-28 | Post-trial decision: one paid GOAT month for demo window (600 req/min removes trial pacing); fixtures stay as fallback plan |
 
 ---
 

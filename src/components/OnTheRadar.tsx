@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactElement } from "react";
+import { useId, useState, type ReactElement } from "react";
 
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import {
@@ -30,13 +30,11 @@ export function OnTheRadar({
   const [picks] = useState<RadarCandidate[]>(() =>
     pickRadarCandidates(RADAR_POOL, RADAR_PICK_COUNT),
   );
+  const headingId = useId();
 
   return (
-    <aside
-      className={styles.radar}
-      aria-label="On the Radar — suggested acquisition targets"
-    >
-      <h2 className={styles.title}>
+    <aside className={styles.radar} aria-labelledby={headingId}>
+      <h2 id={headingId} className={styles.title}>
         On the <span className={styles.radarWord}>Radar</span>
       </h2>
       <p className={styles.subtitle}>Acquisition targets worth a look</p>

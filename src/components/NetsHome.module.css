@@ -355,7 +355,8 @@
     justify-self: end;
     width: 15.5rem;
     min-height: 0;
-    overflow: hidden;
+    /* Scrollbar only when a short viewport would otherwise clip rows. */
+    overflow-y: auto;
   }
 
   .benchScroll {

@@ -7,6 +7,7 @@ import {
   useState,
   type ReactElement,
 } from "react";
+import dynamic from "next/dynamic";
 
 import type { Dossier } from "@/domain/dossier";
 import {
@@ -15,11 +16,17 @@ import {
   type PlayerSummary,
   type RosterPlayer,
 } from "@/domain/player";
-import dynamic from "next/dynamic";
-
 import type { RadarCandidate } from "@/nba/radar/radarPool";
 import { AcquisitionSearch } from "@/components/AcquisitionSearch";
 import { DossierPanel } from "@/components/DossierPanel";
+import { HalfCourt } from "@/components/HalfCourt";
+import { NetsMark } from "@/components/NetsMark";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { PlayerCard } from "@/components/PlayerCard";
+import { apiErrorSchema } from "@/lib/api/schemas";
+import { dossierApiResponseSchema } from "@/lib/api/dossierSchema";
+
+import styles from "./NetsHome.module.css";
 
 /**
  * Client-only: the radar shortlist is shuffled per page load, so its markup
@@ -29,14 +36,6 @@ const OnTheRadar = dynamic(
   () => import("@/components/OnTheRadar").then((mod) => mod.OnTheRadar),
   { ssr: false },
 );
-import { HalfCourt } from "@/components/HalfCourt";
-import { NetsMark } from "@/components/NetsMark";
-import { PlayerAvatar } from "@/components/PlayerAvatar";
-import { PlayerCard } from "@/components/PlayerCard";
-import { apiErrorSchema } from "@/lib/api/schemas";
-import { dossierApiResponseSchema } from "@/lib/api/dossierSchema";
-
-import styles from "./NetsHome.module.css";
 
 type NetsHomeProps = {
   roster: NetsRoster;
