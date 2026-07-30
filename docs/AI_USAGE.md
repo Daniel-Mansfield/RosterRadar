@@ -2,7 +2,7 @@
 
 RosterRadar’s **concept, scoring model, and product decisions are original** (role-fit scouting dossier for NBA decision-makers). AI tools assist with planning, documentation, and implementation; they do not own the central idea.
 
-This log supports the assignment requirement to disclose AI use. Append entries as work continues.
+This log supports the assignment requirement to disclose AI use. Keep entries summary-style; append when a phase or major feature uses AI.
 
 ## Tools
 | Tool | Role |
@@ -11,139 +11,29 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 | Other LLMs (if used) | Note model + purpose in an entry below |
 
 ## Policy
-- Disclose prompts/assistance relevant to submitted work in the final write-up (summarize from this log).
+- Disclose assistance relevant to submitted work in the final write-up (summarize from this log).
 - Do not paste secrets or API keys into AI chats.
 - Prefer AI for scaffolding, refactors, and explanation; keep scoring formulas and product judgment human-owned and documented.
 - Review all AI-generated code against project rules (root-cause-first, TS/React, backend, UI/UX).
 
 ## Log
 
-### 2026-07-26 — Project planning & foundation
+### 2026-07-26 — Phase 0–1 foundation
 - **Tool:** Cursor agent
-- **Used for:** Product brainstorm → RosterRadar naming; scouting-dossier MVP; project outline; design system; backend ports/adapters philosophy; Cursor rules (product, TS/React, UI/UX, backend, root-cause); Phase 0 docs
-- **Not used for:** Final scoring weights/thresholds (still to be designed by us); proprietary CTG/BBall Index formulas (inspiration only)
-- **Prompts / topics (summary):** NBA “Leetify-like” app for FO; role-fit dossier UX; name bank; assignment-fit critique; reputable sources for UX/backend; Phase 0 setup
+- **Used for:** Product framing → RosterRadar; outline / design system / backend / Cursor rules; Next.js scaffold; Nets home + search + drawer placeholder; Phase 1 self-review remediations
+- **Not used for:** Final scoring weights; inventing unresolved BDL ids
 
-### 2026-07-26 — Phase 1 scaffold
+### 2026-07-27 — Vendor lock + Phase 2 dossier
 - **Tool:** Cursor agent
-- **Used for:** Next.js + TypeScript scaffold, design tokens, Zod BALLDONTLIE adapter, `/api/players` spike, Nets home (court/bench/drawer), curated roster seed (free-tier active-roster gap), identity/palette lock
-- **Not used for:** Fit scoring / full dossier content (placeholder drawer only)
+- **Used for:** NBA.com Vercel spike (FAIL) → BALLDONTLIE GOAT path ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)); `scoring/` + dossier API/UI; cache; UI polish; headshots; CI
+- **Not used for:** Proprietary CTG-style formulas; Redis / shared cache
 
-### 2026-07-26 — Identity lock (Nets court + dossier drawer)
+### 2026-07-28 — Phase 3 harden + On the Radar
 - **Tool:** Cursor agent
-- **Used for:** Drawing board → Nets-only home, non-Nets acquisition search, brand palette wiring, outline updates
-- **Not used for:** DnD trade simulation (explicitly cut from v1)
+- **Used for:** Seed id resolution; On the Radar pool/panel/`verify:radar`; `useDossierDrawer`; scoring v1.1; UI polish + mobile court fix
+- **Not used for:** Vendor tier choice (user: one paid GOAT month); full search combobox ARIA
 
-### 2026-07-26 — Phase 1 self-review remediations
+### 2026-07-30 — Lineup Fit panel (PR 1 of 2)
 - **Tool:** Cursor agent
-- **Used for:** Pre-merge code review; domain/error split; Zod client boundaries; search debounce; drawer a11y; muted contrast; seed id resolution (partial); `docs/PHASE_1_REVIEW.md`
-- **Not used for:** Scoring formulas; inventing unresolved BDL ids
-
-### 2026-07-27 — Phase 1 Pass 2 pre-merge re-review
-- **Tool:** Cursor agent
-- **Used for:** Second full code review against identity/MVP expectations; live BDL probe of excludeNets; updated `docs/PHASE_1_REVIEW.md` with open gate items (R14–R22)
-- **Not used for:** Applying remediations yet (awaiting go-ahead); scoring / Phase 2 implementation
-
-### 2026-07-27 — Phase 1 merged; NBA.com vendor spike planned
-- **Tool:** Cursor agent
-- **Used for:** Confirmed PR #1 merge on `main`; authored `docs/SPIKE_NBA_COM.md` pass/fail gate before Phase 2 scoring
-- **Not used for:** Running the spike yet; scoring implementation
-
-### 2026-07-27 — NBA.com spike Proof A+B executed
-- **Tool:** Cursor agent
-- **Used for:** `scripts/spike-nba-com.mjs`, temporary `/api/spike/nba-com`; local roster + career/game-log proofs (both PASS); documented results pending Vercel Proof C
-- **Not used for:** Final vendor lock; production `nba_com` adapter
-
-### 2026-07-27 — NBA.com capacity spike expanded (A/B/D/E)
-- **Tool:** Cursor agent
-- **Used for:** Extended spike for search (`commonallplayers`) + peer percentiles (`leaguedashplayerstats`); fixed diacritic search false negative; expanded `/api/spike/nba-com` capacity payload
-- **Not used for:** Vercel Proof C (awaiting account login); production adapter
-
-### 2026-07-27 — NBA.com Proof C FAIL; vendor decision locked
-- **Tool:** Cursor agent
-- **Used for:** Made repo public; Vercel preview deploy; disabled SSO protection; Proof C returned `fetch failed` from stats.nba.com on Vercel; recorded FAIL → BALLDONTLIE paid path
-- **Not used for:** Building nba_com production adapter; starting GOAT trial (human account step)
-
-### 2026-07-27 — Vendor decision doc + repo cleanup prep
-- **Tool:** Cursor agent
-- **Used for:** Authored `docs/VENDOR_DECISION.md` (absorbs spike findings); removing spike artifacts and scaffold clutter on `spike/nba-com-vendor` (PR, not merge-yet)
-- **Not used for:** GOAT endpoint verification; Phase 2 scoring
-
-### 2026-07-27 — Docs hygiene before Phase 2
-- **Tool:** Cursor agent
-- **Used for:** Synced PHASE_1_REVIEW Pass 3, BACKEND MVP, PROJECT_OUTLINE, DEVELOPMENT with `VENDOR_DECISION.md` (no new doc files)
-- **Not used for:** GOAT verify; Phase 2 implementation
-
-### 2026-07-27 — Phase 2 kickoff: GOAT verify PASS
-- **Tool:** Cursor agent
-- **Used for:** `scripts/verify-goat.mjs`; confirmed active players + season averages + game stats on GOAT trial (paced for 5 req/min)
-- **Not used for:** Finished scoring formulas (next on branch)
-
-### 2026-07-27 — Phase 2 dossier vertical slice
-- **Tool:** Cursor agent
-- **Used for:** GOAT verify; `scoring/` compose + tests; season/game adapter methods; `/api/dossier/[id]`; drawer `DossierPanel`; R14 aliases + R15 client Zod error; seed ids for Ziaire/Ochai
-- **Not used for:** Final write-up; post-trial fixtures plan
-
-### 2026-07-27 — Phase 2 standards QA
-- **Tool:** Cursor agent
-- **Used for:** Layering fix (`parseMinutes` out of scoring); `rate_limited` error; `thinSample`; `docs/PHASE_2_REVIEW.md`
-- **Not used for:** Response cache; UI/UX polish pass
-
-### 2026-07-27 — Application TTL cache
-- **Tool:** Cursor agent
-- **Used for:** `ttlCache` + `createCachedNbaPort` + dossier cache; docs BACKEND §6
-- **Not used for:** Redis / shared store; UI/UX polish
-
-### 2026-07-27 — Cache QA pass
-- **Tool:** Cursor agent
-- **Used for:** Shared LRU store; Zod-normalized search keys; aligned `perPage`; expiry/LRU/port tests
-- **Not used for:** Redis; UI/UX polish
-
-### 2026-07-27 — UI polish + UI QA
-- **Tool:** Cursor agent
-- **Used for:** Header/search layout; Leetify-style dossier; responsive search; UI QA (tokens, evidence table, fit class typing)
-- **Not used for:** Drawer hook extract; seed-id completion
-
-### 2026-07-27 — Player card chrome + Nets headshots
-- **Tool:** Cursor agent
-- **Used for:** Literal card styling; curated ESPN athlete ids on Nets seed; `PlayerAvatar` with initials fallback (Option B, not full C)
-- **Not used for:** BDL→NBA id headshot pipeline for acquisition search
-
-### 2026-07-27 — Post-merge Phase 2 docs + CI
-- **Tool:** Cursor agent
-- **Used for:** README/DEVELOPMENT/PROJECT_OUTLINE sync after PR #3 merge; GitHub Actions `npm test` + `tsc`; Vercel env key for preview/production
-- **Not used for:** Choosing paid vs fixtures post-trial path (still open)
-
-### 2026-07-28 — Seed id resolution (Phase 3, PR #5)
-- **Tool:** Cursor agent
-- **Used for:** Live BDL search to resolve Traore/Thomas ids; diacritic folding in `normalizePersonName`; rosterSeed tests
-- **Not used for:** Vendor tier decision (user chose one month of GOAT)
-
-### 2026-07-28 — "On the Radar" panel (Phase 3)
-- **Tool:** Cursor agent
-- **Used for:** Drafting the 14-candidate pool (user approved names; ids/teams verified against live BDL + ESPN search); `OnTheRadar` component with per-load shuffle (client-only via `next/dynamic`); pool/pick tests; `PlayerAvatar` failed-id refactor surfaced by lint
-- **Not used for:** Editorial final say on candidate angles (open for user review)
-
-### 2026-07-28 — Phase 3 improvements + scoring v1.1
-- **Tool:** Cursor agent
-- **Used for:** Radar row a11y names; `verify:radar` freshness script; `useDossierDrawer` extraction (+ latent unavailable-race fix); test auto-discovery; role-inference dominance margin + thin-sample recommendation cap (`rr-role-fit-v1.1`) with tests
-- **Not used for:** Choosing the dominance margin semantics (user-reviewable editorial threshold)
-
-### 2026-07-28 — Phase 3 UI polish
-- **Tool:** Cursor agent
-- **Used for:** Radar panel weighting (full-column layout, upsized rows) + shuffle button; drawer "Try again" via `retryDossier()` (verified with forced-offline browser test); search placeholder fix; keyboard-nav audit of search results
-- **Not used for:** Deciding to defer full combobox semantics (recommended to user, their call)
-
-### 2026-07-28 — Phase 3 mobile / responsive pass
-- **Tool:** Cursor agent (continued after prior session interrupted mid-task)
-- **Used for:** P3-11 stacked court PG clip (aspect-ratio lock → height follows cards + `background-size: cover`); scoped On the Radar stretch styles to ≥64em so stacked layout stays compact; phone/tablet/desktop verification
-- **Not used for:** Reordering stacked sections (court → bench → radar remains intentional: team first)
-
-### 2026-07-30 — "Lineup Fit" team panel (Phase 3, PR 1 of 2)
-- **Tool:** Cursor agent
-- **Used for:** `composeTeamFit` (pillar means, grade, balance callouts, thin-sample cap) + tests; `GET /api/team-fit` reusing the cached dossier pipeline; `TeamFitPanel` with skeleton/error/retry; four-column grid where only the court track compresses; `ordinal()` fix for "71th"-style percentile copy (also fixed in dossier callouts)
-- **Not used for:** Scoring semantics — the means/thresholds/"Lineup Fit" framing were user-approved before implementation
-
----
-
-*Add new dated entries below as AI is used in later phases.*
+- **Used for:** `composeTeamFit` + `/api/team-fit` + `TeamFitPanel`; four-column layout; review fixes (empty/partial gates, retry focus, skeleton status); docs cleanup
+- **Not used for:** Scoring semantics (user-approved means / thresholds / “Lineup Fit” framing); swap simulation (PR 2)

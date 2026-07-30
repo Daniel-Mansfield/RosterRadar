@@ -3,8 +3,8 @@ import { describe, it } from "node:test";
 
 import type { Dossier, PillarId } from "@/domain/dossier";
 import { ordinal } from "@/scoring/composeDossier";
+import { LINEUP_SIZE } from "@/domain/teamFit";
 import {
-  LINEUP_SIZE,
   TEAM_FIT_SCORING_VERSION,
   composeTeamFit,
 } from "@/scoring/composeTeamFit";

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { LINEUP_SIZE } from "@/domain/teamFit";
 import { toErrorResponse } from "@/lib/api/errorResponse";
 import { loadDossier } from "@/nba/loadDossier";
-import { LINEUP_SIZE, composeTeamFit } from "@/scoring/composeTeamFit";
+import { composeTeamFit } from "@/scoring/composeTeamFit";
 
 const idsSchema = z
   .string()

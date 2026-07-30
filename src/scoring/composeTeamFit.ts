@@ -4,6 +4,7 @@ import type {
   TeamFitPillar,
   TeamFitStarter,
 } from "@/domain/teamFit";
+import { LINEUP_SIZE } from "@/domain/teamFit";
 import { ordinal, recommendationFromGrade } from "@/scoring/composeDossier";
 
 export const TEAM_FIT_SCORING_VERSION = "rr-lineup-fit-v1";
@@ -16,7 +17,7 @@ export const TEAM_GAP_THRESHOLD = 45;
 
 export const MAX_TEAM_CALLOUTS_PER_KIND = 2;
 
-export const LINEUP_SIZE = 5;
+export { LINEUP_SIZE };
 
 /**
  * Compose a lineup-level fit read from the starters' individual dossiers.

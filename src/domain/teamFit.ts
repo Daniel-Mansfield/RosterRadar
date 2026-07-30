@@ -5,6 +5,9 @@ import type {
 } from "@/domain/dossier";
 import type { PlayerId } from "@/domain/player";
 
+/** Starters required for a full lineup-fit read on the Nets home panel. */
+export const LINEUP_SIZE = 5;
+
 /** One of the six role pillars, averaged across the starting lineup. */
 export type TeamFitPillar = {
   id: PillarId;
