@@ -38,7 +38,10 @@ export type TeamFit = {
   grade: number;
   recommendation: FitRecommendation;
   pillars: TeamFitPillar[];
-  /** Balance callouts: up to two strengths + two gaps; pads to three when sparse. */
+  /**
+   * Balance callouts: up to two threshold strengths + two threshold gaps;
+   * pads to three softer insights when sparse; empty when fully balanced.
+   */
   callouts: Callout[];
   confidence: {
     anyThinSample: boolean;

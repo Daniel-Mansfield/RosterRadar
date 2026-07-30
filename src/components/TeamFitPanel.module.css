@@ -276,7 +276,9 @@
   border-radius: 0.2rem;
 }
 
-.method summary:focus {
+/* Kill the mouse-click ring only; keep a visible outline where :focus-visible
+   is unsupported or does not apply to <summary>. */
+.method summary:focus:not(:focus-visible) {
   outline: none;
 }
 

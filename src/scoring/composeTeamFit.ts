@@ -18,7 +18,7 @@ export const TEAM_GAP_THRESHOLD = 45;
 export const MAX_TEAM_CALLOUTS_PER_KIND = 2;
 
 /** Prefer at least this many insights when threshold callouts undershoot. */
-export const TARGET_TEAM_CALLOUTS = 3;
+const TARGET_TEAM_CALLOUTS = 3;
 
 export { LINEUP_SIZE };
 
@@ -28,7 +28,8 @@ export { LINEUP_SIZE };
  * Semantics (agreed for v1):
  * - team pillar = unweighted mean of the starters' pillar percentiles
  * - lineup grade = unweighted mean of the six team pillars
- * - callouts flag pillar averages ≥ strength / ≤ gap thresholds, max two each
+ * - callouts flag pillar averages ≥ strength / ≤ gap thresholds, max two each;
+ *   when those undershoot, pad to three with softer ≥50 / ≤ gap insights
  * - any thin-sample starter caps the recommendation at Conditional
  *
  * Pure aggregation of individual profiles — no synergy or +/- modeling.
@@ -90,7 +91,7 @@ export function composeTeamFit(dossiers: Dossier[]): TeamFit {
       notes: [
         "Each lineup pillar is the unweighted mean of the starters' individual pillar percentiles (each vs league peers).",
         "Lineup grade is the unweighted mean of the six lineup pillars.",
-        `Callouts flag lineup pillars at or above the ${ordinal(TEAM_STRENGTH_THRESHOLD)} percentile (strength) or at or below the ${ordinal(TEAM_GAP_THRESHOLD)} percentile (gap) — at most two of each.`,
+        `Callouts flag lineup pillars at or above the ${ordinal(TEAM_STRENGTH_THRESHOLD)} percentile (strength) or at or below the ${ordinal(TEAM_GAP_THRESHOLD)} percentile (gap) — at most two of each. When those undershoot, softer insights pad the rail up to three (above-average “solid on paper” or gap-band soft spots); a fully balanced lineup stays empty.`,
         "A thin-sample starter caps the lineup read at Conditional; the grade itself stays honest.",
         "This aggregates individual profiles — it does not model on-court synergy, lineup plus-minus, or scheme.",
         ...(mixedSeasons
