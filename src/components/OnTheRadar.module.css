@@ -13,6 +13,8 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+  /* Shared with Fit / Bench titles (shuffle control is 1.7rem). */
+  min-height: 1.7rem;
 }
 
 .title {

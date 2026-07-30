@@ -164,14 +164,14 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
           />
         </div>
 
-        {/* Directly after the court in stacked layouts (it scores the five
-            shown there); leftmost column on wide screens. */}
+        {/* Stacked: after court. Desktop: column 1 (Fit | Radar | Court | Bench). */}
         <div className={styles.teamFitPane}>
           <TeamFitPanel playerIds={starterIds} />
         </div>
 
         <aside className={styles.bench} aria-label="Bench">
           <h2 className={styles.benchTitle}>Bench</h2>
+          <p className={styles.benchSubtitle}>Rotation depth</p>
           <div className={styles.benchScroll}>
             <ul ref={benchListRef} className={styles.benchList}>
               {roster.bench.map((player) => (
@@ -193,7 +193,8 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
           </div>
         </aside>
 
-        {/* Last in DOM (stacked layouts show team first); column 1 on wide screens. */}
+        {/* Last in DOM (stacked: team first); desktop column 2 — next to court
+            so PR 2 drag-swap keeps a short path onto starters. */}
         <div className={styles.radarPane}>
           <OnTheRadar onSelectCandidate={openForRadarCandidate} />
         </div>

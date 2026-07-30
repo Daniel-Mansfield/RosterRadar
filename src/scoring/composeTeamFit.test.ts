@@ -158,9 +158,10 @@ describe("composeTeamFit", () => {
     ]);
 
     const strengths = teamFit.callouts.filter((c) => c.kind === "strength");
-    assert.equal(strengths.length, 1);
     assert.match(strengths[0]?.text ?? "", /Scoring is a lineup strength/);
     assert.match(strengths[0]?.text ?? "", /led by Lead Guard \(95th\)/);
+    // Threshold undershoot pads to three insights (softer follow-ons).
+    assert.equal(teamFit.callouts.length, 3);
   });
 
   it("flags gaps with the ceiling starter percentile", () => {
@@ -170,9 +171,65 @@ describe("composeTeamFit", () => {
     ]);
 
     const gaps = teamFit.callouts.filter((c) => c.kind === "risk");
-    assert.equal(gaps.length, 1);
     assert.match(gaps[0]?.text ?? "", /Playmaking is a lineup gap/);
     assert.match(gaps[0]?.text ?? "", /no starter tops the 40th/);
+    assert.equal(teamFit.callouts.length, 3);
+  });
+
+  it("pads to three insights when threshold callouts undershoot", () => {
+    // Two clear strengths, midboard otherwise — third slot fills with next extreme.
+    const teamFit = composeTeamFit([
+      makeDossier({
+        id: 1,
+        firstName: "Lead",
+        lastName: "Guard",
+        pillars: { playmaking: 80, workload: 75, scoring: 68 },
+      }),
+      makeDossier({
+        id: 2,
+        pillars: { playmaking: 70, workload: 70, scoring: 60 },
+      }),
+    ]);
+
+    assert.equal(teamFit.callouts.length, 3);
+    assert.match(teamFit.callouts[0]?.text ?? "", /Playmaking is a lineup strength/);
+    assert.match(teamFit.callouts[1]?.text ?? "", /Workload is a lineup strength/);
+    assert.match(teamFit.callouts[2]?.text ?? "", /Scoring is solid on paper/);
+  });
+
+  it("does not pad mid-band pillars as risk callouts", () => {
+    // One strength; remaining pillars sit between gap (45) and 50 — not pad material.
+    const teamFit = composeTeamFit([
+      makeDossier({
+        id: 1,
+        pillars: {
+          scoring: 80,
+          playmaking: 48,
+          rebounding: 47,
+          spacing: 46,
+          disruption: 49,
+          workload: 48,
+        },
+      }),
+      makeDossier({
+        id: 2,
+        pillars: {
+          scoring: 70,
+          playmaking: 48,
+          rebounding: 47,
+          spacing: 46,
+          disruption: 49,
+          workload: 48,
+        },
+      }),
+    ]);
+
+    assert.equal(teamFit.callouts.length, 1);
+    assert.match(teamFit.callouts[0]?.text ?? "", /Scoring is a lineup strength/);
+    assert.equal(
+      teamFit.callouts.filter((c) => c.kind === "risk").length,
+      0,
+    );
   });
 
   it("caps callouts at two strengths and two gaps, most extreme first", () => {

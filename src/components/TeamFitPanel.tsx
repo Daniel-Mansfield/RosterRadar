@@ -270,7 +270,24 @@ function PanelBody({ teamFit }: { teamFit: TeamFit }): ReactElement {
         </p>
       ) : null}
 
-      <details className={styles.method}>
+      <details
+        className={styles.method}
+        onToggle={(event) => {
+          const el = event.currentTarget;
+          if (!el.open) return;
+          // After layout, land the notes in the panel scrollport (end so the
+          // last bullet clears the fold instead of only the summary).
+          const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+          ).matches;
+          requestAnimationFrame(() => {
+            el.scrollIntoView({
+              block: "end",
+              behavior: reduceMotion ? "auto" : "smooth",
+            });
+          });
+        }}
+      >
         <summary>How this is scored</summary>
         <ul>
           {teamFit.methodology.notes.map((note) => (
