@@ -75,6 +75,7 @@ Much of the dossier UI already landed in Phase 2. Phase 3 is completion/polish, 
 - [ ] Empty / edge-case polish (null seed ids, rate-limit UX under trial, search empty states)
 - [ ] Responsive polish pass + **demo fixtures** (or paid tier) for reliable demos
 - [ ] Close residual debt as needed: P2-7 drawer hook, P2-9 `inert`, P2-10 null BDL ids ([`PHASE_2_REVIEW.md`](./PHASE_2_REVIEW.md))
+- [x] **Scope addition — "Lineup Fit" panel** (`scoring/composeTeamFit` + `GET /api/team-fit` + `TeamFitPanel`): lineup-level read for the starting five as means of the starters' pillar percentiles. Deliberately an aggregation of individual profiles — no synergy or +/- modeling, so the non-goal stands. A follow-up PR adds swap-a-starter simulation with per-pillar deltas.
 
 ### Phase 4 — Ship
 - [ ] Stretch only if ahead (compare / role toggle)

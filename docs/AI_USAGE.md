@@ -139,6 +139,11 @@ This log supports the assignment requirement to disclose AI use. Append entries 
 - **Used for:** P3-11 stacked court PG clip (aspect-ratio lock → height follows cards + `background-size: cover`); scoped On the Radar stretch styles to ≥64em so stacked layout stays compact; phone/tablet/desktop verification
 - **Not used for:** Reordering stacked sections (court → bench → radar remains intentional: team first)
 
+### 2026-07-30 — "Lineup Fit" team panel (Phase 3, PR 1 of 2)
+- **Tool:** Cursor agent
+- **Used for:** `composeTeamFit` (pillar means, grade, balance callouts, thin-sample cap) + tests; `GET /api/team-fit` reusing the cached dossier pipeline; `TeamFitPanel` with skeleton/error/retry; four-column grid where only the court track compresses; `ordinal()` fix for "71th"-style percentile copy (also fixed in dossier callouts)
+- **Not used for:** Scoring semantics — the means/thresholds/"Lineup Fit" framing were user-approved before implementation
+
 ---
 
 *Add new dated entries below as AI is used in later phases.*

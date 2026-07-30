@@ -102,6 +102,12 @@
   justify-content: center;
 }
 
+.teamFitPane {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
 .benchTitle {
   margin: 0 0 var(--space-3);
   font-size: 0.8rem;
@@ -347,15 +353,19 @@
     flex: 1 1 auto;
     min-height: 0;
     /* Content-sized columns, centered as one block: leftover width splits
-       evenly between the screen edges instead of pooling on the bench side. */
-    grid-template-columns: auto auto auto;
+       evenly between the screen edges instead of pooling on the bench side.
+       The court track is the only compressible one — when the four columns
+       outgrow the viewport it shrinks first, and the court's aspect-ratio +
+       max-width transfer the squeeze into a shorter court. */
+    grid-template-columns: auto auto minmax(0, max-content) auto;
     justify-content: center;
     align-items: stretch;
     column-gap: var(--space-2);
   }
 
   .main > .courtPane {
-    grid-column: 2;
+    grid-column: 3;
+    grid-row: 1;
     min-width: 0;
     min-height: 0;
     height: 100%;
@@ -365,7 +375,8 @@
   }
 
   .bench {
-    grid-column: 3;
+    grid-column: 4;
+    grid-row: 1;
     justify-self: start;
     /* Hug the cards; the court-side padding sets the visual gap so both
        gutters read evenly (the radar pane mirrors it via margin-right). */
@@ -379,7 +390,7 @@
 
   /* Mirror of the bench: radar shortlist fills the left court gutter. */
   .radarPane {
-    grid-column: 1;
+    grid-column: 2;
     grid-row: 1;
     justify-self: end;
     width: 14.5rem;
@@ -387,6 +398,18 @@
     margin-right: var(--space-4);
     min-height: 0;
     /* Scrollbar only when a short viewport would otherwise clip rows. */
+    overflow-y: auto;
+  }
+
+  /* Leftmost column: lineup-level read for the starting five. */
+  .teamFitPane {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    width: 15rem;
+    /* Same court-side whitespace rhythm as the radar pane. */
+    margin-right: var(--space-4);
+    min-height: 0;
     overflow-y: auto;
   }
 

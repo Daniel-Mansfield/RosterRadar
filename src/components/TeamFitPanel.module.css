@@ -1,0 +1,305 @@
+.panel {
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: center;
+  color: var(--content-primary);
+}
+
+.subtitle {
+  margin: 0.2rem 0 var(--space-3);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--content-muted);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* —— Grade scoreboard —— */
+
+.scoreboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.grade {
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.scoreMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.fitBadge {
+  margin: 0;
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 0.15rem var(--space-2);
+  border-radius: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  background: var(--surface-subtle);
+}
+
+.fitBadge.strong {
+  background: var(--fit-strong-bg);
+  color: var(--fit-strong);
+}
+
+.fitBadge.conditional {
+  background: var(--fit-conditional-bg);
+  color: var(--fit-conditional);
+}
+
+.fitBadge.poor {
+  background: var(--fit-poor-bg);
+  color: var(--fit-poor);
+}
+
+.strong {
+  color: var(--fit-strong);
+}
+
+.conditional {
+  color: var(--fit-conditional);
+}
+
+.poor {
+  color: var(--fit-poor);
+}
+
+.season {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--content-muted);
+}
+
+/* —— Pillar bars (compact cousins of the dossier rows) —— */
+
+.pillars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.pillar {
+  min-width: 0;
+}
+
+.pillarHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: 0.25rem;
+}
+
+.pillarLabel {
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.pillarPct {
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--content-primary);
+}
+
+.barTrack {
+  height: 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 85%, transparent);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--content-muted);
+}
+
+.barMid {
+  background: var(--content-muted);
+}
+
+.barStrong {
+  background: var(--fit-strong);
+}
+
+.barPoor {
+  background: var(--fit-poor);
+}
+
+/* —— Balance callouts —— */
+
+.callouts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.callouts li {
+  margin: 0;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--surface-subtle) 55%, transparent);
+  border-left: 3px solid var(--border);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--content-primary);
+}
+
+.calloutStrength {
+  border-left-color: var(--fit-strong);
+}
+
+.calloutRisk {
+  border-left-color: var(--fit-poor);
+}
+
+.balanced {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--content-muted);
+}
+
+.thinNote {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--content-muted);
+}
+
+/* —— Methodology (collapsed) —— */
+
+.method {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-3);
+  color: var(--content-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.method summary {
+  cursor: pointer;
+  color: var(--content-primary);
+  font-weight: 600;
+}
+
+.method ul {
+  margin: var(--space-2) 0 0;
+  padding-left: 1.1rem;
+}
+
+/* —— Error state —— */
+
+.placeholder {
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px dashed var(--border);
+  border-radius: 0.5rem;
+  color: var(--content-muted);
+  line-height: 1.5;
+  font-size: 0.85rem;
+}
+
+.placeholderMessage {
+  margin: 0;
+}
+
+.retry {
+  margin-top: var(--space-3);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--content-primary);
+  border-radius: 0.35rem;
+  padding: var(--space-1) var(--space-3);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.retry:hover {
+  border-color: var(--accent);
+}
+
+.retry:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* —— Loading skeleton —— */
+
+.bone {
+  display: block;
+  border-radius: 0.3rem;
+  background: color-mix(in srgb, var(--border) 85%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bone {
+    animation: teamFitPulse 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes teamFitPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.boneGrade {
+  width: 3.4rem;
+  height: 2.6rem;
+}
+
+.boneBadge {
+  width: 5.5rem;
+  height: 1.3rem;
+}
+
+.boneLabel {
+  width: 55%;
+  height: 0.7rem;
+  margin-bottom: 0.3rem;
+}
+
+.boneBar {
+  width: 100%;
+  height: 0.45rem;
+  border-radius: 999px;
+}
