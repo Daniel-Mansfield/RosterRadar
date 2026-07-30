@@ -87,7 +87,7 @@ export function composeTeamFit(dossiers: Dossier[]): TeamFit {
       notes: [
         "Each lineup pillar is the unweighted mean of the starters' individual pillar percentiles (each vs league peers).",
         "Lineup grade is the unweighted mean of the six lineup pillars.",
-        `Callouts flag lineup pillars at or above the ${ordinal(TEAM_STRENGTH_THRESHOLD)} percentile (strength) or at or below the ${ordinal(TEAM_GAP_THRESHOLD)} (gap) — at most two of each.`,
+        `Callouts flag lineup pillars at or above the ${ordinal(TEAM_STRENGTH_THRESHOLD)} percentile (strength) or at or below the ${ordinal(TEAM_GAP_THRESHOLD)} percentile (gap) — at most two of each.`,
         "A thin-sample starter caps the lineup read at Conditional; the grade itself stays honest.",
         "This aggregates individual profiles — it does not model on-court synergy, lineup plus-minus, or scheme.",
         ...(mixedSeasons
