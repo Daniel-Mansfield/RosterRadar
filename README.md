@@ -16,8 +16,8 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 | **Non-goals (v1)** | Auth, film, tracking, salary/cap, full roster mapper, social, live tools |
 | **Frontend** | Opinionated, easy, responsive; one accent; semantic design tokens; WCAG AA contrast |
 | **Backend** | Backend owns interpretation; frontend owns presentation; ports/adapters; pure scoring; Zod at boundaries |
-| **API surface** | `GET /api/players`, `GET /api/dossier/[id]` → typed dossier JSON |
-| **Data** | [BALLDONTLIE](https://docs.balldontlie.io/) (GOAT trial for Phase 2) behind `NbaStatsPort` — see [`docs/VENDOR_DECISION.md`](docs/VENDOR_DECISION.md) |
+| **API surface** | `GET /api/players`, `GET /api/dossier/[id]`, `GET /api/team-fit` → typed JSON |
+| **Data** | [BALLDONTLIE](https://docs.balldontlie.io/) (GOAT) behind `NbaStatsPort` — [`docs/VENDOR_DECISION.md`](docs/VENDOR_DECISION.md) |
 | **Stack** | TypeScript, React, Next.js, Vercel |
 | **Quality bar** | Clean, maintainable code; root-cause fixes (no quick-fix patches); original scoring + AI disclosed |
 | **Process** | Phase-by-phase (`docs/DEVELOPMENT.md`); branch off `main`, named commits, merge after testing |
@@ -29,13 +29,12 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 - Vendor & hosting decision: [`docs/VENDOR_DECISION.md`](docs/VENDOR_DECISION.md)
 - Design system: [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md)
 - Development phases: [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
-- Phase 1 review log: [`docs/PHASE_1_REVIEW.md`](docs/PHASE_1_REVIEW.md)
-- Phase 2 review log: [`docs/PHASE_2_REVIEW.md`](docs/PHASE_2_REVIEW.md)
-- AI disclosure log: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
+- Phase reviews: [`PHASE_1`](docs/PHASE_1_REVIEW.md) · [`PHASE_2`](docs/PHASE_2_REVIEW.md) · [`PHASE_3`](docs/PHASE_3_REVIEW.md)
+- AI disclosure: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
 - Cursor rules: [`.cursor/rules/`](.cursor/rules/)
 
 ## Status
-Phase 2 merged (`phase-2/dossier-slice` → `main`, PR #3): role-fit dossiers, scoring, caching, Nets home polish. Vendor: BALLDONTLIE GOAT trial (NBA.com not used on Vercel). Next: Phase 3 harden/fixtures + post-trial vendor plan.
+Phase 3 in progress: On the Radar, scoring v1.1, mobile harden, Lineup Fit panel (PR 1). Vendor: BALLDONTLIE GOAT (paid month for demo window). Next: lineup swap simulation (PR 2), then Phase 4 ship.
 
 ## Setup
 Copy `.env.example` → `.env.local` and set `BALLDONTLIE_API_KEY`. Never commit secrets. For Vercel, set the same key on Production/Preview (Dashboard → Settings → Environment Variables).

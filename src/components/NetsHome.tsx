@@ -17,6 +17,7 @@ import { HalfCourt } from "@/components/HalfCourt";
 import { NetsMark } from "@/components/NetsMark";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PlayerCard } from "@/components/PlayerCard";
+import { TeamFitPanel } from "@/components/TeamFitPanel";
 import {
   useDossierDrawer,
   type DrawerIdentity,
@@ -50,6 +51,9 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   } = useDossierDrawer();
   const [benchCanScrollMore, setBenchCanScrollMore] = useState(false);
   const benchListRef = useRef<HTMLUListElement>(null);
+  const starterIds = roster.starters
+    .map((player) => player.id)
+    .filter((id): id is number => id != null);
 
   function updateBenchScrollHint(): void {
     const list = benchListRef.current;
@@ -158,6 +162,12 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             starters={roster.starters}
             onSelectPlayer={openForRosterPlayer}
           />
+        </div>
+
+        {/* Directly after the court in stacked layouts (it scores the five
+            shown there); leftmost column on wide screens. */}
+        <div className={styles.teamFitPane}>
+          <TeamFitPanel playerIds={starterIds} />
         </div>
 
         <aside className={styles.bench} aria-label="Bench">

@@ -43,6 +43,17 @@ const PILLAR_LABELS = {
   workload: "Workload",
 } as const satisfies Record<PillarId, string>;
 
+/** English ordinal for percentile copy — "71st", "82nd", "93rd", "11th". */
+export function ordinal(n: number): string {
+  const rem100 = Math.abs(n) % 100;
+  if (rem100 >= 11 && rem100 <= 13) return `${n}th`;
+  const rem10 = Math.abs(n) % 10;
+  if (rem10 === 1) return `${n}st`;
+  if (rem10 === 2) return `${n}nd`;
+  if (rem10 === 3) return `${n}rd`;
+  return `${n}th`;
+}
+
 export function percentileFromRank(
   rank: number | null,
   poolSize: number = PEER_POOL_SIZE,
@@ -142,6 +153,23 @@ export function buildPillars(line: PlayerSeasonLine): RolePillar[] {
   ];
 }
 
+/**
+ * Shared grade → recommendation banding (player dossiers and lineup fit).
+ * "Strong" is a commitment; never make it on a thin sample. The grade stays
+ * honest — only the recommendation is capped.
+ */
+export function recommendationFromGrade(
+  grade: number,
+  thinSample = false,
+): FitRecommendation {
+  const recommendation: FitRecommendation =
+    grade >= 65 ? "strong" : grade >= 45 ? "conditional" : "poor";
+  if (thinSample && recommendation === "strong") {
+    return "conditional";
+  }
+  return recommendation;
+}
+
 export function fitFromPillars(
   pillars: RolePillar[],
   options: { thinSample?: boolean } = {},
@@ -155,14 +183,10 @@ export function fitFromPillars(
   const grade = Math.round(
     pillars.reduce((sum, p) => sum + p.percentile, 0) / pillars.length,
   );
-  let recommendation: FitRecommendation =
-    grade >= 65 ? "strong" : grade >= 45 ? "conditional" : "poor";
-  // "Strong" is a commitment; never make it on a thin sample. The grade stays
-  // honest — only the recommendation is capped.
-  if (options.thinSample && recommendation === "strong") {
-    recommendation = "conditional";
-  }
-  return { grade, recommendation };
+  return {
+    grade,
+    recommendation: recommendationFromGrade(grade, options.thinSample),
+  };
 }
 
 export function confidenceFromSample(
@@ -181,14 +205,14 @@ export function buildCallouts(
   const sorted = [...pillars].sort((a, b) => b.percentile - a.percentile);
   const strengths = sorted.slice(0, 2).map((p) => ({
     kind: "strength" as const,
-    text: `${p.label} sits near the ${p.percentile}th percentile (${p.raw} ${p.unit}), supporting a ${ROLE_LABELS[roleId].toLowerCase()} read.`,
+    text: `${p.label} sits near the ${ordinal(p.percentile)} percentile (${p.raw} ${p.unit}), supporting a ${ROLE_LABELS[roleId].toLowerCase()} read.`,
   }));
   const risks = [...pillars]
     .sort((a, b) => a.percentile - b.percentile)
     .slice(0, 2)
     .map((p) => ({
       kind: "risk" as const,
-      text: `${p.label} is a relative gap (${p.percentile}th percentile at ${p.raw} ${p.unit}) — worth stress-testing in role fit.`,
+      text: `${p.label} is a relative gap (${ordinal(p.percentile)} percentile at ${p.raw} ${p.unit}) — worth stress-testing in role fit.`,
     }));
   return [...strengths, ...risks];
 }

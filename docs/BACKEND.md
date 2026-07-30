@@ -27,21 +27,21 @@ Full product scope: [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md).
 Inspired by Alistair Cockburn’s **Ports and Adapters** (hexagonal architecture): keep the application core free of UI and infrastructure details so adapters (NBA API, HTTP) can change without rewriting business logic.
 
 ```
-┌─────────────────────────────────────────────┐
-│  Driving adapter: Route Handlers (HTTP)     │
-│    /api/players  ·  /api/dossier/[id]       │
-└─────────────────────┬───────────────────────┘
+┌──────────────────────────────────────────────────┐
+│  Driving adapter: Route Handlers (HTTP)          │
+│    /api/players · /api/dossier/[id] · /api/team-fit │
+└─────────────────────┬────────────────────────────┘
                       │
-┌─────────────────────▼───────────────────────┐
-│  Application core                           │
-│    composeDossier()  ·  searchPlayers()     │
-│    scoring/*  (pure)                        │
-└─────────────────────┬───────────────────────┘
+┌─────────────────────▼────────────────────────────┐
+│  Application core                                │
+│    composeDossier() · composeTeamFit() · search  │
+│    scoring/*  (pure)                             │
+└─────────────────────┬────────────────────────────┘
                       │  port: NbaStatsPort
-┌─────────────────────▼───────────────────────┐
-│  Driven adapter: NBA API client             │
-│    fetch → Zod parse → domain types         │
-└─────────────────────────────────────────────┘
+┌─────────────────────▼────────────────────────────┐
+│  Driven adapter: NBA API client                  │
+│    fetch → Zod parse → domain types              │
+└──────────────────────────────────────────────────┘
 ```
 
 | Layer | Owns | Must not |
@@ -82,6 +82,15 @@ Names can adjust when scaffolding; the **boundaries** must not.
   - identity, detected role, fit grade, recommendation, confidence
   - pillars (percentiles), strengths/risks, evidence
   - methodology metadata (peer set, min minutes, scoring version)
+
+### `GET /api/team-fit?ids=`
+- Input: 1–5 unique positive BALLDONTLIE player ids, comma-separated
+- Output: `{ teamFit: TeamFit }` — lineup-level aggregation of the players'
+  individual dossiers (pillar means, lineup grade, balance callouts,
+  thin-sample confidence). Reuses the cached dossier pipeline.
+- Framing: individual profiles vs peers — **not** synergy or +/- modeling
+- UI for the Nets home panel requires all five starters resolved; the route
+  stays flexible (1–5) for validation and a future swap simulation
 
 ### Error envelope (typed)
 Use stable machine codes the UI can map to empty/error/confidence states:
@@ -181,8 +190,8 @@ Per BALLDONTLIE’s published endpoint matrix ([nba.balldontlie.io](https://nba.
 **MVP approach (locked — see [`VENDOR_DECISION.md`](./VENDOR_DECISION.md)):**
 - **Vendor:** BALLDONTLIE primary (GOAT trial for Phase 2 stats/roster endpoints).
 - **Nets roster:** prefer live/active when the key allows; **curated seed** remains fallback (`rosterSeed.ts`).
-- **Acquisition search:** live `/nba/v1/players?search=` with `excludeNets` (harden aliases — review R14).
-- **Stats for scoring:** use GOAT season averages / game stats while available; plan paid month or fixtures before trial ends.
+- **Acquisition search:** live `/nba/v1/players?search=` with `excludeNets` (alias-aware).
+- **Stats for scoring:** GOAT season averages / game stats; paid month covers the demo window (fixtures = fallback).
 - **Not on Vercel runtime:** official NBA.com `stats.nba.com` adapter (local-only research if ever needed).
 
 ### Phase 1 checklist (done)

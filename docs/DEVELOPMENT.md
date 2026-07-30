@@ -10,89 +10,54 @@ Phased plan for RosterRadar. Product/architecture detail lives in [`PROJECT_OUTL
 |---|---|
 | Default branch | `main` stays stable / deployable |
 | Work branches | Create from up-to-date `main` for each phase or feature |
-| Commits | **Always** use a clear commit message (what/why); never leave commits unnamed |
-| Before merge | Run/test the change locally (and relevant checks); fix at the root cause |
-| Merge | Merge (or PR) into `main` only after the branch is validated |
-| Push | Push the work branch to GitHub when sharing or opening a PR; push `main` after merge |
+| Commits | Clear message (what/why); never unnamed |
+| Before merge | Test locally; fix at the root cause |
+| Merge | Into `main` only after the branch is validated |
+| Push | Work branch for PRs; `main` after merge |
 
-### Branch naming
-```
-phase-1/scaffold          # phase-scoped work
-feat/player-search        # feature
-fix/dossier-empty-state  # bugfix
-docs/dev-workflow         # documentation only
-chore/eslint-config       # tooling
-```
-
-### Typical loop
-```bash
-git checkout main && git pull
-git checkout -b phase-1/scaffold
-# … implement & test …
-git add -A && git commit -m "Describe the change and why."
-# optional: git push -u origin HEAD && gh pr create
-# after review/validation: merge into main, then delete the branch
-```
+Branch names: `phase-N/…`, `feat/…`, `fix/…`, `docs/…`, `chore/…`.
 
 ## Phase checklist
 
-### Phase 0 — Freeze the foundation
-- [x] Project outline, design system, backend design, Cursor rules
-- [x] `.gitignore`, README doc index
-- [x] AI usage log ([`AI_USAGE.md`](./AI_USAGE.md))
-- [x] Data vendor locked (BALLDONTLIE — see BACKEND.md; note tier limits)
-- [x] `.env.example` (no secrets)
-- [x] Planning baseline **committed** to git
+### Phase 0 — Foundation
+- [x] Outline, design system, backend design, Cursor rules, AI log, `.env.example`
 
 ### Phase 1 — Runnable skeleton
-- [x] Next.js + TypeScript scaffold (strict tsconfig per rules)
-- [x] Design tokens in global CSS (Daniel palette)
-- [x] Zod + BALLDONTLIE adapter (`searchPlayers`, curated `getNetsRoster`)
-- [x] Nets home: brand, half-court, bench, drawer placeholder, non-Nets search
-- [x] Pre-merge self-review remediations ([`PHASE_1_REVIEW.md`](./PHASE_1_REVIEW.md))
-- [x] Phase 1 merged to `main` (PR #1)
-- [x] Hello-world deploy (Vercel — see vendor section)
-- [x] `.env.local` from `.env.example` (local only; never commit)
+- [x] Next.js + tokens + BDL adapter + Nets home (court / bench / drawer / search)
+- [x] Merged (PR #1) + Vercel hello deploy — [`PHASE_1_REVIEW.md`](./PHASE_1_REVIEW.md)
 
-### Vendor decision (before Phase 2 scoring)
-- [x] Research + lock ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) — BALLDONTLIE GOAT trial; NBA.com not used on Vercel
-- [x] Confirm GOAT endpoints with rotated API key (`npm run verify:goat` — search, active players, season averages, game stats all PASS; pace ≤5 req/min on trial)
-- [ ] **Decide post-trial path before GOAT ends** — paid month vs demo fixtures (still open; blocks long-lived demos when trial expires)
+### Vendor
+- [x] Locked: BALLDONTLIE GOAT — [`VENDOR_DECISION.md`](./VENDOR_DECISION.md)
+- [x] `npm run verify:goat` PASS
+- [x] Post-trial path: one paid GOAT month for the demo window (fixtures = fallback)
 
-### Phase 2 — Vertical slice
-- [x] `NbaStatsPort` + Zod boundary (players + nets roster)
-- [x] GOAT verify (`npm run verify:goat`)
-- [x] Pure `scoring/` + unit tests (`npm test`)
-- [x] `GET /api/dossier/[id]` + dossier UI in drawer
-- [x] Wire drawer to real role-fit payload (acquisition path first; Nets with resolved ids)
-- [x] Phase 2 merged to `main` (PR #3) — review log: [`PHASE_2_REVIEW.md`](./PHASE_2_REVIEW.md)
-- [x] Vercel preview/production have `BALLDONTLIE_API_KEY` (set post-merge when dossier opened blank)
+### Phase 2 — Dossier vertical slice
+- [x] Pure `scoring/` + tests; `GET /api/dossier/[id]`; drawer UI; TTL cache
+- [x] Merged (PR #3) — [`PHASE_2_REVIEW.md`](./PHASE_2_REVIEW.md)
+- [x] `BALLDONTLIE_API_KEY` on Vercel preview/production
 
-### Phase 3 — Product complete (harden what shipped)
-Much of the dossier UI already landed in Phase 2. Phase 3 is completion/polish, not a greenfield rebuild:
-- [x] Pillars, callouts, evidence, methodology (shipped in dossier panel)
-- [x] Loading / error / thin-sample surfaces (drawer + dossier confidence)
-- [ ] Empty / edge-case polish (null seed ids, rate-limit UX under trial, search empty states)
-- [ ] Responsive polish pass + **demo fixtures** (or paid tier) for reliable demos
-- [ ] Close residual debt as needed: P2-7 drawer hook, P2-9 `inert`, P2-10 null BDL ids ([`PHASE_2_REVIEW.md`](./PHASE_2_REVIEW.md))
+### Phase 3 — Harden + additions
+- [x] Dossier surfaces (loading / error / thin-sample / retry)
+- [x] On the Radar; seed ids; scoring v1.1; mobile court fix
+- [x] Lineup Fit panel (PR 1) — team-level read for the starting five; swap sim = PR 2
+- [ ] Residual polish as needed — [`PHASE_3_REVIEW.md`](./PHASE_3_REVIEW.md)
 
 ### Phase 4 — Ship
 - [ ] Stretch only if ahead (compare / role toggle)
 - [ ] Write-up + AI disclosure + final QA + live URL
 
-## Definition of done (per feature)
-A feature is done when:
-1. Types and boundary validation are correct (no `any` on vendor JSON)
-2. Root cause of failures is fixed at the right layer (adapter vs scoring vs UI)
-3. Happy path **and** loading / empty / error (or thin-sample) are handled
-4. Scoring changes include a unit test when logic is pure
-5. Docs/AI log updated if the change affects architecture or used new AI assistance
-6. Work was done on a **branch** and merged to `main` only after testing
+## Definition of done
+1. Types + boundary validation correct (no `any` on vendor JSON)
+2. Failures fixed at the right layer (adapter vs scoring vs UI)
+3. Happy path **and** loading / empty / error (or thin-sample) handled
+4. Pure scoring changes include a unit test
+5. Docs / AI log updated when architecture or AI assistance changes
+6. Work on a **branch**; merge to `main` only after testing
 
-## Local setup (after Phase 1 scaffold)
+## Local setup
 ```bash
 cp .env.example .env.local
-# Add BALLDONTLIE_API_KEY from https://balldontlie.io account
-npm install   # or pnpm / yarn — lock in Phase 1
+# Add BALLDONTLIE_API_KEY from https://balldontlie.io
+npm install
 npm run dev
 ```

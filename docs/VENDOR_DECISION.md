@@ -117,16 +117,9 @@ Note: trial rate limit ≈ **5 req/min** — adapter/dossier composition must pa
 
 ---
 
-## 7. Known debt carried from Phase 1 (not fixed in cleanup)
+## 7. Phase 1 debt (status)
 
-See also [`PHASE_1_REVIEW.md`](./PHASE_1_REVIEW.md) Pass 2:
-
-| ID | Issue | Disposition |
-|---|---|---|
-| R14 | Acquisition filter misses nickname aliases (e.g. Nic vs Nicolas Claxton) | Fix when extending search/roster on GOAT |
-| R15 | Client Zod parse failure shown as empty results | Fix with search/dossier client hardening |
-| R18 | Some seed BDL ids still null | Resolve against GOAT/active players when wiring dossier |
-| Trial cliff | GOAT access temporary | Plan paid month or fixtures before expiry |
+Alias exclude, client Zod errors, and null seed ids were closed in Phase 2–3 — see [`PHASE_1_REVIEW.md`](./PHASE_1_REVIEW.md). Post-trial path: one paid GOAT month (above); fixtures remain the fallback.
 
 ---
 
