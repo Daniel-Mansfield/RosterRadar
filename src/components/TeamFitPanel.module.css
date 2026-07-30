@@ -1,8 +1,37 @@
 .panel {
   min-width: 0;
   width: 100%;
+  /* Hug content when short (no empty footer); cap + scroll when methodology expands. */
+  height: auto;
+  max-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  /* Breathing room so the last methodology note clears the fold. */
+  padding-bottom: var(--space-4);
+  box-sizing: border-box;
+  /* Thin scrollbar when the panel overflows (methodology expand). */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--border) 80%, transparent) transparent;
+}
+
+/* Reserve gutter only while notes are open — avoids a permanent empty strip. */
+.panel:has(details[open]) {
+  scrollbar-gutter: stable;
+}
+
+.panel::-webkit-scrollbar {
+  width: 0.35rem;
+}
+
+.panel::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.panel::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .title {
@@ -12,6 +41,11 @@
   letter-spacing: 0.02em;
   text-align: center;
   color: var(--content-primary);
+  /* Match Radar’s shuffle-row height so the three rails align. */
+  min-height: 1.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* tabIndex={-1}: programmatic focus target for retry (not in tab order). */
@@ -44,7 +78,9 @@
 .body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  /* Content-sized — do not stretch callouts into empty column space. */
+  flex: 0 0 auto;
 }
 
 /* —— Grade scoreboard —— */
@@ -53,12 +89,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
 .grade {
   margin: 0;
-  font-size: 2.6rem;
+  /* Quieter than the dossier hero — court stays the visual focus. */
+  font-size: 1.85rem;
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -124,7 +161,7 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-1);
 }
 
 .pillar {
@@ -136,23 +173,23 @@
   justify-content: space-between;
   align-items: baseline;
   gap: var(--space-3);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .pillarLabel {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 500;
 }
 
 .pillarPct {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--content-primary);
 }
 
 .barTrack {
-  height: 0.45rem;
+  height: 0.35rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--border) 85%, transparent);
   overflow: hidden;
@@ -222,8 +259,11 @@
 /* —— Methodology (collapsed) —— */
 
 .method {
+  flex: 0 0 auto;
   border-top: 1px solid var(--border);
-  padding-top: var(--space-3);
+  padding-top: var(--space-2);
+  /* Room below the last note when the panel scrolls after expand. */
+  padding-bottom: var(--space-1);
   color: var(--content-muted);
   font-size: 0.75rem;
   line-height: 1.45;
@@ -233,11 +273,27 @@
   cursor: pointer;
   color: var(--content-primary);
   font-weight: 600;
+  border-radius: 0.2rem;
+}
+
+/* Kill the mouse-click ring only; keep a visible outline where :focus-visible
+   is unsupported or does not apply to <summary>. */
+.method summary:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.method summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .method ul {
   margin: var(--space-2) 0 0;
   padding-left: 1.1rem;
+}
+
+.method li + li {
+  margin-top: var(--space-1);
 }
 
 /* —— Error state —— */
@@ -302,8 +358,8 @@
 }
 
 .boneGrade {
-  width: 3.4rem;
-  height: 2.6rem;
+  width: 2.4rem;
+  height: 1.85rem;
 }
 
 .boneBadge {
@@ -319,6 +375,15 @@
 
 .boneBar {
   width: 100%;
-  height: 0.45rem;
+  height: 0.35rem;
   border-radius: 999px;
+}
+
+/* Wide: keep stats + insights content-sized so methodology sits directly
+   under them (no stretched dead space). Pane scrolls on expand. */
+@media (min-width: 64em) {
+  .pillars,
+  .callouts {
+    flex: 0 0 auto;
+  }
 }

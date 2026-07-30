@@ -17,6 +17,9 @@ export const TEAM_GAP_THRESHOLD = 45;
 
 export const MAX_TEAM_CALLOUTS_PER_KIND = 2;
 
+/** Prefer at least this many insights when threshold callouts undershoot. */
+const TARGET_TEAM_CALLOUTS = 3;
+
 export { LINEUP_SIZE };
 
 /**
@@ -25,7 +28,8 @@ export { LINEUP_SIZE };
  * Semantics (agreed for v1):
  * - team pillar = unweighted mean of the starters' pillar percentiles
  * - lineup grade = unweighted mean of the six team pillars
- * - callouts flag pillar averages ≥ strength / ≤ gap thresholds, max two each
+ * - callouts flag pillar averages ≥ strength / ≤ gap thresholds, max two each;
+ *   when those undershoot, pad to three with softer ≥50 / ≤ gap insights
  * - any thin-sample starter caps the recommendation at Conditional
  *
  * Pure aggregation of individual profiles — no synergy or +/- modeling.
@@ -87,7 +91,7 @@ export function composeTeamFit(dossiers: Dossier[]): TeamFit {
       notes: [
         "Each lineup pillar is the unweighted mean of the starters' individual pillar percentiles (each vs league peers).",
         "Lineup grade is the unweighted mean of the six lineup pillars.",
-        `Callouts flag lineup pillars at or above the ${ordinal(TEAM_STRENGTH_THRESHOLD)} percentile (strength) or at or below the ${ordinal(TEAM_GAP_THRESHOLD)} percentile (gap) — at most two of each.`,
+        `Callouts flag lineup pillars at or above the ${ordinal(TEAM_STRENGTH_THRESHOLD)} percentile (strength) or at or below the ${ordinal(TEAM_GAP_THRESHOLD)} percentile (gap) — at most two of each. When those undershoot, softer insights pad the rail up to three (above-average “solid on paper” or gap-band soft spots); a fully balanced lineup stays empty.`,
         "A thin-sample starter caps the lineup read at Conditional; the grade itself stays honest.",
         "This aggregates individual profiles — it does not model on-court synergy, lineup plus-minus, or scheme.",
         ...(mixedSeasons
@@ -119,11 +123,14 @@ function buildTeamCallouts(
   pillars: TeamFitPillar[],
   dossiers: Dossier[],
 ): Callout[] {
+  const used = new Set<PillarId>();
+
   const strengths = pillars
     .filter((p) => p.percentile >= TEAM_STRENGTH_THRESHOLD)
     .sort((a, b) => b.percentile - a.percentile)
     .slice(0, MAX_TEAM_CALLOUTS_PER_KIND)
     .map((p): Callout => {
+      used.add(p.id);
       const leader = topStarter(dossiers, p.id);
       return {
         kind: "strength",
@@ -136,6 +143,7 @@ function buildTeamCallouts(
     .sort((a, b) => a.percentile - b.percentile)
     .slice(0, MAX_TEAM_CALLOUTS_PER_KIND)
     .map((p): Callout => {
+      used.add(p.id);
       const best = topStarter(dossiers, p.id);
       return {
         kind: "risk",
@@ -143,7 +151,40 @@ function buildTeamCallouts(
       };
     });
 
-  return [...strengths, ...gaps];
+  const callouts = [...strengths, ...gaps];
+
+  // When threshold flags undershoot, add the next-most-extreme unused pillar
+  // as a softer insight so the home rail has enough to read. Mid-band pillars
+  // (between gap and 50) are skipped — they are not strengths or gaps.
+  while (callouts.length > 0 && callouts.length < TARGET_TEAM_CALLOUTS) {
+    const next = pillars
+      .filter(
+        (p) =>
+          !used.has(p.id) &&
+          (p.percentile >= 50 || p.percentile <= TEAM_GAP_THRESHOLD),
+      )
+      .sort(
+        (a, b) =>
+          Math.abs(b.percentile - 50) - Math.abs(a.percentile - 50) ||
+          b.percentile - a.percentile,
+      )[0];
+    if (!next) break;
+    used.add(next.id);
+    const leader = topStarter(dossiers, next.id);
+    if (next.percentile >= 50) {
+      callouts.push({
+        kind: "strength",
+        text: `${next.label} is solid on paper — the starters average the ${ordinal(next.percentile)} percentile, led by ${leader.name} (${ordinal(leader.percentile)}).`,
+      });
+    } else {
+      callouts.push({
+        kind: "risk",
+        text: `${next.label} is a relative soft spot — the starters average the ${ordinal(next.percentile)} percentile; no starter tops the ${ordinal(leader.percentile)}.`,
+      });
+    }
+  }
+
+  return callouts;
 }
 
 /** Starter with the highest percentile in a pillar. */

@@ -86,7 +86,8 @@
 
 .main {
   display: grid;
-  gap: var(--space-5);
+  /* Stacked: more vertical air between Fit / Bench / Radar / Court. */
+  gap: var(--space-6);
 }
 
 .bench {
@@ -106,17 +107,32 @@
   min-width: 0;
   display: flex;
   justify-content: center;
+  /* Don't stretch the panel to column height — that left empty space under
+     the insights / methodology. Panel caps itself with max-height: 100%. */
+  align-items: flex-start;
 }
 
 .benchTitle {
-  margin: 0 0 var(--space-3);
-  font-size: 0.8rem;
+  margin: 0;
+  font-size: 1.05rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--content-muted);
+  letter-spacing: 0.02em;
   text-align: center;
+  color: var(--content-primary);
   width: 100%;
+  /* Match Fit / Radar title-row height so the three rails align. */
+  min-height: 1.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.benchSubtitle {
+  margin: 0.2rem 0 var(--space-3);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--content-muted);
 }
 
 .benchScroll {
@@ -360,7 +376,8 @@
     grid-template-columns: auto auto minmax(0, max-content) auto;
     justify-content: center;
     align-items: stretch;
-    column-gap: var(--space-2);
+    /* More air between Fit | Radar | Court | Bench so columns read as siblings. */
+    column-gap: var(--space-4);
   }
 
   .main > .courtPane {
@@ -378,39 +395,53 @@
     grid-column: 4;
     grid-row: 1;
     justify-self: start;
-    /* Hug the cards; the court-side padding sets the visual gap so both
-       gutters read evenly (the radar pane mirrors it via margin-right). */
+    /* Hug the cards; court-side padding matches the left panes' margin-right. */
     width: fit-content;
-    padding-inline: var(--space-4) 0;
+    padding-inline: var(--space-5) 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 0;
   }
 
-  /* Mirror of the bench: radar shortlist fills the left court gutter. */
-  .radarPane {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
-    width: 14.5rem;
-    /* Match the bench cards' court-side whitespace. */
-    margin-right: var(--space-4);
-    min-height: 0;
-    /* Scrollbar only when a short viewport would otherwise clip rows. */
-    overflow-y: auto;
-  }
-
-  /* Leftmost column: lineup-level read for the starting five. */
+  /* Lineup Fit — leftmost readout; Radar sits beside the court for DnD. */
   .teamFitPane {
     grid-column: 1;
     grid-row: 1;
     justify-self: end;
+    /* Shared rail width with Radar so the two side columns read as siblings. */
     width: 15rem;
-    /* Same court-side whitespace rhythm as the radar pane. */
-    margin-right: var(--space-4);
+    margin-right: var(--space-5);
+    min-height: 0;
+    /* Panel scrolls; keep the pane from nesting a second scrollbar. */
+    overflow: hidden;
+  }
+
+  /* Acquisition shortlist — adjacent to the court (drop targets in PR 2). */
+  .radarPane {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    width: 15rem;
+    margin-right: var(--space-5);
     min-height: 0;
     overflow-y: auto;
+    /* Thin scrollbar when the shortlist overflows the court column. */
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--border) 80%, transparent) transparent;
+  }
+
+  .radarPane::-webkit-scrollbar {
+    width: 0.35rem;
+  }
+
+  .radarPane::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--border) 80%, transparent);
+  }
+
+  .radarPane::-webkit-scrollbar-track {
+    background: transparent;
   }
 
   .benchScroll {
