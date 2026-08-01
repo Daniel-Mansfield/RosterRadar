@@ -7,6 +7,11 @@ export type PlayerSummary = {
   lastName: string;
   position: string | null;
   teamAbbreviation: string | null;
+  /**
+   * ESPN athlete id for headshots when curated or best-effort resolved;
+   * `null` → initials avatar. Never used for BALLDONTLIE calls.
+   */
+  espnAthleteId: number | null;
 };
 
 /** Court / bench placement for the Nets home view. */

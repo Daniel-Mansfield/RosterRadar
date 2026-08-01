@@ -18,6 +18,7 @@ function mockPort(counts: {
     lastName: "Player",
     position: "G",
     teamAbbreviation: "BOS",
+    espnAthleteId: null,
   };
 
   return {

@@ -70,12 +70,10 @@ export function lineupIncomingFromRadar(
 }
 
 /** Acquisition search (or any PlayerSummary) → lineup incoming. */
-export function lineupIncomingFromSummary(
-  player: PlayerSummary & { espnAthleteId?: number | null },
-): LineupIncoming {
+export function lineupIncomingFromSummary(player: PlayerSummary): LineupIncoming {
   return {
     id: player.id,
-    espnAthleteId: player.espnAthleteId ?? null,
+    espnAthleteId: player.espnAthleteId,
     firstName: player.firstName,
     lastName: player.lastName,
     position: player.position,

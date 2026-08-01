@@ -48,7 +48,7 @@ Browser (Next.js)
 
 ## 4. Data vendor
 
-**BALLDONTLIE GOAT** behind `NbaStatsPort`. An NBA.com spike failed from Vercel (IP / bot blocks); BALLDONTLIE is cloud-callable and sufficient for season averages + game logs. The demo window uses a **paid GOAT month**; fixtures remain the documented offline fallback. Headshots use curated ESPN athlete ids (Nets seed + Radar pool), not BDL. Decision record: [`VENDOR_DECISION.md`](./VENDOR_DECISION.md).
+**BALLDONTLIE GOAT** behind `NbaStatsPort`. An NBA.com spike failed from Vercel (IP / bot blocks); BALLDONTLIE is cloud-callable and sufficient for season averages + game logs. The demo window uses a **paid GOAT month**; fixtures remain the documented offline fallback. Headshots use curated ESPN athlete ids (Nets seed + Radar pool) plus best-effort ESPN search for acquisition results — not BDL. Decision record: [`VENDOR_DECISION.md`](./VENDOR_DECISION.md).
 
 ---
 

@@ -201,7 +201,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       firstName: player.firstName,
       lastName: player.lastName,
       playerId: player.id,
-      espnAthleteId: null,
+      espnAthleteId: player.espnAthleteId,
       tryInLineup: lineupIncomingFromSummary(player),
     });
   }

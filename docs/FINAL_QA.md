@@ -10,6 +10,7 @@ Run against **production** ([live URL](https://roster-radar-orcin.vercel.app)) a
 - [x] Search non-Nets player → same dossier flow
 - [ ] Search swap icon → click starter: acquisition sim (Out on displaced); Fit banner; Reset
 - [ ] Search dossier **Try in lineup** → same acquisition sim path
+- [ ] Search results / dossier / post-swap court show headshots when ESPN id resolves; initials on miss
 - [x] Radar card click → dossier with full scouting angle under the subtitle
 - [x] Lineup Fit shows grade + six pillars for real five
 - [ ] Drag Radar → starter: court updates; Fit banner + deltas; Reset restores *(swap-icon path verified; HTML5 DnD not re-exercised in this smoke)*
