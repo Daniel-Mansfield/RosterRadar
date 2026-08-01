@@ -42,7 +42,7 @@ Branch names: `phase-N/…`, `feat/…`, `fix/…`, `docs/…`, `chore/…`.
 - [x] Lineup Fit panel (PR 1) — team-level read for the starting five
 - [x] Lineup swap (PR 2) — one-for-one Radar→starter sim + Fit deltas
 - [x] Spotlight tutorial — optional Tour coach marks on live UI
-- [ ] Residual polish — [`PHASE_3_REVIEW.md`](./PHASE_3_REVIEW.md)
+- [x] Residual polish — shared percentile bars; docs sync — [`PHASE_3_REVIEW.md`](./PHASE_3_REVIEW.md)
 
 ### Phase 4 — Ship
 - [ ] Stretch only if ahead (compare / role toggle)

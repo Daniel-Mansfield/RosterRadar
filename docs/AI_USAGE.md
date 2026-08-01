@@ -47,3 +47,8 @@ This log supports the assignment requirement to disclose AI use. Keep entries su
 - **Tool:** Cursor agent
 - **Used for:** Optional Tour control + live `data-tour` coach marks (scrim cutout, keyboard, reduced-motion)
 - **Not used for:** Auto-blocking first-visit onboarding
+
+### 2026-08-01 — Phase 3 polish
+- **Tool:** Cursor agent
+- **Used for:** Shared percentile bar tones (70/45); README/DEVELOPMENT/VENDOR sync
+- **Not used for:** Search combobox ARIA / dialog `inert` (still deferred)

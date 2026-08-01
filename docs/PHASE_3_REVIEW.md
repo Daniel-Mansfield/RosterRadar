@@ -17,5 +17,8 @@ Hardening + product additions after Phase 2. Per-pass fix tables live in git his
 |---|---|
 | Search combobox ARIA | Arrow keys / `aria-activedescendant` deferred; Tab/Enter work |
 | Dialog `inert` | Carried from Phase 1–2 |
-| Lineup Fit polish | Bar poor-tone (≤35) vs gap callout (≤45); shared bar helpers with dossier; gated copy under “Starting five” subtitle |
 | Post-demo data | Paid GOAT month covers the demo window; fixtures remain the documented fallback ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) |
+
+### Polish (2026-08-01)
+- Shared `percentileBarTone` (70 / 45) for dossier + Lineup Fit bars — aligned with strength/gap callouts
+- README + DEVELOPMENT checklist updated for swap + tour
