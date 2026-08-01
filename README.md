@@ -31,10 +31,15 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 - Development phases: [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
 - Phase reviews: [`PHASE_1`](docs/PHASE_1_REVIEW.md) · [`PHASE_2`](docs/PHASE_2_REVIEW.md) · [`PHASE_3`](docs/PHASE_3_REVIEW.md)
 - AI disclosure: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
+- Assignment write-up: [`docs/WRITEUP.md`](docs/WRITEUP.md)
+- Final QA checklist: [`docs/FINAL_QA.md`](docs/FINAL_QA.md)
 - Cursor rules: [`.cursor/rules/`](.cursor/rules/)
 
+## Live demo
+[https://roster-radar-orcin.vercel.app](https://roster-radar-orcin.vercel.app)
+
 ## Status
-Phase 3 wrap: On the Radar, Lineup Fit, one-for-one Radar→starter swap + Fit deltas, optional Tour. Vendor: BALLDONTLIE GOAT (paid month for demo window; fixtures remain fallback). Next: Phase 4 write-up + final QA.
+Phase 3 wrap + write-up drafted. Vendor: BALLDONTLIE GOAT (paid demo month; fixtures fallback). Merge Phase 3 PRs → run [`FINAL_QA.md`](docs/FINAL_QA.md) on production.
 
 ## Setup
 Copy `.env.example` → `.env.local` and set `BALLDONTLIE_API_KEY`. Never commit secrets. For Vercel, set the same key on Production/Preview (Dashboard → Settings → Environment Variables).

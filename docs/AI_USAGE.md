@@ -52,3 +52,8 @@ This log supports the assignment requirement to disclose AI use. Keep entries su
 - **Tool:** Cursor agent
 - **Used for:** Shared percentile bar tones (70/45); README/DEVELOPMENT/VENDOR sync
 - **Not used for:** Search combobox ARIA / dialog `inert` (still deferred)
+
+### 2026-08-01 — Write-up
+- **Tool:** Cursor agent
+- **Used for:** Draft [`WRITEUP.md`](./WRITEUP.md) + [`FINAL_QA.md`](./FINAL_QA.md) from existing docs
+- **Not used for:** Inventing scoring claims beyond documented methodology
