@@ -34,6 +34,8 @@
   position: fixed;
   z-index: 52;
   width: min(20rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
   padding: var(--space-4);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
@@ -104,20 +106,21 @@
   cursor: not-allowed;
 }
 
+/* Neutral primary — same language as Fit Reset (avoid cherry “error” read). */
 .primary {
-  border: 1px solid var(--accent);
-  background: var(--accent);
-  color: var(--on-accent);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--content-primary) 12%, var(--surface-raised));
+  color: var(--content-primary);
 }
 
 .primary:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
+  border-color: var(--content-primary);
+  background: color-mix(in srgb, var(--content-primary) 18%, var(--surface-raised));
 }
 
 .ghost:focus-visible,
 .primary:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--content-primary);
   outline-offset: 2px;
 }
 

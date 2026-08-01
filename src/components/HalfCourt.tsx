@@ -1,8 +1,7 @@
 import type { ReactElement } from "react";
 
 import type { RosterPlayer } from "@/domain/player";
-import type { StarterSlot } from "@/domain/lineupSim";
-import type { RadarCandidate } from "@/nba/radar/radarPool";
+import type { LineupDragPayload, StarterSlot } from "@/domain/lineupSim";
 import { PlayerCard } from "@/components/PlayerCard";
 
 import styles from "./HalfCourt.module.css";
@@ -20,7 +19,7 @@ const slotClass = {
 type HalfCourtProps = {
   starters: RosterPlayer[];
   onSelectPlayer?: (player: RosterPlayer) => void;
-  onRadarDrop?: (slot: StarterSlot, candidate: RadarCandidate) => void;
+  onLineupDrop?: (slot: StarterSlot, payload: LineupDragPayload) => void;
   /** When true, starter cards highlight as place targets. */
   dropArmed?: boolean;
 };
@@ -28,7 +27,7 @@ type HalfCourtProps = {
 export function HalfCourt({
   starters,
   onSelectPlayer,
-  onRadarDrop,
+  onLineupDrop,
   dropArmed = false,
 }: HalfCourtProps): ReactElement {
   const bySlot = new Map(starters.map((player) => [player.slot, player]));
@@ -49,7 +48,7 @@ export function HalfCourt({
                 player={player}
                 onSelect={onSelectPlayer}
                 size="starter"
-                onRadarDrop={onRadarDrop}
+                onLineupDrop={onLineupDrop}
                 dropArmed={dropArmed}
               />
             ) : (

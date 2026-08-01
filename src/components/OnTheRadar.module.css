@@ -78,22 +78,14 @@
   }
 }
 
-.subtitle {
-  margin: 0.2rem 0 var(--space-3);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  text-align: center;
-  color: var(--content-muted);
-}
-
 .list {
   list-style: none;
-  margin: 0;
+  margin: var(--space-2) 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .item {
@@ -103,8 +95,8 @@
 
 .rowWrap {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  align-items: center;
+  gap: var(--space-2);
   width: 100%;
   min-width: 0;
 }
@@ -115,35 +107,42 @@
   border-radius: 0.5rem;
 }
 
-.place {
-  align-self: stretch;
+/* Compact swap control — beside the row, not overlaid on it. */
+.swap {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
   margin: 0;
-  padding: 0.2rem var(--space-2);
+  padding: 0;
   border: 1px solid var(--border);
-  border-radius: 0.35rem;
+  border-radius: 50%;
   background: transparent;
   color: var(--content-muted);
-  font: inherit;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   cursor: pointer;
 }
 
-.place:hover {
+.swap:hover {
   border-color: var(--accent);
   color: var(--content-primary);
 }
 
-.place:focus-visible {
+.swap:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-.place[aria-pressed="true"] {
+.swap[aria-pressed="true"] {
   border-color: var(--accent);
   color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.swapIcon {
+  width: 0.8rem;
+  height: 0.8rem;
 }
 
 /* Wide layout: fill the court-height gutter (paired with NetsHome ≥64em). */
@@ -155,15 +154,22 @@
   .list {
     flex: 1 1 auto;
     min-height: 0;
-    /* Fallback for very tall viewports once rows hit their max height. */
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: var(--space-2);
   }
 
   .item {
-    /* Rows grow to share the column height: bigger cards, no dead space. */
     flex: 1 1 auto;
     min-height: 0;
-    max-height: 9.5rem;
+    max-height: 8.5rem;
+  }
+
+  .rowWrap {
+    height: 100%;
+  }
+
+  .row {
+    height: 100%;
   }
 }
 
@@ -171,8 +177,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  width: 100%;
-  padding: var(--space-3);
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  padding: 0.65rem var(--space-3);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
   background: var(--surface-raised);
@@ -243,10 +251,9 @@
   font-size: 0.78rem;
   line-height: 1.35;
   color: var(--content-muted);
-  /* Taller rows leave room for a third line before truncating. */
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
 }

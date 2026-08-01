@@ -12,7 +12,7 @@ This document is the submission write-up. Detailed design notes live in sibling 
 
 **RosterRadar** is a role-aware scouting tool for Brooklyn Nets roster decisions. It answers: *what role does this player play, how do they grade in that role versus peers, and is that a Strong / Conditional / Poor fit — with evidence?*
 
-The home surface shows the Nets starting five on a half-court plus bench depth, a **Lineup Fit** rail (peer-percentile aggregation for the five), and **On the Radar** (curated acquisition shortlist). Search opens dossiers for non-Nets players. An optional **Tour** coach-marks the live UI. A scoped **one-for-one swap** lets staff drag (or Place) a Radar candidate onto a starter and see Lineup Fit deltas — peer aggregation only, not a trade engine.
+The home surface shows the Nets starting five on a half-court plus bench depth, a **Lineup Fit** rail (peer-percentile aggregation for the five), and **On the Radar** (curated acquisition shortlist). Search opens dossiers for non-Nets players. An optional **Tutorial** coach-marks the live UI. A scoped **one-for-one swap** lets staff drag (or use a swap icon) a Radar candidate or bench player onto a starter and see Lineup Fit deltas — peer aggregation only, not a trade engine.
 
 ---
 
@@ -71,8 +71,9 @@ Version string on payloads (`scoringVersion`) keeps UI and write-up aligned. Det
 - Explicitly **not** synergy, lineup +/-, or scheme modeling (`rr-lineup-fit-v1`).
 
 ### Swap simulation
-- Client-side: one Radar candidate replaces one starter by slot.
+- Client-side: one incoming player replaces one starter by slot (Radar acquisition or bench true-exchange).
 - Fit refetch for the hypothetical five; deltas vs the real five’s baseline Fit.
+- Radar swaps pin the displaced starter on the bench (Out); bench swaps exchange spots.
 - No salary, multi-player packages, or chemistry claims.
 
 ---
@@ -83,8 +84,8 @@ Version string on payloads (`scoringVersion`) keeps UI and write-up aligned. Det
 2. **Dossier drawer** — search or click → role, grade, pillars, callouts, evidence  
 3. **On the Radar** — curated shortlist, shuffle, zero API until dossier open  
 4. **Lineup Fit** — starting-five aggregation + methodology disclosure  
-5. **Radar → starter swap** — DnD or Place + click; Reset  
-6. **Tour** — optional spotlight coach marks (never auto-blocking)  
+5. **Lineup swap** — Radar or bench → starter via DnD or swap icon; Fit banner + Reset  
+6. **Tutorial** — optional spotlight coach marks (never auto-blocking)  
 7. **States** — loading skeletons, errors/retry, thin-sample, unavailable ids  
 
 Design system: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md). Identity: [`IDENTITY.md`](./IDENTITY.md).
@@ -121,7 +122,7 @@ Design system: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md). Identity: [`IDENTITY.md
 
 ## 10. Final QA checklist
 
-See [`FINAL_QA.md`](./FINAL_QA.md). Smoke on production after Phase 3 PRs merge: home, dossier (roster + search + Radar), Lineup Fit, swap + Reset, Tour, mobile stack, thin-sample / error paths.
+See [`FINAL_QA.md`](./FINAL_QA.md). Smoke on production after Phase 3 wrap merges: home, dossier (roster + search + Radar angle), Lineup Fit, Radar/bench swap + Reset, Tutorial, mobile stack, thin-sample / error paths.
 
 ---
 

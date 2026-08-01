@@ -168,19 +168,19 @@ export function TeamFitPanel({
           : "Starting five vs league peers"}
       </p>
       {isSimulating && simSummary ? (
-        <p className={styles.simBanner} role="status">
-          {simSummary}
-        </p>
-      ) : null}
-      {isSimulating && onReset ? (
-        <button
-          type="button"
-          className={styles.reset}
-          onClick={onReset}
-          data-tour="reset-lineup"
-        >
-          Reset lineup
-        </button>
+        <div className={styles.simBanner} role="status">
+          <p className={styles.simSummary}>{simSummary}</p>
+          {onReset ? (
+            <button
+              type="button"
+              className={styles.reset}
+              onClick={onReset}
+              data-tour="reset-lineup"
+            >
+              Reset lineup
+            </button>
+          ) : null}
+        </div>
       ) : null}
       {body}
     </section>

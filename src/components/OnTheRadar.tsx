@@ -9,7 +9,11 @@ import {
 } from "react";
 
 import { PlayerAvatar } from "@/components/PlayerAvatar";
-import { RADAR_DRAG_MIME } from "@/domain/lineupSim";
+import {
+  LINEUP_DRAG_MIME,
+  lineupIncomingFromRadar,
+  type LineupDragPayload,
+} from "@/domain/lineupSim";
 import {
   RADAR_PICK_COUNT,
   RADAR_POOL,
@@ -21,7 +25,7 @@ import styles from "./OnTheRadar.module.css";
 
 type OnTheRadarProps = {
   onSelectCandidate: (candidate: RadarCandidate) => void;
-  /** Begin keyboard/click place mode — user then picks a starter slot. */
+  /** Begin keyboard/click swap mode — user then picks a starter slot. */
   onBeginPlace?: (candidate: RadarCandidate) => void;
   /** Candidate currently waiting for a court slot (highlight its row). */
   pendingCandidateId?: number | null;
@@ -35,8 +39,8 @@ type OnTheRadarProps = {
  * server-rendering random markup would break hydration. The header button
  * reshuffles on demand; the pool is static, so shuffling costs no API calls.
  *
- * Rows are draggable onto starters; click still opens the dossier. A Place
- * control arms keyboard/click placement for a11y without relying on DnD.
+ * Rows are draggable onto starters; click still opens the dossier. A compact
+ * swap icon arms keyboard/click placement for a11y without relying on DnD.
  */
 export function OnTheRadar({
   onSelectCandidate,
@@ -62,7 +66,11 @@ export function OnTheRadar({
     candidate: RadarCandidate,
   ): void {
     draggedRef.current = true;
-    event.dataTransfer.setData(RADAR_DRAG_MIME, JSON.stringify(candidate));
+    const payload: LineupDragPayload = {
+      source: "radar",
+      incoming: lineupIncomingFromRadar(candidate),
+    };
+    event.dataTransfer.setData(LINEUP_DRAG_MIME, JSON.stringify(payload));
     event.dataTransfer.effectAllowed = "copy";
   }
 
@@ -105,12 +113,10 @@ export function OnTheRadar({
           </svg>
         </button>
       </div>
-      <p className={styles.subtitle}>
-        Drag onto a starter — or Place, then pick a slot
-      </p>
       <ul className={styles.list}>
         {picks.map((candidate) => {
           const pending = pendingCandidateId === candidate.id;
+          const name = `${candidate.firstName} ${candidate.lastName}`;
           return (
             <li key={candidate.id} className={styles.item}>
               <div
@@ -133,9 +139,7 @@ export function OnTheRadar({
                     shape="rounded"
                   />
                   <span className={styles.rowBody}>
-                    <span className={styles.name}>
-                      {candidate.firstName} {candidate.lastName}
-                    </span>
+                    <span className={styles.name}>{name}</span>
                     <span className={styles.meta}>
                       {candidate.teamAbbreviation} · {candidate.position}
                     </span>
@@ -145,12 +149,21 @@ export function OnTheRadar({
                 {onBeginPlace ? (
                   <button
                     type="button"
-                    className={styles.place}
+                    className={styles.swap}
                     onClick={() => onBeginPlace(candidate)}
                     aria-pressed={pending}
-                    aria-label={`Place ${candidate.firstName} ${candidate.lastName} on a starter slot`}
+                    aria-label={`Swap ${name} onto a starter slot`}
                   >
-                    Place
+                    <svg
+                      className={styles.swapIcon}
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M11.5 2.5 14 5l-2.5 2.5V6H6V4h5.5V2.5zm-7 11L2 11l2.5-2.5V10h5.5v2H4.5v1.5z"
+                      />
+                    </svg>
                   </button>
                 ) : null}
               </div>

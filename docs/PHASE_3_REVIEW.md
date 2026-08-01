@@ -9,7 +9,7 @@ Hardening + product additions after Phase 2. Per-pass fix tables live in git his
 - **Scoring v1.1:** creator dominance margin; thin sample caps Strong → Conditional
 - **Layout:** radar / court / bench spacing; mobile-first HalfCourt (no PG clip on stacked); even page margins
 - **Lineup Fit (PR 1):** `composeTeamFit` + `GET /api/team-fit` + `TeamFitPanel`; four-column desktop; empty/partial id gates; heading focus park on retry
-- **Lineup swap (PR 2):** Radar→starter HTML5 DnD + Place/keyboard path; `useLineupSim`; Fit grade/pillar deltas vs real five; Reset; outline carve-out for one-for-one sim (not trade packages)
+- **Lineup swap (PR 2):** Radar/bench→starter HTML5 DnD + swap-icon path; `useLineupSim`; Fit grade/pillar deltas vs real five; Reset banner; outline carve-out for one-for-one sim (not trade packages)
 - **Spotlight tour:** Optional header Tour button; coach marks on search / court / Fit / Radar (reduced-motion + keyboard)
 
 ## Residual

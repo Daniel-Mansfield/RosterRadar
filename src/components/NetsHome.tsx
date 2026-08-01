@@ -17,7 +17,9 @@ import {
 } from "@/domain/player";
 import {
   isStarterSlot,
+  lineupIncomingFromBench,
   starterIdsFromPlayers,
+  type LineupDragPayload,
   type StarterSlot,
 } from "@/domain/lineupSim";
 import type { TeamFit } from "@/domain/teamFit";
@@ -72,15 +74,18 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   const {
     sim,
     displayStarters,
+    displayBench,
+    displacedPlayerId,
     displayStarterIds,
     isSimulating,
-    pendingCandidate,
-    beginPendingSwap,
+    pendingIncoming,
+    beginPendingRadar,
+    beginPendingBench,
     cancelPendingSwap,
     applySwap,
     placeOnSlot,
     reset,
-  } = useLineupSim(roster.starters);
+  } = useLineupSim(roster.starters, roster.bench);
 
   const realStarterIds = useMemo(
     () => starterIdsFromPlayers(roster.starters),
@@ -118,7 +123,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     realStarterIds.length === LINEUP_SIZE ? baselineFit : null;
 
   useEffect(() => {
-    if (!pendingCandidate) return;
+    if (!pendingIncoming) return;
 
     function onKeyDown(event: KeyboardEvent): void {
       if (event.key === "Escape") {
@@ -128,7 +133,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [pendingCandidate, cancelPendingSwap]);
+  }, [pendingIncoming, cancelPendingSwap]);
 
   const simSummary = useMemo(() => {
     if (sim.status !== "simulating") return null;
@@ -154,7 +159,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
 
   function openForRosterPlayer(player: RosterPlayer): void {
     // Place mode always targets the real starter in that slot (not a prior sim).
-    if (pendingCandidate && isStarterSlot(player.slot)) {
+    if (pendingIncoming && isStarterSlot(player.slot)) {
       const real = roster.starters.find((p) => p.slot === player.slot);
       if (real && real.id != null) {
         placeOnSlot(player.slot, real);
@@ -205,16 +210,18 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       lastName: candidate.lastName,
       playerId: candidate.id,
       espnAthleteId: candidate.espnAthleteId,
+      radarAngle: candidate.angle,
     });
   }
 
-  function handleRadarDrop(slot: StarterSlot, candidate: RadarCandidate): void {
+  function handleLineupDrop(slot: StarterSlot, payload: LineupDragPayload): void {
     const starter = roster.starters.find((p) => p.slot === slot);
     if (!starter || starter.id == null) return;
     applySwap({
       slot,
       outgoingId: starter.id,
-      incoming: candidate,
+      incoming: payload.incoming,
+      source: payload.source,
     });
   }
 
@@ -240,7 +247,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       list.removeEventListener("scroll", measure);
       observer.disconnect();
     };
-  }, [roster.bench.length]);
+  }, [displayBench.length]);
 
   return (
     <div className={styles.page}>
@@ -265,27 +272,19 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             type="button"
             className={styles.tourButton}
             onClick={() => setTourOpen(true)}
-            aria-label="Start guided tour"
           >
-            Tour
+            Tutorial
           </button>
         </div>
       </header>
-
-      {pendingCandidate ? (
-        <p className={styles.placeHint} role="status">
-          Place {pendingCandidate.firstName} {pendingCandidate.lastName} on a
-          starter — Esc to cancel
-        </p>
-      ) : null}
 
       <div className={styles.main}>
         <div className={styles.courtPane}>
           <HalfCourt
             starters={displayStarters}
             onSelectPlayer={openForRosterPlayer}
-            onRadarDrop={handleRadarDrop}
-            dropArmed={pendingCandidate != null}
+            onLineupDrop={handleLineupDrop}
+            dropArmed={pendingIncoming != null}
           />
         </div>
 
@@ -299,20 +298,65 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
           />
         </div>
 
-        <aside className={styles.bench} aria-label="Bench">
+        <aside className={styles.bench} aria-label="Bench" data-tour="bench">
           <h2 className={styles.benchTitle}>Bench</h2>
-          <p className={styles.benchSubtitle}>Rotation depth</p>
           <div className={styles.benchScroll}>
             <ul ref={benchListRef} className={styles.benchList}>
-              {roster.bench.map((player) => (
-                <li key={rosterPlayerKey(player)}>
-                  <PlayerCard
-                    player={player}
-                    onSelect={openForRosterPlayer}
-                    size="bench"
-                  />
-                </li>
-              ))}
+              {displayBench.map((player, index) => {
+                const isDisplacedOut =
+                  displacedPlayerId != null &&
+                  player.id === displacedPlayerId &&
+                  index === 0;
+                const canSwap =
+                  !isDisplacedOut && lineupIncomingFromBench(player) != null;
+                const pending =
+                  pendingIncoming?.source === "bench" &&
+                  pendingIncoming.incoming.id === player.id;
+                const name = `${player.firstName} ${player.lastName}`;
+
+                return (
+                  <li
+                    key={
+                      isDisplacedOut
+                        ? `displaced:${player.id}`
+                        : rosterPlayerKey(player)
+                    }
+                    className={styles.benchItem}
+                  >
+                    <div
+                      className={`${styles.benchRow} ${pending ? styles.benchRowPending : ""}`}
+                    >
+                      {canSwap ? (
+                        <button
+                          type="button"
+                          className={styles.benchSwap}
+                          onClick={() => beginPendingBench(player)}
+                          aria-pressed={pending}
+                          aria-label={`Swap ${name} onto a starter slot`}
+                        >
+                          <svg
+                            className={styles.benchSwapIcon}
+                            viewBox="0 0 16 16"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill="currentColor"
+                              d="M11.5 2.5 14 5l-2.5 2.5V6H6V4h5.5V2.5zm-7 11L2 11l2.5-2.5V10h5.5v2H4.5v1.5z"
+                            />
+                          </svg>
+                        </button>
+                      ) : null}
+                      <PlayerCard
+                        player={player}
+                        onSelect={openForRosterPlayer}
+                        size="bench"
+                        outOfLineup={isDisplacedOut}
+                        draggableToCourt={canSwap}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
             {benchCanScrollMore ? (
               <div className={styles.benchScrollHint} aria-hidden="true">
@@ -326,8 +370,12 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
         <div className={styles.radarPane}>
           <OnTheRadar
             onSelectCandidate={openForRadarCandidate}
-            onBeginPlace={beginPendingSwap}
-            pendingCandidateId={pendingCandidate?.id ?? null}
+            onBeginPlace={beginPendingRadar}
+            pendingCandidateId={
+              pendingIncoming?.source === "radar"
+                ? pendingIncoming.incoming.id
+                : null
+            }
           />
         </div>
       </div>
@@ -359,6 +407,9 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
                     {drawer.title}
                   </h2>
                   <p className={styles.drawerSub}>{drawer.subtitle}</p>
+                  {drawer.radarAngle ? (
+                    <p className={styles.radarAngle}>{drawer.radarAngle}</p>
+                  ) : null}
                 </div>
               ) : (
                 <div className={styles.drawerIdentity}>
@@ -374,6 +425,9 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
                       {drawer.title}
                     </h2>
                     <p className={styles.drawerSub}>{drawer.subtitle}</p>
+                    {drawer.radarAngle ? (
+                      <p className={styles.radarAngle}>{drawer.radarAngle}</p>
+                    ) : null}
                   </div>
                 </div>
               )}

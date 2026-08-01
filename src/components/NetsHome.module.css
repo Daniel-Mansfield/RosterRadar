@@ -80,7 +80,7 @@
 }
 
 .searchSlot {
-  width: min(28rem, 100%);
+  width: min(36rem, 100%);
   align-self: center;
 }
 
@@ -88,38 +88,45 @@
   display: flex;
   justify-content: flex-end;
   align-self: flex-end;
+  /* Keep clear of the page edge while staying right-aligned. */
+  padding-right: var(--space-2);
 }
 
 .tourButton {
   margin: 0;
-  padding: 0.35rem var(--space-3);
+  padding: 0.5rem var(--space-4);
   border: 1px solid var(--border);
-  border-radius: 0.35rem;
-  background: transparent;
-  color: var(--content-primary);
+  border-radius: 0.45rem;
+  background: var(--surface-raised);
+  color: var(--content-muted);
   font: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
   cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    color 120ms ease;
 }
 
 .tourButton:hover {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--content-primary) 45%, var(--border));
+  background: color-mix(in srgb, var(--content-primary) 10%, var(--surface-raised));
+  color: var(--content-primary);
 }
 
 .tourButton:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--content-primary);
   outline-offset: 2px;
 }
 
-.placeHint {
-  margin: 0;
-  padding: var(--space-2) var(--space-4);
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--content-primary);
-  background: color-mix(in srgb, var(--surface-subtle) 70%, transparent);
-  border-bottom: 1px solid var(--border);
+@media (prefers-reduced-motion: reduce) {
+  .tourButton {
+    transition: none;
+  }
 }
 
 .main {
@@ -165,18 +172,11 @@
   justify-content: center;
 }
 
-.benchSubtitle {
-  margin: 0.2rem 0 var(--space-3);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  text-align: center;
-  color: var(--content-muted);
-}
-
 .benchScroll {
   position: relative;
   width: 100%;
   min-height: 0;
+  margin-top: var(--space-2);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -187,10 +187,68 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  /* Extra width for the left-side swap control beside each card. */
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
   gap: var(--space-3);
   justify-items: center;
   width: 100%;
+}
+
+.benchItem {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.benchRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.benchRowPending {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+.benchSwap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--content-muted);
+  cursor: pointer;
+}
+
+.benchSwap:hover {
+  border-color: var(--accent);
+  color: var(--content-primary);
+}
+
+.benchSwap:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.benchSwap[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.benchSwapIcon {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 .benchScrollHint {
@@ -307,6 +365,14 @@
   font-size: 0.95rem;
 }
 
+.radarAngle {
+  margin: var(--space-2) 0 0;
+  max-width: 36rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--content-primary);
+}
+
 .close {
   border: 1px solid var(--border);
   background: transparent;
@@ -371,7 +437,7 @@
 @media (min-width: 70em) {
   .header {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(16rem, 28rem) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 36rem) minmax(0, 1fr);
     align-items: center;
     gap: var(--space-4);
   }
@@ -395,6 +461,7 @@
     grid-column: 3;
     justify-self: end;
     align-self: center;
+    padding-right: var(--space-3);
   }
 }
 

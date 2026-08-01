@@ -38,7 +38,7 @@ Identity detail: [`IDENTITY.md`](./IDENTITY.md). Visual tokens: [`DESIGN_SYSTEM.
 ### 2.2 Non-goals (v1)
 Auth, multi-team picker, film, tracking, salary/cap, **full** multi-player DnD trade packages, team +/- / synergy projections, **full** headshot pipeline for arbitrary search results (Nets use curated ESPN ids only — see IDENTITY), social, live in-game tools.
 
-**In scope (narrow):** one-for-one client-side Radar → starter swap that recomputes Lineup Fit peer aggregation and shows deltas — not a trade engine.
+**In scope (narrow):** one-for-one client-side Radar-or-bench → starter swap that recomputes Lineup Fit peer aggregation and shows deltas — not a trade engine.
 
 ### 2.3 Inspiration & domain references (framing only — do not copy proprietary models)
 
