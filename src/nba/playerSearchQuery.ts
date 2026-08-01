@@ -33,15 +33,17 @@ export function planPlayerSearch(query: string): PlayerSearchPlan {
   }
 
   const lastToken = tokens[tokens.length - 1] ?? "";
-  const firstPart = tokens.slice(0, -1).join(" ");
+  const givenTokens = tokens.slice(0, -1);
+  const firstPart = givenTokens.join(" ");
   const firstNamePrefix = normalizePersonName(firstPart);
   const lastNamePrefix = normalizePersonName(lastToken);
 
   // One-letter surname tokens are useless as BDL search (too broad / empty
-  // after the space). Search the given name and keep the last-initial filter.
+  // after the space). Search a single given-name token and keep local filters.
+  // Never send a spaced string as vendorSearch — BDL matches one field/token.
   if (lastNamePrefix.length < 2) {
     return {
-      vendorSearch: firstPart,
+      vendorSearch: givenTokens[0] ?? lastToken,
       firstNamePrefix: firstNamePrefix.length > 0 ? firstNamePrefix : null,
       lastNamePrefix: lastNamePrefix.length > 0 ? lastNamePrefix : null,
     };
