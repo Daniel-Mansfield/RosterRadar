@@ -17,7 +17,6 @@ import {
 } from "@/nba/nets/rosterSeed";
 import { parseMinutes } from "@/nba/parseMinutes";
 import { isEspnAthleteId } from "@/nba/headshot";
-import { attachEspnAthleteIds } from "@/nba/espn/attachEspnAthleteIds";
 import {
   planPlayerSearch,
   playerMatchesSearchPlan,
@@ -285,10 +284,9 @@ export function createBalldontlieAdapter(): NbaStatsPort {
         );
       }
       if (input.excludeNets) {
-        players = players.filter((player) => !isNetsPlayer(player));
+        return players.filter((player) => !isNetsPlayer(player));
       }
-      // Headshots are optional; curated + best-effort ESPN, never fail search.
-      return attachEspnAthleteIds(players);
+      return players;
     },
 
     async getNetsRoster(): Promise<NetsRoster> {
