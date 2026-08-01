@@ -7,6 +7,7 @@ import {
   applyLineupSwap,
   buildSimBench,
   lineupIncomingFromRadar,
+  lineupIncomingFromSummary,
   parseLineupDragPayload,
   starterIdsFromPlayers,
 } from "@/domain/lineupSim";
@@ -52,7 +53,7 @@ describe("lineupSim", () => {
       slot: "SG",
       outgoingId: 2,
       incoming: lineupIncomingFromRadar(candidate),
-      source: "radar",
+      source: "acquisition",
     });
 
     assert.equal(next[1]?.id, candidate.id);
@@ -71,6 +72,20 @@ describe("lineupSim", () => {
     assert.deepEqual(starterIdsFromPlayers(starters), [1, 3]);
   });
 
+  it("maps a player summary into lineup incoming", () => {
+    const incoming = lineupIncomingFromSummary({
+      id: 237,
+      firstName: "LeBron",
+      lastName: "James",
+      position: "F",
+      teamAbbreviation: "LAL",
+      espnAthleteId: 1966,
+    });
+    assert.equal(incoming.id, 237);
+    assert.equal(incoming.espnAthleteId, 1966);
+    assert.equal(incoming.lastName, "James");
+  });
+
   it("parses a lineup drag payload", () => {
     const payload = {
       source: "bench" as const,
@@ -87,11 +102,22 @@ describe("lineupSim", () => {
     assert.deepEqual(parsed, payload);
   });
 
-  it("parses legacy flat radar drag payloads", () => {
+  it("parses legacy flat radar drag payloads as acquisition", () => {
     const parsed = parseLineupDragPayload(JSON.stringify(candidate));
-    assert.equal(parsed?.source, "radar");
+    assert.equal(parsed?.source, "acquisition");
     assert.equal(parsed?.incoming.id, candidate.id);
     assert.equal(parsed?.incoming.firstName, "Anfernee");
+  });
+
+  it("normalizes legacy source radar to acquisition", () => {
+    const parsed = parseLineupDragPayload(
+      JSON.stringify({
+        source: "radar",
+        incoming: lineupIncomingFromRadar(candidate),
+      }),
+    );
+    assert.equal(parsed?.source, "acquisition");
+    assert.equal(parsed?.incoming.id, candidate.id);
   });
 
   it("rejects malformed drag payloads", () => {
@@ -99,7 +125,7 @@ describe("lineupSim", () => {
     assert.equal(parseLineupDragPayload(JSON.stringify({ id: "x" })), null);
   });
 
-  it("pins the displaced starter at the front of the sim bench for radar", () => {
+  it("pins the displaced starter at the front of the sim bench for acquisition", () => {
     const starters = [
       starter("PG", 1, "Egor Demin"),
       starter("SG", 2, "Nolan Traore"),
@@ -112,7 +138,7 @@ describe("lineupSim", () => {
       slot: "SG",
       outgoingId: 2,
       incoming: lineupIncomingFromRadar(candidate),
-      source: "radar",
+      source: "acquisition",
     });
 
     assert.equal(simBench.length, 2);

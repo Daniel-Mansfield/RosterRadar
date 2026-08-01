@@ -9,6 +9,7 @@ import {
 } from "react";
 
 import type { Dossier } from "@/domain/dossier";
+import type { LineupIncoming } from "@/domain/lineupSim";
 import { apiErrorSchema } from "@/lib/api/schemas";
 import { dossierApiResponseSchema } from "@/lib/api/dossierSchema";
 
@@ -22,6 +23,11 @@ export type DrawerIdentity = {
   espnAthleteId: number | null;
   /** Full Radar scouting angle — shown in the drawer when opened from On the Radar. */
   radarAngle?: string | null;
+  /**
+   * When set (search / Radar acquisition), the drawer can offer “Try in lineup”.
+   * Omitted for Nets roster opens.
+   */
+  tryInLineup?: LineupIncoming | null;
 };
 
 export type DossierLoadState =
@@ -152,27 +158,7 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     // The retry button unmounts on the loading transition; park focus on the
     // stable close button so keyboard focus doesn't drop to <body>.
     closeButtonRef.current?.focus();
-    const {
-      title,
-      subtitle,
-      firstName,
-      lastName,
-      playerId,
-      espnAthleteId,
-      radarAngle,
-    } = drawer;
-    void loadDossier(
-      {
-        title,
-        subtitle,
-        firstName,
-        lastName,
-        playerId,
-        espnAthleteId,
-        radarAngle,
-      },
-      playerId,
-    );
+    void loadDossier(toDrawerIdentity(drawer), drawer.playerId);
   }
 
   useEffect(() => {
@@ -237,6 +223,22 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     drawerRef,
     closeButtonRef,
     titleId,
+  };
+}
+
+/** Strip drawer chrome (`open` / `dossier`) so retries keep every identity field. */
+function toDrawerIdentity(
+  drawer: Extract<DrawerState, { open: true }>,
+): DrawerIdentity {
+  return {
+    title: drawer.title,
+    subtitle: drawer.subtitle,
+    firstName: drawer.firstName,
+    lastName: drawer.lastName,
+    playerId: drawer.playerId,
+    espnAthleteId: drawer.espnAthleteId,
+    radarAngle: drawer.radarAngle,
+    tryInLineup: drawer.tryInLineup,
   };
 }
 

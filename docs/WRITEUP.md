@@ -71,9 +71,10 @@ Version string on payloads (`scoringVersion`) keeps UI and write-up aligned. Det
 - Explicitly **not** synergy, lineup +/-, or scheme modeling (`rr-lineup-fit-v1`).
 
 ### Swap simulation
-- Client-side: one incoming player replaces one starter by slot (Radar acquisition or bench true-exchange).
+- Client-side: one incoming player replaces one starter by slot (acquisition from Radar or player search, or bench true-exchange).
 - Fit refetch for the hypothetical five; deltas vs the real five’s baseline Fit.
-- Radar swaps pin the displaced starter on the bench (Out); bench swaps exchange spots.
+- Acquisition swaps pin the displaced starter on the bench (Out); bench swaps exchange spots.
+- Search: swap icon on results or **Try in lineup** in the dossier; same Fit path as Radar.
 - No salary, multi-player packages, or chemistry claims.
 
 ---
@@ -84,7 +85,7 @@ Version string on payloads (`scoringVersion`) keeps UI and write-up aligned. Det
 2. **Dossier drawer** — search or click → role, grade, pillars, callouts, evidence  
 3. **On the Radar** — curated shortlist, shuffle, zero API until dossier open  
 4. **Lineup Fit** — starting-five aggregation + methodology disclosure  
-5. **Lineup swap** — Radar or bench → starter via DnD or swap icon; Fit banner + Reset  
+5. **Lineup swap** — Radar, search, or bench → starter via DnD / swap icon / Try in lineup; Fit banner + Reset  
 6. **Tutorial** — optional spotlight coach marks (never auto-blocking)  
 7. **States** — loading skeletons, errors/retry, thin-sample, unavailable ids  
 

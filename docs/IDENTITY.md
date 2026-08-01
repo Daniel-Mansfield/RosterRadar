@@ -24,7 +24,7 @@
 ### Player search (acquisition candidates)
 - Search finds **only players not on the Brooklyn Nets** (you can’t trade for someone already on the roster)
 - Selecting a search result opens their **role-fit dossier in the drawer** (evaluate as a potential addition)
-- May show a **hypothetical** one-for-one Radar-or-bench→starter swap (court + Lineup Fit deltas); does **not** model salary, packages, or synergy/+/-
+- Search and Radar share **acquisition** lineup sims: swap icon or **Try in lineup** → one starter slot; displaced starter pinned on the bench (Out); Lineup Fit deltas. Bench swaps remain a true exchange. Does **not** model salary, packages, or synergy/+/-
 
 ### Explicitly out of v1
 - Team search / other franchises as home targets

@@ -18,6 +18,8 @@ import {
 import {
   isStarterSlot,
   lineupIncomingFromBench,
+  lineupIncomingFromRadar,
+  lineupIncomingFromSummary,
   starterIdsFromPlayers,
   type LineupDragPayload,
   type StarterSlot,
@@ -80,6 +82,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     isSimulating,
     pendingIncoming,
     beginPendingRadar,
+    beginPendingAcquisition,
     beginPendingBench,
     cancelPendingSwap,
     applySwap,
@@ -199,6 +202,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       lastName: player.lastName,
       playerId: player.id,
       espnAthleteId: null,
+      tryInLineup: lineupIncomingFromSummary(player),
     });
   }
 
@@ -211,7 +215,23 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       playerId: candidate.id,
       espnAthleteId: candidate.espnAthleteId,
       radarAngle: candidate.angle,
+      tryInLineup: lineupIncomingFromRadar(candidate),
     });
+  }
+
+  function beginSearchPlace(player: PlayerSummary): void {
+    beginPendingAcquisition(lineupIncomingFromSummary(player));
+    if (drawer.open) {
+      closeDrawer();
+    }
+  }
+
+  function tryDrawerInLineup(): void {
+    if (!drawer.open || !drawer.tryInLineup) {
+      return;
+    }
+    beginPendingAcquisition(drawer.tryInLineup);
+    closeDrawer();
   }
 
   function handleLineupDrop(slot: StarterSlot, payload: LineupDragPayload): void {
@@ -265,7 +285,15 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
           </div>
         </div>
         <div className={styles.searchSlot} data-tour="search">
-          <AcquisitionSearch onSelectPlayer={openForAcquisition} />
+          <AcquisitionSearch
+            onSelectPlayer={openForAcquisition}
+            onBeginPlace={beginSearchPlace}
+            pendingPlayerId={
+              pendingIncoming?.source === "acquisition"
+                ? pendingIncoming.incoming.id
+                : null
+            }
+          />
         </div>
         <div className={styles.tourSlot}>
           <button
@@ -372,7 +400,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             onSelectCandidate={openForRadarCandidate}
             onBeginPlace={beginPendingRadar}
             pendingCandidateId={
-              pendingIncoming?.source === "radar"
+              pendingIncoming?.source === "acquisition"
                 ? pendingIncoming.incoming.id
                 : null
             }
@@ -431,14 +459,25 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
                   </div>
                 </div>
               )}
-              <button
-                ref={closeButtonRef}
-                type="button"
-                className={styles.close}
-                onClick={closeDrawer}
-              >
-                Close
-              </button>
+              <div className={styles.drawerActions}>
+                {drawer.tryInLineup ? (
+                  <button
+                    type="button"
+                    className={styles.tryInLineup}
+                    onClick={tryDrawerInLineup}
+                  >
+                    Try in lineup
+                  </button>
+                ) : null}
+                <button
+                  ref={closeButtonRef}
+                  type="button"
+                  className={styles.close}
+                  onClick={closeDrawer}
+                >
+                  Close
+                </button>
+              </div>
             </div>
             <div className={styles.drawerBody}>
               {drawer.dossier.status === "loading" ? <DossierSkeleton /> : null}

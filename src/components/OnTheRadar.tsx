@@ -67,7 +67,7 @@ export function OnTheRadar({
   ): void {
     draggedRef.current = true;
     const payload: LineupDragPayload = {
-      source: "radar",
+      source: "acquisition",
       incoming: lineupIncomingFromRadar(candidate),
     };
     event.dataTransfer.setData(LINEUP_DRAG_MIME, JSON.stringify(payload));

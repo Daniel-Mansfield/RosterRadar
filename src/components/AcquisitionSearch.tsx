@@ -20,6 +20,10 @@ const SEARCH_DEBOUNCE_MS = 280;
 
 type AcquisitionSearchProps = {
   onSelectPlayer?: (player: PlayerSummary) => void;
+  /** Arm acquisition swap — user then picks a starter slot on the court. */
+  onBeginPlace?: (player: PlayerSummary) => void;
+  /** Player currently waiting for a court slot (highlight its row). */
+  pendingPlayerId?: number | null;
 };
 
 type SearchState =
@@ -30,6 +34,8 @@ type SearchState =
 
 export function AcquisitionSearch({
   onSelectPlayer,
+  onBeginPlace,
+  pendingPlayerId = null,
 }: AcquisitionSearchProps): ReactElement {
   const [query, setQuery] = useState("");
   const [state, setState] = useState<SearchState>({ status: "idle" });
@@ -92,6 +98,12 @@ export function AcquisitionSearch({
     };
   }, [query]);
 
+  function handleBeginPlace(player: PlayerSummary): void {
+    onBeginPlace?.(player);
+    // Collapse the dropdown so the court is visible for slot pick.
+    setState({ status: "idle" });
+  }
+
   return (
     <section className={styles.wrap} aria-label="Search non-Nets players">
       <input
@@ -126,30 +138,58 @@ export function AcquisitionSearch({
       ) : null}
       {state.status === "ready" && state.players.length > 0 ? (
         <ul className={styles.results}>
-          {state.players.map((player) => (
-            <li key={player.id}>
-              <button
-                type="button"
-                className={styles.result}
-                onClick={() => onSelectPlayer?.(player)}
-              >
-                <span className={styles.resultMain}>
-                  <PlayerAvatar
-                    firstName={player.firstName}
-                    lastName={player.lastName}
-                    size={40}
-                  />
-                  <span>
-                    {player.firstName} {player.lastName}
-                  </span>
-                </span>
-                <span className={styles.resultMeta}>
-                  {player.teamAbbreviation ?? "FA"}
-                  {player.position ? ` · ${player.position}` : ""}
-                </span>
-              </button>
-            </li>
-          ))}
+          {state.players.map((player) => {
+            const pending = pendingPlayerId === player.id;
+            const name = `${player.firstName} ${player.lastName}`;
+            return (
+              <li key={player.id}>
+                <div
+                  className={`${styles.resultRow} ${pending ? styles.resultPending : ""}`}
+                >
+                  <button
+                    type="button"
+                    className={styles.result}
+                    onClick={() => onSelectPlayer?.(player)}
+                  >
+                    <span className={styles.resultMain}>
+                      <PlayerAvatar
+                        firstName={player.firstName}
+                        lastName={player.lastName}
+                        size={40}
+                      />
+                      <span>
+                        {player.firstName} {player.lastName}
+                      </span>
+                    </span>
+                    <span className={styles.resultMeta}>
+                      {player.teamAbbreviation ?? "FA"}
+                      {player.position ? ` · ${player.position}` : ""}
+                    </span>
+                  </button>
+                  {onBeginPlace ? (
+                    <button
+                      type="button"
+                      className={styles.swap}
+                      onClick={() => handleBeginPlace(player)}
+                      aria-pressed={pending}
+                      aria-label={`Swap ${name} onto a starter slot`}
+                    >
+                      <svg
+                        className={styles.swapIcon}
+                        viewBox="0 0 16 16"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M11.5 2.5 14 5l-2.5 2.5V6H6V4h5.5V2.5zm-7 11L2 11l2.5-2.5V10h5.5v2H4.5v1.5z"
+                        />
+                      </svg>
+                    </button>
+                  ) : null}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       ) : null}
     </section>

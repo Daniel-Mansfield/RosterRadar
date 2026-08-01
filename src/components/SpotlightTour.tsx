@@ -25,7 +25,7 @@ const TOUR_STEPS: TourStep[] = [
   {
     target: "search",
     title: "Search acquisition targets",
-    body: "Find non-Nets players and open a role-fit dossier — verdict first, evidence second.",
+    body: "Find non-Nets players for a role-fit dossier, or use the swap icon / Try in lineup to simulate them into a starter slot.",
   },
   {
     target: "court",
