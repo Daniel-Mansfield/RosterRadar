@@ -17,6 +17,10 @@ import {
 } from "@/nba/nets/rosterSeed";
 import { parseMinutes } from "@/nba/parseMinutes";
 import { isEspnAthleteId } from "@/nba/headshot";
+import {
+  planPlayerSearch,
+  playerMatchesSearchPlan,
+} from "@/nba/playerSearchQuery";
 
 import {
   balldontliePlayersResponseSchema,
@@ -251,9 +255,16 @@ export function createBalldontlieAdapter(): NbaStatsPort {
         throw new AppError("validation_error", message, 400);
       }
 
+      // BDL matches one name field; multi-word queries need a plan + local filter.
+      const plan = planPlayerSearch(parsedQuery.data);
+      const refining =
+        plan.firstNamePrefix != null || plan.lastNamePrefix != null;
+
       const json = await balldontlieFetch("/nba/v1/players", {
-        search: parsedQuery.data,
-        per_page: "15",
+        search: plan.vendorSearch,
+        // Wider page when we refine locally so the target is less likely to fall
+        // outside the first vendor page (BDL max per_page is 100).
+        per_page: refining ? "100" : "15",
       });
 
       const parsed = balldontliePlayersResponseSchema.safeParse(json);
@@ -265,7 +276,12 @@ export function createBalldontlieAdapter(): NbaStatsPort {
         );
       }
 
-      const players = parsed.data.data.map(toPlayerSummary);
+      let players = parsed.data.data.map(toPlayerSummary);
+      if (refining) {
+        players = players.filter((player) =>
+          playerMatchesSearchPlan(player, plan),
+        );
+      }
       if (input.excludeNets) {
         return players.filter((player) => !isNetsPlayer(player));
       }
