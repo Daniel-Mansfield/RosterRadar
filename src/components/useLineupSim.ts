@@ -1,11 +1,10 @@
-"use client";
-
 import { useCallback, useMemo, useState } from "react";
 
 import type { RosterPlayer } from "@/domain/player";
 import {
   applyLineupSwap,
   buildSimBench,
+  isAcquisitionSource,
   lineupIncomingFromBench,
   lineupIncomingFromRadar,
   outgoingStarter,
@@ -27,9 +26,9 @@ type UseLineupSimResult = {
   sim: LineupSimState;
   /** Starters as shown on court (real or simulated). */
   displayStarters: RosterPlayer[];
-  /** Bench as shown — radar pin or bench true-exchange. */
+  /** Bench as shown — acquisition pin or bench true-exchange. */
   displayBench: RosterPlayer[];
-  /** BDL id of radar-displaced starter (bench “Out” badge), if any. */
+  /** BDL id of acquisition-displaced starter (bench “Out” badge), if any. */
   displacedPlayerId: number | null;
   /** Resolved ids for Lineup Fit (real or simulated). */
   displayStarterIds: number[];
@@ -38,6 +37,7 @@ type UseLineupSimResult = {
   /** Incoming player waiting for a keyboard/click slot pick. */
   pendingIncoming: PendingLineupIncoming | null;
   beginPendingRadar: (candidate: RadarCandidate) => void;
+  beginPendingAcquisition: (incoming: LineupIncoming) => void;
   beginPendingBench: (player: RosterPlayer) => boolean;
   cancelPendingSwap: () => void;
   applySwap: (swap: LineupSwap) => void;
@@ -47,7 +47,7 @@ type UseLineupSimResult = {
 };
 
 /**
- * Client-side one-for-one lineup simulation (Radar or bench → starter).
+ * Client-side one-for-one lineup simulation (acquisition or bench → starter).
  * Does not mutate the server roster prop; Fit refetch follows display ids.
  */
 export function useLineupSim(
@@ -73,7 +73,7 @@ export function useLineupSim(
   }, [sim, bench, starters]);
 
   const displacedPlayerId = useMemo(() => {
-    if (sim.status !== "simulating" || sim.swap.source !== "radar") {
+    if (sim.status !== "simulating" || !isAcquisitionSource(sim.swap.source)) {
       return null;
     }
     return outgoingStarter(starters, sim.swap)?.id ?? null;
@@ -84,18 +84,26 @@ export function useLineupSim(
     [displayStarters],
   );
 
-  const beginPendingRadar = useCallback((candidate: RadarCandidate) => {
+  const beginPendingAcquisition = useCallback((incoming: LineupIncoming) => {
     // Second tap on the same pressed swap icon cancels (touch-friendly).
     setPendingIncoming((prev) => {
-      if (prev?.source === "radar" && prev.incoming.id === candidate.id) {
+      if (
+        prev &&
+        isAcquisitionSource(prev.source) &&
+        prev.incoming.id === incoming.id
+      ) {
         return null;
       }
-      return {
-        source: "radar",
-        incoming: lineupIncomingFromRadar(candidate),
-      };
+      return { source: "acquisition", incoming };
     });
   }, []);
+
+  const beginPendingRadar = useCallback(
+    (candidate: RadarCandidate) => {
+      beginPendingAcquisition(lineupIncomingFromRadar(candidate));
+    },
+    [beginPendingAcquisition],
+  );
 
   const beginPendingBench = useCallback((player: RosterPlayer): boolean => {
     const incoming = lineupIncomingFromBench(player);
@@ -150,6 +158,7 @@ export function useLineupSim(
     isSimulating: sim.status === "simulating",
     pendingIncoming,
     beginPendingRadar,
+    beginPendingAcquisition,
     beginPendingBench,
     cancelPendingSwap,
     applySwap,

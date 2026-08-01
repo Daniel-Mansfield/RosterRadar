@@ -372,7 +372,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             onSelectCandidate={openForRadarCandidate}
             onBeginPlace={beginPendingRadar}
             pendingCandidateId={
-              pendingIncoming?.source === "radar"
+              pendingIncoming?.source === "acquisition"
                 ? pendingIncoming.incoming.id
                 : null
             }
