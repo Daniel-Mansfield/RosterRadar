@@ -8,6 +8,8 @@ Run against **production** ([live URL](https://roster-radar-orcin.vercel.app)) a
 - [x] Home loads: brand, search, court, Fit, Radar, bench
 - [x] Click starter → dossier drawer (verdict, pillars, callouts)
 - [x] Search non-Nets player → same dossier flow
+- [ ] Search swap icon → click starter: acquisition sim (Out on displaced); Fit banner; Reset
+- [ ] Search dossier **Try in lineup** → same acquisition sim path
 - [x] Radar card click → dossier with full scouting angle under the subtitle
 - [x] Lineup Fit shows grade + six pillars for real five
 - [ ] Drag Radar → starter: court updates; Fit banner + deltas; Reset restores *(swap-icon path verified; HTML5 DnD not re-exercised in this smoke)*

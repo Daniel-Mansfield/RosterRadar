@@ -9,6 +9,7 @@ import {
 } from "react";
 
 import type { Dossier } from "@/domain/dossier";
+import type { LineupIncoming } from "@/domain/lineupSim";
 import { apiErrorSchema } from "@/lib/api/schemas";
 import { dossierApiResponseSchema } from "@/lib/api/dossierSchema";
 
@@ -22,6 +23,11 @@ export type DrawerIdentity = {
   espnAthleteId: number | null;
   /** Full Radar scouting angle — shown in the drawer when opened from On the Radar. */
   radarAngle?: string | null;
+  /**
+   * When set (search / Radar acquisition), the drawer can offer “Try in lineup”.
+   * Omitted for Nets roster opens.
+   */
+  tryInLineup?: LineupIncoming | null;
 };
 
 export type DossierLoadState =
