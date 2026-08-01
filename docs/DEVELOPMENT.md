@@ -41,7 +41,8 @@ Branch names: `phase-N/…`, `feat/…`, `fix/…`, `docs/…`, `chore/…`.
 - [x] On the Radar; seed ids; scoring v1.1; mobile court fix
 - [x] Lineup Fit panel (PR 1) — team-level read for the starting five
 - [x] Lineup swap (PR 2) — one-for-one Radar→starter sim + Fit deltas
-- [ ] Spotlight tutorial; residual polish — [`PHASE_3_REVIEW.md`](./PHASE_3_REVIEW.md)
+- [x] Spotlight tutorial — optional Tour coach marks on live UI
+- [ ] Residual polish — [`PHASE_3_REVIEW.md`](./PHASE_3_REVIEW.md)
 
 ### Phase 4 — Ship
 - [ ] Stretch only if ahead (compare / role toggle)

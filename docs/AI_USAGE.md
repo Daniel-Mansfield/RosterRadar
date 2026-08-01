@@ -42,3 +42,8 @@ This log supports the assignment requirement to disclose AI use. Keep entries su
 - **Tool:** Cursor agent
 - **Used for:** `useLineupSim` + Radar DnD/Place; Fit deltas vs baseline; Reset; outline/identity carve-out
 - **Not used for:** Trade packages, salary, synergy/+/- modeling
+
+### 2026-08-01 — Spotlight tour
+- **Tool:** Cursor agent
+- **Used for:** Optional Tour control + live `data-tour` coach marks (scrim cutout, keyboard, reduced-motion)
+- **Not used for:** Auto-blocking first-visit onboarding

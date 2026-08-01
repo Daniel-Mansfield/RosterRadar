@@ -84,6 +84,34 @@
   align-self: center;
 }
 
+.tourSlot {
+  display: flex;
+  justify-content: flex-end;
+  align-self: flex-end;
+}
+
+.tourButton {
+  margin: 0;
+  padding: 0.35rem var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--content-primary);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tourButton:hover {
+  border-color: var(--accent);
+}
+
+.tourButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .placeHint {
   margin: 0;
   padding: var(--space-2) var(--space-4);
@@ -361,6 +389,12 @@
     width: 100%;
     align-self: center;
     justify-self: stretch;
+  }
+
+  .tourSlot {
+    grid-column: 3;
+    justify-self: end;
+    align-self: center;
   }
 }
 

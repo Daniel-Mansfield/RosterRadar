@@ -31,6 +31,7 @@ import { HalfCourt } from "@/components/HalfCourt";
 import { NetsMark } from "@/components/NetsMark";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PlayerCard } from "@/components/PlayerCard";
+import { SpotlightTour } from "@/components/SpotlightTour";
 import { TeamFitPanel } from "@/components/TeamFitPanel";
 import {
   useDossierDrawer,
@@ -65,6 +66,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     titleId,
   } = useDossierDrawer();
   const [benchCanScrollMore, setBenchCanScrollMore] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
   const benchListRef = useRef<HTMLUListElement>(null);
 
   const {
@@ -258,6 +260,16 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
         <div className={styles.searchSlot} data-tour="search">
           <AcquisitionSearch onSelectPlayer={openForAcquisition} />
         </div>
+        <div className={styles.tourSlot}>
+          <button
+            type="button"
+            className={styles.tourButton}
+            onClick={() => setTourOpen(true)}
+            aria-label="Start guided tour"
+          >
+            Tour
+          </button>
+        </div>
       </header>
 
       {pendingCandidate ? (
@@ -319,6 +331,11 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
           />
         </div>
       </div>
+
+      {/* Remount on each open so the tour always starts at step 1. */}
+      {tourOpen ? (
+        <SpotlightTour open onClose={() => setTourOpen(false)} />
+      ) : null}
 
       {drawer.open ? (
         <div className={styles.drawerRoot}>
