@@ -20,6 +20,8 @@ export type DrawerIdentity = {
   playerId: number | null;
   /** Curated ESPN headshot id when known (Nets seed / radar pool); null for search. */
   espnAthleteId: number | null;
+  /** Full Radar scouting angle — shown in the drawer when opened from On the Radar. */
+  radarAngle?: string | null;
 };
 
 export type DossierLoadState =
@@ -150,10 +152,25 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     // The retry button unmounts on the loading transition; park focus on the
     // stable close button so keyboard focus doesn't drop to <body>.
     closeButtonRef.current?.focus();
-    const { title, subtitle, firstName, lastName, playerId, espnAthleteId } =
-      drawer;
+    const {
+      title,
+      subtitle,
+      firstName,
+      lastName,
+      playerId,
+      espnAthleteId,
+      radarAngle,
+    } = drawer;
     void loadDossier(
-      { title, subtitle, firstName, lastName, playerId, espnAthleteId },
+      {
+        title,
+        subtitle,
+        firstName,
+        lastName,
+        playerId,
+        espnAthleteId,
+        radarAngle,
+      },
       playerId,
     );
   }

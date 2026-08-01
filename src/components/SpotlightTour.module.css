@@ -1,0 +1,132 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--scrim) 55%, transparent);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* When a cutout exists, the hole’s box-shadow provides the dim — hide flat scrim. */
+.root:has(.hole) .scrim {
+  background: transparent;
+}
+
+/* Cutout: clear hole + dim via huge box-shadow on a positioned rect. */
+.hole {
+  position: fixed;
+  z-index: 51;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0 9999px color-mix(in srgb, var(--scrim) 55%, transparent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  pointer-events: none;
+}
+
+.card {
+  position: fixed;
+  z-index: 52;
+  width: min(20rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface-raised);
+  color: var(--content-primary);
+  box-shadow: 0 0.5rem 1.5rem color-mix(in srgb, var(--scrim) 40%, transparent);
+  pointer-events: auto;
+}
+
+.stepMeta {
+  margin: 0 0 var(--space-2);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--content-muted);
+}
+
+.title {
+  margin: 0 0 var(--space-2);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.body {
+  margin: 0 0 var(--space-4);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--content-muted);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.nav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ghost,
+.primary {
+  margin: 0;
+  padding: 0.35rem var(--space-3);
+  border-radius: 0.35rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghost {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--content-primary);
+}
+
+.ghost:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.ghost:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Neutral primary — same language as Fit Reset (avoid cherry “error” read). */
+.primary {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--content-primary) 12%, var(--surface-raised));
+  color: var(--content-primary);
+}
+
+.primary:hover {
+  border-color: var(--content-primary);
+  background: color-mix(in srgb, var(--content-primary) 18%, var(--surface-raised));
+}
+
+.ghost:focus-visible,
+.primary:focus-visible {
+  outline: 2px solid var(--content-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hole,
+  .card {
+    transition: none;
+  }
+}

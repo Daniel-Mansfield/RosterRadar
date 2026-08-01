@@ -37,3 +37,28 @@ This log supports the assignment requirement to disclose AI use. Keep entries su
 - **Tool:** Cursor agent
 - **Used for:** `composeTeamFit` + `/api/team-fit` + `TeamFitPanel`; four-column layout; review fixes (empty/partial gates, retry focus, skeleton status); docs cleanup
 - **Not used for:** Scoring semantics (user-approved means / thresholds / “Lineup Fit” framing); swap simulation (PR 2)
+
+### 2026-08-01 — Lineup swap (PR 2 of 2)
+- **Tool:** Cursor agent
+- **Used for:** `useLineupSim` + Radar DnD/swap icon; Fit deltas vs baseline; Reset; outline/identity carve-out
+- **Not used for:** Trade packages, salary, synergy/+/- modeling
+
+### 2026-08-01 — Spotlight tour
+- **Tool:** Cursor agent
+- **Used for:** Optional Tutorial control + live `data-tour` coach marks (scrim cutout, keyboard, reduced-motion)
+- **Not used for:** Auto-blocking first-visit onboarding
+
+### 2026-08-01 — Phase 3 polish
+- **Tool:** Cursor agent
+- **Used for:** Shared percentile bar tones (70/45); README/DEVELOPMENT/VENDOR sync
+- **Not used for:** Search combobox ARIA / dialog `inert` (still deferred)
+
+### 2026-08-01 — Write-up
+- **Tool:** Cursor agent
+- **Used for:** Draft [`WRITEUP.md`](./WRITEUP.md) + [`FINAL_QA.md`](./FINAL_QA.md) from existing docs
+- **Not used for:** Inventing scoring claims beyond documented methodology
+
+### 2026-08-01 — Post-stack local iteration
+- **Tool:** Cursor agent
+- **Used for:** Bench↔starter true exchange; swap icon UX; Fit reset banner; Radar angle in dossier; Tutorial placement/a11y; docs sync after local testing
+- **Not used for:** Multi-slot stacked swaps / trade packages

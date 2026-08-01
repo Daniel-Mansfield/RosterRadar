@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 
 import type { Dossier } from "@/domain/dossier";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { percentileBarTone } from "@/lib/ui/percentileBar";
 
 import styles from "./DossierPanel.module.css";
 
@@ -35,8 +36,9 @@ const FIT_CLASS = {
 } as const satisfies Record<Dossier["fit"]["recommendation"], string>;
 
 function barTone(percentile: number): string {
-  if (percentile >= 70) return requireClass(styles.barStrong, "barStrong");
-  if (percentile <= 35) return requireClass(styles.barPoor, "barPoor");
+  const tone = percentileBarTone(percentile);
+  if (tone === "strong") return requireClass(styles.barStrong, "barStrong");
+  if (tone === "poor") return requireClass(styles.barPoor, "barPoor");
   return requireClass(styles.barMid, "barMid");
 }
 

@@ -13,7 +13,7 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 | **UX model** | Leetify-like clarity (verdict first, sub-scores, callouts) + Cleaning the Glass seriousness; progressive disclosure |
 | **Differentiator** | Grade by **role fit**, not a generic box-score dump; opinionated Strong / Conditional / Poor recommendation |
 | **Scope** | Small 10-day MVP; ship search + one-player dossier; compare / role toggle only if ahead |
-| **Non-goals (v1)** | Auth, film, tracking, salary/cap, full roster mapper, social, live tools |
+| **Non-goals (v1)** | Auth, film, tracking, salary/cap, full trade packages / +/- projections, social, live tools |
 | **Frontend** | Opinionated, easy, responsive; one accent; semantic design tokens; WCAG AA contrast |
 | **Backend** | Backend owns interpretation; frontend owns presentation; ports/adapters; pure scoring; Zod at boundaries |
 | **API surface** | `GET /api/players`, `GET /api/dossier/[id]`, `GET /api/team-fit` → typed JSON |
@@ -31,10 +31,15 @@ Scouting dossiers that grade NBA players by role, not just box scores.
 - Development phases: [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
 - Phase reviews: [`PHASE_1`](docs/PHASE_1_REVIEW.md) · [`PHASE_2`](docs/PHASE_2_REVIEW.md) · [`PHASE_3`](docs/PHASE_3_REVIEW.md)
 - AI disclosure: [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
+- Assignment write-up: [`docs/WRITEUP.md`](docs/WRITEUP.md)
+- Final QA checklist: [`docs/FINAL_QA.md`](docs/FINAL_QA.md)
 - Cursor rules: [`.cursor/rules/`](.cursor/rules/)
 
+## Live demo
+[https://roster-radar-orcin.vercel.app](https://roster-radar-orcin.vercel.app)
+
 ## Status
-Phase 3 in progress: On the Radar, scoring v1.1, mobile harden, Lineup Fit panel (PR 1). Vendor: BALLDONTLIE GOAT (paid month for demo window). Next: lineup swap simulation (PR 2), then Phase 4 ship.
+Phase 3 wrap + write-up drafted. Vendor: BALLDONTLIE GOAT (paid demo month; fixtures fallback). Merge Phase 3 PRs → run [`FINAL_QA.md`](docs/FINAL_QA.md) on production.
 
 ## Setup
 Copy `.env.example` → `.env.local` and set `BALLDONTLIE_API_KEY`. Never commit secrets. For Vercel, set the same key on Production/Preview (Dashboard → Settings → Environment Variables).

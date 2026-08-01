@@ -1,8 +1,19 @@
 "use client";
 
-import { useId, useState, type ReactElement } from "react";
+import {
+  useId,
+  useRef,
+  useState,
+  type DragEvent,
+  type ReactElement,
+} from "react";
 
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import {
+  LINEUP_DRAG_MIME,
+  lineupIncomingFromRadar,
+  type LineupDragPayload,
+} from "@/domain/lineupSim";
 import {
   RADAR_PICK_COUNT,
   RADAR_POOL,
@@ -14,6 +25,10 @@ import styles from "./OnTheRadar.module.css";
 
 type OnTheRadarProps = {
   onSelectCandidate: (candidate: RadarCandidate) => void;
+  /** Begin keyboard/click swap mode — user then picks a starter slot. */
+  onBeginPlace?: (candidate: RadarCandidate) => void;
+  /** Candidate currently waiting for a court slot (highlight its row). */
+  pendingCandidateId?: number | null;
 };
 
 /**
@@ -23,9 +38,14 @@ type OnTheRadarProps = {
  * only render on the client (`next/dynamic` with `ssr: false` in NetsHome) —
  * server-rendering random markup would break hydration. The header button
  * reshuffles on demand; the pool is static, so shuffling costs no API calls.
+ *
+ * Rows are draggable onto starters; click still opens the dossier. A compact
+ * swap icon arms keyboard/click placement for a11y without relying on DnD.
  */
 export function OnTheRadar({
   onSelectCandidate,
+  onBeginPlace,
+  pendingCandidateId = null,
 }: OnTheRadarProps): ReactElement {
   // Lazy initializer: one shuffle per mount, stable across re-renders.
   const [picks, setPicks] = useState<RadarCandidate[]>(() =>
@@ -34,14 +54,44 @@ export function OnTheRadar({
   // Keyed to the icon so each click retriggers the spin animation.
   const [shuffleCount, setShuffleCount] = useState(0);
   const headingId = useId();
+  const draggedRef = useRef(false);
 
   function reshuffle(): void {
     setPicks(pickRadarCandidates(RADAR_POOL, RADAR_PICK_COUNT));
     setShuffleCount((count) => count + 1);
   }
 
+  function handleDragStart(
+    event: DragEvent<HTMLButtonElement>,
+    candidate: RadarCandidate,
+  ): void {
+    draggedRef.current = true;
+    const payload: LineupDragPayload = {
+      source: "radar",
+      incoming: lineupIncomingFromRadar(candidate),
+    };
+    event.dataTransfer.setData(LINEUP_DRAG_MIME, JSON.stringify(payload));
+    event.dataTransfer.effectAllowed = "copy";
+  }
+
+  function handleDragEnd(): void {
+    // Click fires after drag on some browsers; ignore the post-drag click.
+    window.setTimeout(() => {
+      draggedRef.current = false;
+    }, 0);
+  }
+
+  function handleRowClick(candidate: RadarCandidate): void {
+    if (draggedRef.current) return;
+    onSelectCandidate(candidate);
+  }
+
   return (
-    <aside className={styles.radar} aria-labelledby={headingId}>
+    <aside
+      className={styles.radar}
+      aria-labelledby={headingId}
+      data-tour="radar"
+    >
       <div className={styles.headerRow}>
         <h2 id={headingId} className={styles.title}>
           On the <span className={styles.radarWord}>Radar</span>
@@ -63,39 +113,63 @@ export function OnTheRadar({
           </svg>
         </button>
       </div>
-      <p className={styles.subtitle}>
-        A rotating shortlist of acquisition targets
-      </p>
       <ul className={styles.list}>
-        {picks.map((candidate) => (
-          <li key={candidate.id} className={styles.item}>
-            {/* No aria-label: the visible content (name, team, angle) is the
-                accessible name, prefixed with a hidden action verb. */}
-            <button
-              type="button"
-              className={styles.row}
-              onClick={() => onSelectCandidate(candidate)}
-            >
-              <span className={styles.srOnly}>Open dossier for </span>
-              <PlayerAvatar
-                firstName={candidate.firstName}
-                lastName={candidate.lastName}
-                espnAthleteId={candidate.espnAthleteId}
-                size={60}
-                shape="rounded"
-              />
-              <span className={styles.rowBody}>
-                <span className={styles.name}>
-                  {candidate.firstName} {candidate.lastName}
-                </span>
-                <span className={styles.meta}>
-                  {candidate.teamAbbreviation} · {candidate.position}
-                </span>
-                <span className={styles.angle}>{candidate.angle}</span>
-              </span>
-            </button>
-          </li>
-        ))}
+        {picks.map((candidate) => {
+          const pending = pendingCandidateId === candidate.id;
+          const name = `${candidate.firstName} ${candidate.lastName}`;
+          return (
+            <li key={candidate.id} className={styles.item}>
+              <div
+                className={`${styles.rowWrap} ${pending ? styles.rowPending : ""}`}
+              >
+                <button
+                  type="button"
+                  className={styles.row}
+                  draggable
+                  onDragStart={(event) => handleDragStart(event, candidate)}
+                  onDragEnd={handleDragEnd}
+                  onClick={() => handleRowClick(candidate)}
+                >
+                  <span className={styles.srOnly}>Open dossier for </span>
+                  <PlayerAvatar
+                    firstName={candidate.firstName}
+                    lastName={candidate.lastName}
+                    espnAthleteId={candidate.espnAthleteId}
+                    size={60}
+                    shape="rounded"
+                  />
+                  <span className={styles.rowBody}>
+                    <span className={styles.name}>{name}</span>
+                    <span className={styles.meta}>
+                      {candidate.teamAbbreviation} · {candidate.position}
+                    </span>
+                    <span className={styles.angle}>{candidate.angle}</span>
+                  </span>
+                </button>
+                {onBeginPlace ? (
+                  <button
+                    type="button"
+                    className={styles.swap}
+                    onClick={() => onBeginPlace(candidate)}
+                    aria-pressed={pending}
+                    aria-label={`Swap ${name} onto a starter slot`}
+                  >
+                    <svg
+                      className={styles.swapIcon}
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M11.5 2.5 14 5l-2.5 2.5V6H6V4h5.5V2.5zm-7 11L2 11l2.5-2.5V10h5.5v2H4.5v1.5z"
+                      />
+                    </svg>
+                  </button>
+                ) : null}
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </aside>
   );

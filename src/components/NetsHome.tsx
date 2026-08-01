@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactElement } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactElement,
+} from "react";
 import dynamic from "next/dynamic";
 
 import {
@@ -9,7 +15,17 @@ import {
   type PlayerSummary,
   type RosterPlayer,
 } from "@/domain/player";
+import {
+  isStarterSlot,
+  lineupIncomingFromBench,
+  starterIdsFromPlayers,
+  type LineupDragPayload,
+  type StarterSlot,
+} from "@/domain/lineupSim";
+import type { TeamFit } from "@/domain/teamFit";
+import { LINEUP_SIZE } from "@/domain/teamFit";
 import type { RadarCandidate } from "@/nba/radar/radarPool";
+import { teamFitApiResponseSchema } from "@/lib/api/teamFitSchema";
 import { AcquisitionSearch } from "@/components/AcquisitionSearch";
 import { DossierPanel } from "@/components/DossierPanel";
 import { DossierSkeleton } from "@/components/DossierSkeleton";
@@ -17,11 +33,13 @@ import { HalfCourt } from "@/components/HalfCourt";
 import { NetsMark } from "@/components/NetsMark";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { PlayerCard } from "@/components/PlayerCard";
+import { SpotlightTour } from "@/components/SpotlightTour";
 import { TeamFitPanel } from "@/components/TeamFitPanel";
 import {
   useDossierDrawer,
   type DrawerIdentity,
 } from "@/components/useDossierDrawer";
+import { useLineupSim } from "@/components/useLineupSim";
 
 import styles from "./NetsHome.module.css";
 
@@ -50,10 +68,82 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     titleId,
   } = useDossierDrawer();
   const [benchCanScrollMore, setBenchCanScrollMore] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
   const benchListRef = useRef<HTMLUListElement>(null);
-  const starterIds = roster.starters
-    .map((player) => player.id)
-    .filter((id): id is number => id != null);
+
+  const {
+    sim,
+    displayStarters,
+    displayBench,
+    displacedPlayerId,
+    displayStarterIds,
+    isSimulating,
+    pendingIncoming,
+    beginPendingRadar,
+    beginPendingBench,
+    cancelPendingSwap,
+    applySwap,
+    placeOnSlot,
+    reset,
+  } = useLineupSim(roster.starters, roster.bench);
+
+  const realStarterIds = useMemo(
+    () => starterIdsFromPlayers(roster.starters),
+    [roster.starters],
+  );
+  const realIdsKey = realStarterIds.join(",");
+
+  const [baselineFit, setBaselineFit] = useState<TeamFit | null>(null);
+
+  // Load once for the real five; deltas compare sim Fit against this snapshot.
+  // Do not sync-clear in the effect body (cascading render lint) — gate on length when passing.
+  useEffect(() => {
+    if (realStarterIds.length !== LINEUP_SIZE) {
+      return;
+    }
+
+    let cancelled = false;
+    void fetch(`/api/team-fit?ids=${realIdsKey}`)
+      .then((response) => response.json())
+      .then((json: unknown) => {
+        if (cancelled) return;
+        const parsed = teamFitApiResponseSchema.safeParse(json);
+        setBaselineFit(parsed.success ? parsed.data.teamFit : null);
+      })
+      .catch(() => {
+        if (!cancelled) setBaselineFit(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [realIdsKey, realStarterIds.length]);
+
+  const baselineForPanel =
+    realStarterIds.length === LINEUP_SIZE ? baselineFit : null;
+
+  useEffect(() => {
+    if (!pendingIncoming) return;
+
+    function onKeyDown(event: KeyboardEvent): void {
+      if (event.key === "Escape") {
+        cancelPendingSwap();
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [pendingIncoming, cancelPendingSwap]);
+
+  const simSummary = useMemo(() => {
+    if (sim.status !== "simulating") return null;
+    const outgoing = roster.starters.find((p) => p.slot === sim.swap.slot);
+    const outName = outgoing
+      ? `${outgoing.firstName} ${outgoing.lastName}`
+      : sim.swap.slot;
+    const inName = `${sim.swap.incoming.firstName} ${sim.swap.incoming.lastName}`;
+    return `${inName} in for ${outName} (${sim.swap.slot}) — peer aggregation, not synergy`;
+  }, [sim, roster.starters]);
 
   function updateBenchScrollHint(): void {
     const list = benchListRef.current;
@@ -62,10 +152,21 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       return;
     }
     const remaining = list.scrollHeight - list.scrollTop - list.clientHeight;
-    setBenchCanScrollMore(list.scrollHeight > list.clientHeight + 2 && remaining > 8);
+    setBenchCanScrollMore(
+      list.scrollHeight > list.clientHeight + 2 && remaining > 8,
+    );
   }
 
   function openForRosterPlayer(player: RosterPlayer): void {
+    // Place mode always targets the real starter in that slot (not a prior sim).
+    if (pendingIncoming && isStarterSlot(player.slot)) {
+      const real = roster.starters.find((p) => p.slot === player.slot);
+      if (real && real.id != null) {
+        placeOnSlot(player.slot, real);
+        return;
+      }
+    }
+
     const identity: DrawerIdentity = {
       title: `${player.firstName} ${player.lastName}`,
       subtitle: `${roster.teamName} · ${player.slot}${
@@ -109,6 +210,18 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       lastName: candidate.lastName,
       playerId: candidate.id,
       espnAthleteId: candidate.espnAthleteId,
+      radarAngle: candidate.angle,
+    });
+  }
+
+  function handleLineupDrop(slot: StarterSlot, payload: LineupDragPayload): void {
+    const starter = roster.starters.find((p) => p.slot === slot);
+    if (!starter || starter.id == null) return;
+    applySwap({
+      slot,
+      outgoingId: starter.id,
+      incoming: payload.incoming,
+      source: payload.source,
     });
   }
 
@@ -134,7 +247,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       list.removeEventListener("scroll", measure);
       observer.disconnect();
     };
-  }, [roster.bench.length]);
+  }, [displayBench.length]);
 
   return (
     <div className={styles.page}>
@@ -151,38 +264,99 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             </p>
           </div>
         </div>
-        <div className={styles.searchSlot}>
+        <div className={styles.searchSlot} data-tour="search">
           <AcquisitionSearch onSelectPlayer={openForAcquisition} />
+        </div>
+        <div className={styles.tourSlot}>
+          <button
+            type="button"
+            className={styles.tourButton}
+            onClick={() => setTourOpen(true)}
+          >
+            Tutorial
+          </button>
         </div>
       </header>
 
       <div className={styles.main}>
         <div className={styles.courtPane}>
           <HalfCourt
-            starters={roster.starters}
+            starters={displayStarters}
             onSelectPlayer={openForRosterPlayer}
+            onLineupDrop={handleLineupDrop}
+            dropArmed={pendingIncoming != null}
           />
         </div>
 
-        {/* Stacked: after court. Desktop: column 1 (Fit | Radar | Court | Bench). */}
         <div className={styles.teamFitPane}>
-          <TeamFitPanel playerIds={starterIds} />
+          <TeamFitPanel
+            playerIds={displayStarterIds}
+            baseline={baselineForPanel}
+            isSimulating={isSimulating}
+            simSummary={simSummary}
+            onReset={reset}
+          />
         </div>
 
-        <aside className={styles.bench} aria-label="Bench">
+        <aside className={styles.bench} aria-label="Bench" data-tour="bench">
           <h2 className={styles.benchTitle}>Bench</h2>
-          <p className={styles.benchSubtitle}>Rotation depth</p>
           <div className={styles.benchScroll}>
             <ul ref={benchListRef} className={styles.benchList}>
-              {roster.bench.map((player) => (
-                <li key={rosterPlayerKey(player)}>
-                  <PlayerCard
-                    player={player}
-                    onSelect={openForRosterPlayer}
-                    size="bench"
-                  />
-                </li>
-              ))}
+              {displayBench.map((player, index) => {
+                const isDisplacedOut =
+                  displacedPlayerId != null &&
+                  player.id === displacedPlayerId &&
+                  index === 0;
+                const canSwap =
+                  !isDisplacedOut && lineupIncomingFromBench(player) != null;
+                const pending =
+                  pendingIncoming?.source === "bench" &&
+                  pendingIncoming.incoming.id === player.id;
+                const name = `${player.firstName} ${player.lastName}`;
+
+                return (
+                  <li
+                    key={
+                      isDisplacedOut
+                        ? `displaced:${player.id}`
+                        : rosterPlayerKey(player)
+                    }
+                    className={styles.benchItem}
+                  >
+                    <div
+                      className={`${styles.benchRow} ${pending ? styles.benchRowPending : ""}`}
+                    >
+                      {canSwap ? (
+                        <button
+                          type="button"
+                          className={styles.benchSwap}
+                          onClick={() => beginPendingBench(player)}
+                          aria-pressed={pending}
+                          aria-label={`Swap ${name} onto a starter slot`}
+                        >
+                          <svg
+                            className={styles.benchSwapIcon}
+                            viewBox="0 0 16 16"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill="currentColor"
+                              d="M11.5 2.5 14 5l-2.5 2.5V6H6V4h5.5V2.5zm-7 11L2 11l2.5-2.5V10h5.5v2H4.5v1.5z"
+                            />
+                          </svg>
+                        </button>
+                      ) : null}
+                      <PlayerCard
+                        player={player}
+                        onSelect={openForRosterPlayer}
+                        size="bench"
+                        outOfLineup={isDisplacedOut}
+                        draggableToCourt={canSwap}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
             {benchCanScrollMore ? (
               <div className={styles.benchScrollHint} aria-hidden="true">
@@ -193,12 +367,23 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
           </div>
         </aside>
 
-        {/* Last in DOM (stacked: team first); desktop column 2 — next to court
-            so PR 2 drag-swap keeps a short path onto starters. */}
         <div className={styles.radarPane}>
-          <OnTheRadar onSelectCandidate={openForRadarCandidate} />
+          <OnTheRadar
+            onSelectCandidate={openForRadarCandidate}
+            onBeginPlace={beginPendingRadar}
+            pendingCandidateId={
+              pendingIncoming?.source === "radar"
+                ? pendingIncoming.incoming.id
+                : null
+            }
+          />
         </div>
       </div>
+
+      {/* Remount on each open so the tour always starts at step 1. */}
+      {tourOpen ? (
+        <SpotlightTour open onClose={() => setTourOpen(false)} />
+      ) : null}
 
       {drawer.open ? (
         <div className={styles.drawerRoot}>
@@ -216,13 +401,15 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             aria-labelledby={titleId}
           >
             <div className={styles.drawerHeader}>
-              {/* Portrait lives in the dossier hero when ready; header avatar for loading/error. */}
               {drawer.dossier.status === "ready" ? (
                 <div>
                   <h2 id={titleId} className={styles.drawerTitle}>
                     {drawer.title}
                   </h2>
                   <p className={styles.drawerSub}>{drawer.subtitle}</p>
+                  {drawer.radarAngle ? (
+                    <p className={styles.radarAngle}>{drawer.radarAngle}</p>
+                  ) : null}
                 </div>
               ) : (
                 <div className={styles.drawerIdentity}>
@@ -238,6 +425,9 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
                       {drawer.title}
                     </h2>
                     <p className={styles.drawerSub}>{drawer.subtitle}</p>
+                    {drawer.radarAngle ? (
+                      <p className={styles.radarAngle}>{drawer.radarAngle}</p>
+                    ) : null}
                   </div>
                 </div>
               )}
@@ -255,8 +445,6 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
               {drawer.dossier.status === "error" ||
               drawer.dossier.status === "unavailable" ? (
                 <div className={styles.placeholder}>
-                  {/* Alert on the message only: keeps the announcement clean
-                      instead of reading the retry button label as part of it. */}
                   <p className={styles.placeholderMessage} role="alert">
                     {drawer.dossier.message}
                   </p>

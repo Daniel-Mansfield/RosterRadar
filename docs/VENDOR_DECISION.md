@@ -132,6 +132,7 @@ Alias exclude, client Zod errors, and null seed ids were closed in Phase 2â€“3 â
 | 2026-07-27 | NBA.com local capacities PASS; Vercel Proof C FAIL |
 | 2026-07-27 | Locked BALLDONTLIE GOAT trial path; documented here; spike code removed |
 | 2026-07-28 | Post-trial decision: one paid GOAT month for demo window (600 req/min removes trial pacing); fixtures stay as fallback plan |
+| 2026-08-01 | Paid GOAT month active for live demo; fixtures remain documented offline fallback |
 
 ---
 

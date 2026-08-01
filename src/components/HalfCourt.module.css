@@ -31,18 +31,19 @@
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: var(--white);
+  color: var(--content-primary);
   text-align: center;
-  /* Small plate so white text stays readable on light hardwood. */
+  /* Small plate so primary text stays readable on light hardwood.
+     --court-matte is the documented court surface token. */
   background: color-mix(in srgb, var(--court-matte) 82%, transparent);
   border-radius: 0.25rem;
 }
 
 .empty {
   padding: var(--space-2);
-  border: 1px dashed color-mix(in srgb, var(--graphite) 45%, transparent);
+  border: 1px dashed var(--border);
   border-radius: 0.4rem;
-  color: color-mix(in srgb, var(--graphite) 75%, transparent);
+  color: var(--content-muted);
   text-align: center;
   width: min(100%, var(--starter-card-max, 9rem));
   margin: 0 auto;

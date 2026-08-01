@@ -39,12 +39,16 @@ Branch names: `phase-N/…`, `feat/…`, `fix/…`, `docs/…`, `chore/…`.
 ### Phase 3 — Harden + additions
 - [x] Dossier surfaces (loading / error / thin-sample / retry)
 - [x] On the Radar; seed ids; scoring v1.1; mobile court fix
-- [x] Lineup Fit panel (PR 1) — team-level read for the starting five; swap sim = PR 2
-- [ ] Residual polish as needed — [`PHASE_3_REVIEW.md`](./PHASE_3_REVIEW.md)
+- [x] Lineup Fit panel (PR 1) — team-level read for the starting five
+- [x] Lineup swap (PR 2) — one-for-one Radar/bench→starter sim + Fit deltas
+- [x] Spotlight tutorial — optional Tutorial coach marks on live UI
+- [x] Residual polish — shared percentile bars; docs sync — [`PHASE_3_REVIEW.md`](./PHASE_3_REVIEW.md)
 
 ### Phase 4 — Ship
-- [ ] Stretch only if ahead (compare / role toggle)
-- [ ] Write-up + AI disclosure + final QA + live URL
+- [x] Write-up — [`WRITEUP.md`](./WRITEUP.md) + [`FINAL_QA.md`](./FINAL_QA.md)
+- [x] AI disclosure — [`AI_USAGE.md`](./AI_USAGE.md)
+- [ ] Final QA on live URL after Phase 3 wrap PRs merge
+- [ ] Stretch only if ahead (compare / role toggle) — skipped
 
 ## Definition of done
 1. Types + boundary validation correct (no `any` on vendor JSON)
