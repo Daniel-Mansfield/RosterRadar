@@ -58,6 +58,13 @@
   outline-offset: 2px;
 }
 
+/* Armed for Radar drop / keyboard place — accent ring, not decorative glow. */
+.dropTarget {
+  border-color: var(--accent);
+  outline: 2px dashed var(--accent);
+  outline-offset: 3px;
+}
+
 .photoWell {
   flex: 1 1 auto;
   min-height: 0;

@@ -9,7 +9,7 @@ import {
   type RefObject,
 } from "react";
 
-import type { FitRecommendation } from "@/domain/dossier";
+import type { FitRecommendation, PillarId } from "@/domain/dossier";
 import type { TeamFit } from "@/domain/teamFit";
 import { LINEUP_SIZE } from "@/domain/teamFit";
 import { apiErrorSchema } from "@/lib/api/schemas";
@@ -18,8 +18,14 @@ import { teamFitApiResponseSchema } from "@/lib/api/teamFitSchema";
 import styles from "./TeamFitPanel.module.css";
 
 type TeamFitPanelProps = {
-  /** Resolved BALLDONTLIE ids for the starting five. */
+  /** Resolved BALLDONTLIE ids for the starting five (real or simulated). */
   playerIds: number[];
+  /** Real-lineup Fit used for deltas while simulating. */
+  baseline?: TeamFit | null;
+  isSimulating?: boolean;
+  /** Short line under the subtitle while a swap is active. */
+  simSummary?: string | null;
+  onReset?: () => void;
 };
 
 type PanelState =
@@ -51,6 +57,21 @@ function barTone(percentile: number): string {
   if (percentile >= 70) return requireClass(styles.barStrong, "barStrong");
   if (percentile <= 35) return requireClass(styles.barPoor, "barPoor");
   return requireClass(styles.barMid, "barMid");
+}
+
+function formatDelta(delta: number): string {
+  if (delta > 0) return `+${delta}`;
+  return `${delta}`;
+}
+
+function deltaClass(delta: number): string {
+  if (delta > 0) return requireClass(styles.deltaUp, "deltaUp");
+  if (delta < 0) return requireClass(styles.deltaDown, "deltaDown");
+  return requireClass(styles.deltaFlat, "deltaFlat");
+}
+
+function baselinePillarMap(baseline: TeamFit): Map<PillarId, number> {
+  return new Map(baseline.pillars.map((p) => [p.id, p.percentile]));
 }
 
 async function fetchTeamFit(idsKey: string): Promise<PanelState> {
@@ -88,10 +109,16 @@ async function fetchTeamFit(idsKey: string): Promise<PanelState> {
  *
  * Empty / partial starter ids are handled here (no fetch) so the panel never
  * silently scores a subset as a "starting five." The live loader is keyed on
- * the id list — a props change (PR 2 swap) remounts it into loading without a
- * set-state-in-effect dance.
+ * the id list — a props change (swap) remounts it into loading without a
+ * set-state-in-effect dance. Optional baseline shows aggregation deltas only.
  */
-export function TeamFitPanel({ playerIds }: TeamFitPanelProps): ReactElement {
+export function TeamFitPanel({
+  playerIds,
+  baseline = null,
+  isSimulating = false,
+  simSummary = null,
+  onReset,
+}: TeamFitPanelProps): ReactElement {
   const headingId = useId();
   // Programmatic focus target for retry (not in tab order).
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -109,18 +136,22 @@ export function TeamFitPanel({ playerIds }: TeamFitPanelProps): ReactElement {
       />
     );
   } else {
-    // key remounts the loader when the lineup changes → fresh loading state.
     body = (
       <TeamFitPanelLive
         key={idsKey}
         idsKey={idsKey}
         headingRef={headingRef}
+        baseline={isSimulating ? baseline : null}
       />
     );
   }
 
   return (
-    <section className={styles.panel} aria-labelledby={headingId}>
+    <section
+      className={styles.panel}
+      aria-labelledby={headingId}
+      data-tour="team-fit"
+    >
       <h2
         ref={headingRef}
         id={headingId}
@@ -129,7 +160,26 @@ export function TeamFitPanel({ playerIds }: TeamFitPanelProps): ReactElement {
       >
         Lineup Fit
       </h2>
-      <p className={styles.subtitle}>Starting five vs league peers</p>
+      <p className={styles.subtitle}>
+        {isSimulating
+          ? "Hypothetical starting five vs league peers"
+          : "Starting five vs league peers"}
+      </p>
+      {isSimulating && simSummary ? (
+        <p className={styles.simBanner} role="status">
+          {simSummary}
+        </p>
+      ) : null}
+      {isSimulating && onReset ? (
+        <button
+          type="button"
+          className={styles.reset}
+          onClick={onReset}
+          data-tour="reset-lineup"
+        >
+          Reset lineup
+        </button>
+      ) : null}
       {body}
     </section>
   );
@@ -138,11 +188,15 @@ export function TeamFitPanel({ playerIds }: TeamFitPanelProps): ReactElement {
 type LiveProps = {
   idsKey: string;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  baseline: TeamFit | null;
 };
 
-function TeamFitPanelLive({ idsKey, headingRef }: LiveProps): ReactElement {
+function TeamFitPanelLive({
+  idsKey,
+  headingRef,
+  baseline,
+}: LiveProps): ReactElement {
   const [state, setState] = useState<PanelState>({ status: "loading" });
-  // Bumped by retry to re-run the fetch effect for the same ids.
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -160,8 +214,6 @@ function TeamFitPanelLive({ idsKey, headingRef }: LiveProps): ReactElement {
   }, [idsKey, attempt]);
 
   function retry(): void {
-    // Retry button unmounts on the loading transition; park focus on the
-    // stable heading so keyboard focus doesn't drop to <body>.
     headingRef.current?.focus();
     setState({ status: "loading" });
     setAttempt((n) => n + 1);
@@ -174,8 +226,6 @@ function TeamFitPanelLive({ idsKey, headingRef }: LiveProps): ReactElement {
   if (state.status === "error") {
     return (
       <div className={styles.placeholder}>
-        {/* Alert on the message only: keeps the announcement clean instead of
-            reading the retry button label as part of it. */}
         <p className={styles.placeholderMessage} role="alert">
           {state.message}
         </p>
@@ -186,7 +236,7 @@ function TeamFitPanelLive({ idsKey, headingRef }: LiveProps): ReactElement {
     );
   }
 
-  return <PanelBody teamFit={state.teamFit} />;
+  return <PanelBody teamFit={state.teamFit} baseline={baseline} />;
 }
 
 function UnavailableMessage({ message }: { message: string }): ReactElement {
@@ -199,47 +249,82 @@ function UnavailableMessage({ message }: { message: string }): ReactElement {
   );
 }
 
-function PanelBody({ teamFit }: { teamFit: TeamFit }): ReactElement {
+function PanelBody({
+  teamFit,
+  baseline,
+}: {
+  teamFit: TeamFit;
+  baseline: TeamFit | null;
+}): ReactElement {
   const fitClass = FIT_CLASS[teamFit.recommendation];
   const fitLabel = FIT_LABEL[teamFit.recommendation];
+  const gradeDelta =
+    baseline != null ? teamFit.grade - baseline.grade : null;
+  const basePillars = baseline != null ? baselinePillarMap(baseline) : null;
+
+  const scoreAria =
+    gradeDelta != null
+      ? `${fitLabel}, lineup grade ${teamFit.grade}, ${formatDelta(gradeDelta)} vs real lineup`
+      : `${fitLabel}, lineup grade ${teamFit.grade}`;
 
   return (
     <div className={styles.body}>
-      <div
-        className={styles.scoreboard}
-        aria-label={`${fitLabel}, lineup grade ${teamFit.grade}`}
-      >
+      <div className={styles.scoreboard} aria-label={scoreAria}>
         <p className={`${styles.grade} ${fitClass}`} aria-hidden="true">
           {teamFit.grade}
         </p>
         <div className={styles.scoreMeta}>
           <p className={`${styles.fitBadge} ${fitClass}`}>{fitLabel}</p>
-          <p className={styles.season}>{teamFit.season} season</p>
+          {gradeDelta != null ? (
+            <p className={`${styles.gradeDelta} ${deltaClass(gradeDelta)}`}>
+              {formatDelta(gradeDelta)} vs real
+            </p>
+          ) : (
+            <p className={styles.season}>{teamFit.season} season</p>
+          )}
         </div>
       </div>
 
       <ul className={styles.pillars}>
-        {teamFit.pillars.map((pillar) => (
-          <li key={pillar.id} className={styles.pillar}>
-            <div className={styles.pillarHead}>
-              <span className={styles.pillarLabel}>{pillar.label}</span>
-              <span className={styles.pillarPct}>{pillar.percentile}</span>
-            </div>
-            <div
-              className={styles.barTrack}
-              role="meter"
-              aria-valuenow={pillar.percentile}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={`${pillar.label} lineup percentile ${pillar.percentile}`}
-            >
+        {teamFit.pillars.map((pillar) => {
+          const basePct = basePillars?.get(pillar.id);
+          const pillarDelta =
+            basePct != null ? pillar.percentile - basePct : null;
+          return (
+            <li key={pillar.id} className={styles.pillar}>
+              <div className={styles.pillarHead}>
+                <span className={styles.pillarLabel}>{pillar.label}</span>
+                <span className={styles.pillarPctRow}>
+                  <span className={styles.pillarPct}>{pillar.percentile}</span>
+                  {pillarDelta != null ? (
+                    <span
+                      className={`${styles.pillarDelta} ${deltaClass(pillarDelta)}`}
+                    >
+                      {formatDelta(pillarDelta)}
+                    </span>
+                  ) : null}
+                </span>
+              </div>
               <div
-                className={`${styles.barFill} ${barTone(pillar.percentile)}`}
-                style={{ width: `${pillar.percentile}%` }}
-              />
-            </div>
-          </li>
-        ))}
+                className={styles.barTrack}
+                role="meter"
+                aria-valuenow={pillar.percentile}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={
+                  pillarDelta != null
+                    ? `${pillar.label} lineup percentile ${pillar.percentile}, ${formatDelta(pillarDelta)} vs real`
+                    : `${pillar.label} lineup percentile ${pillar.percentile}`
+                }
+              >
+                <div
+                  className={`${styles.barFill} ${barTone(pillar.percentile)}`}
+                  style={{ width: `${pillar.percentile}%` }}
+                />
+              </div>
+            </li>
+          );
+        })}
       </ul>
 
       {teamFit.callouts.length > 0 ? (
@@ -275,8 +360,6 @@ function PanelBody({ teamFit }: { teamFit: TeamFit }): ReactElement {
         onToggle={(event) => {
           const el = event.currentTarget;
           if (!el.open) return;
-          // After layout, land the notes in the panel scrollport (end so the
-          // last bullet clears the fold instead of only the summary).
           const reduceMotion = window.matchMedia(
             "(prefers-reduced-motion: reduce)",
           ).matches;
@@ -293,6 +376,12 @@ function PanelBody({ teamFit }: { teamFit: TeamFit }): ReactElement {
           {teamFit.methodology.notes.map((note) => (
             <li key={note}>{note}</li>
           ))}
+          {baseline != null ? (
+            <li>
+              Deltas compare this hypothetical lineup’s pillar averages to the
+              real starting five — still peer aggregation, not on-court synergy.
+            </li>
+          ) : null}
         </ul>
       </details>
     </div>

@@ -101,6 +101,51 @@
   flex: 0 0 auto;
 }
 
+.rowWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  min-width: 0;
+}
+
+.rowPending {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+.place {
+  align-self: stretch;
+  margin: 0;
+  padding: 0.2rem var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--content-muted);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.place:hover {
+  border-color: var(--accent);
+  color: var(--content-primary);
+}
+
+.place:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.place[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* Wide layout: fill the court-height gutter (paired with NetsHome ≥64em). */
 @media (min-width: 64em) {
   .radar {

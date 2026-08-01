@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactElement } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactElement,
+} from "react";
 import dynamic from "next/dynamic";
 
 import {
@@ -9,7 +15,15 @@ import {
   type PlayerSummary,
   type RosterPlayer,
 } from "@/domain/player";
+import {
+  isStarterSlot,
+  starterIdsFromPlayers,
+  type StarterSlot,
+} from "@/domain/lineupSim";
+import type { TeamFit } from "@/domain/teamFit";
+import { LINEUP_SIZE } from "@/domain/teamFit";
 import type { RadarCandidate } from "@/nba/radar/radarPool";
+import { teamFitApiResponseSchema } from "@/lib/api/teamFitSchema";
 import { AcquisitionSearch } from "@/components/AcquisitionSearch";
 import { DossierPanel } from "@/components/DossierPanel";
 import { DossierSkeleton } from "@/components/DossierSkeleton";
@@ -22,6 +36,7 @@ import {
   useDossierDrawer,
   type DrawerIdentity,
 } from "@/components/useDossierDrawer";
+import { useLineupSim } from "@/components/useLineupSim";
 
 import styles from "./NetsHome.module.css";
 
@@ -51,9 +66,77 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   } = useDossierDrawer();
   const [benchCanScrollMore, setBenchCanScrollMore] = useState(false);
   const benchListRef = useRef<HTMLUListElement>(null);
-  const starterIds = roster.starters
-    .map((player) => player.id)
-    .filter((id): id is number => id != null);
+
+  const {
+    sim,
+    displayStarters,
+    displayStarterIds,
+    isSimulating,
+    pendingCandidate,
+    beginPendingSwap,
+    cancelPendingSwap,
+    applySwap,
+    placeOnSlot,
+    reset,
+  } = useLineupSim(roster.starters);
+
+  const realStarterIds = useMemo(
+    () => starterIdsFromPlayers(roster.starters),
+    [roster.starters],
+  );
+  const realIdsKey = realStarterIds.join(",");
+
+  const [baselineFit, setBaselineFit] = useState<TeamFit | null>(null);
+
+  // Load once for the real five; deltas compare sim Fit against this snapshot.
+  // Do not sync-clear in the effect body (cascading render lint) — gate on length when passing.
+  useEffect(() => {
+    if (realStarterIds.length !== LINEUP_SIZE) {
+      return;
+    }
+
+    let cancelled = false;
+    void fetch(`/api/team-fit?ids=${realIdsKey}`)
+      .then((response) => response.json())
+      .then((json: unknown) => {
+        if (cancelled) return;
+        const parsed = teamFitApiResponseSchema.safeParse(json);
+        setBaselineFit(parsed.success ? parsed.data.teamFit : null);
+      })
+      .catch(() => {
+        if (!cancelled) setBaselineFit(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [realIdsKey, realStarterIds.length]);
+
+  const baselineForPanel =
+    realStarterIds.length === LINEUP_SIZE ? baselineFit : null;
+
+  useEffect(() => {
+    if (!pendingCandidate) return;
+
+    function onKeyDown(event: KeyboardEvent): void {
+      if (event.key === "Escape") {
+        cancelPendingSwap();
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [pendingCandidate, cancelPendingSwap]);
+
+  const simSummary = useMemo(() => {
+    if (sim.status !== "simulating") return null;
+    const outgoing = roster.starters.find((p) => p.slot === sim.swap.slot);
+    const outName = outgoing
+      ? `${outgoing.firstName} ${outgoing.lastName}`
+      : sim.swap.slot;
+    const inName = `${sim.swap.incoming.firstName} ${sim.swap.incoming.lastName}`;
+    return `${inName} in for ${outName} (${sim.swap.slot}) — peer aggregation, not synergy`;
+  }, [sim, roster.starters]);
 
   function updateBenchScrollHint(): void {
     const list = benchListRef.current;
@@ -62,10 +145,21 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       return;
     }
     const remaining = list.scrollHeight - list.scrollTop - list.clientHeight;
-    setBenchCanScrollMore(list.scrollHeight > list.clientHeight + 2 && remaining > 8);
+    setBenchCanScrollMore(
+      list.scrollHeight > list.clientHeight + 2 && remaining > 8,
+    );
   }
 
   function openForRosterPlayer(player: RosterPlayer): void {
+    // Place mode always targets the real starter in that slot (not a prior sim).
+    if (pendingCandidate && isStarterSlot(player.slot)) {
+      const real = roster.starters.find((p) => p.slot === player.slot);
+      if (real && real.id != null) {
+        placeOnSlot(player.slot, real);
+        return;
+      }
+    }
+
     const identity: DrawerIdentity = {
       title: `${player.firstName} ${player.lastName}`,
       subtitle: `${roster.teamName} · ${player.slot}${
@@ -112,6 +206,16 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     });
   }
 
+  function handleRadarDrop(slot: StarterSlot, candidate: RadarCandidate): void {
+    const starter = roster.starters.find((p) => p.slot === slot);
+    if (!starter || starter.id == null) return;
+    applySwap({
+      slot,
+      outgoingId: starter.id,
+      incoming: candidate,
+    });
+  }
+
   useEffect(() => {
     const list = benchListRef.current;
     if (!list) {
@@ -151,22 +255,36 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             </p>
           </div>
         </div>
-        <div className={styles.searchSlot}>
+        <div className={styles.searchSlot} data-tour="search">
           <AcquisitionSearch onSelectPlayer={openForAcquisition} />
         </div>
       </header>
 
+      {pendingCandidate ? (
+        <p className={styles.placeHint} role="status">
+          Place {pendingCandidate.firstName} {pendingCandidate.lastName} on a
+          starter — Esc to cancel
+        </p>
+      ) : null}
+
       <div className={styles.main}>
         <div className={styles.courtPane}>
           <HalfCourt
-            starters={roster.starters}
+            starters={displayStarters}
             onSelectPlayer={openForRosterPlayer}
+            onRadarDrop={handleRadarDrop}
+            dropArmed={pendingCandidate != null}
           />
         </div>
 
-        {/* Stacked: after court. Desktop: column 1 (Fit | Radar | Court | Bench). */}
         <div className={styles.teamFitPane}>
-          <TeamFitPanel playerIds={starterIds} />
+          <TeamFitPanel
+            playerIds={displayStarterIds}
+            baseline={baselineForPanel}
+            isSimulating={isSimulating}
+            simSummary={simSummary}
+            onReset={reset}
+          />
         </div>
 
         <aside className={styles.bench} aria-label="Bench">
@@ -193,10 +311,12 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
           </div>
         </aside>
 
-        {/* Last in DOM (stacked: team first); desktop column 2 — next to court
-            so PR 2 drag-swap keeps a short path onto starters. */}
         <div className={styles.radarPane}>
-          <OnTheRadar onSelectCandidate={openForRadarCandidate} />
+          <OnTheRadar
+            onSelectCandidate={openForRadarCandidate}
+            onBeginPlace={beginPendingSwap}
+            pendingCandidateId={pendingCandidate?.id ?? null}
+          />
         </div>
       </div>
 
@@ -216,7 +336,6 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             aria-labelledby={titleId}
           >
             <div className={styles.drawerHeader}>
-              {/* Portrait lives in the dossier hero when ready; header avatar for loading/error. */}
               {drawer.dossier.status === "ready" ? (
                 <div>
                   <h2 id={titleId} className={styles.drawerTitle}>
@@ -255,8 +374,6 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
               {drawer.dossier.status === "error" ||
               drawer.dossier.status === "unavailable" ? (
                 <div className={styles.placeholder}>
-                  {/* Alert on the message only: keeps the announcement clean
-                      instead of reading the retry button label as part of it. */}
                   <p className={styles.placeholderMessage} role="alert">
                     {drawer.dossier.message}
                   </p>

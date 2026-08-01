@@ -37,3 +37,8 @@ This log supports the assignment requirement to disclose AI use. Keep entries su
 - **Tool:** Cursor agent
 - **Used for:** `composeTeamFit` + `/api/team-fit` + `TeamFitPanel`; four-column layout; review fixes (empty/partial gates, retry focus, skeleton status); docs cleanup
 - **Not used for:** Scoring semantics (user-approved means / thresholds / “Lineup Fit” framing); swap simulation (PR 2)
+
+### 2026-08-01 — Lineup swap (PR 2 of 2)
+- **Tool:** Cursor agent
+- **Used for:** `useLineupSim` + Radar DnD/Place; Fit deltas vs baseline; Reset; outline/identity carve-out
+- **Not used for:** Trade packages, salary, synergy/+/- modeling

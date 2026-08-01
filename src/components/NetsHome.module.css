@@ -84,6 +84,16 @@
   align-self: center;
 }
 
+.placeHint {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--content-primary);
+  background: color-mix(in srgb, var(--surface-subtle) 70%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+
 .main {
   display: grid;
   /* Stacked: more vertical air between Fit / Bench / Radar / Court. */

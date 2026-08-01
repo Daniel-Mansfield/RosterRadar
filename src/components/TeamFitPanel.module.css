@@ -75,6 +75,69 @@
   color: var(--content-muted);
 }
 
+.simBanner {
+  margin: calc(var(--space-2) * -1) 0 var(--space-2);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--content-primary);
+}
+
+.reset {
+  display: block;
+  width: fit-content;
+  margin: 0 auto var(--space-3);
+  padding: 0.2rem var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--content-primary);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reset:hover {
+  border-color: var(--accent);
+}
+
+.reset:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.gradeDelta {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.pillarPctRow {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.pillarDelta {
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.deltaUp {
+  color: var(--fit-strong);
+}
+
+.deltaDown {
+  color: var(--fit-poor);
+}
+
+.deltaFlat {
+  color: var(--content-muted);
+}
+
 .body {
   display: flex;
   flex-direction: column;

@@ -2,7 +2,7 @@
 
 **Purpose:** Capture the *core feeling* of RosterRadar, map it to the assignment outline, and record keep / cut / later decisions. Living template for identity—not every idea ships in the 10-day MVP.
 
-**Status:** Core IA + brand palette **locked** (2026-07-26). Trade/DnD still later.
+**Status:** Core IA + brand palette **locked** (2026-07-26). Scoped one-for-one Radar→starter swap ships in Phase 3 wrap; full trade packages / +/- stay out.
 
 **Related:** [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md) · [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) · `src/styles/palette.css`
 
@@ -24,7 +24,7 @@
 ### Player search (acquisition candidates)
 - Search finds **only players not on the Brooklyn Nets** (you can’t trade for someone already on the roster)
 - Selecting a search result opens their **role-fit dossier in the drawer** (evaluate as a potential addition)
-- Does **not** perform a live trade or rewrite the court in v1 (DnD / projections = later)
+- May show a **hypothetical** one-for-one Radar→starter swap (court + Lineup Fit deltas); does **not** model salary, packages, or synergy/+/-
 
 ### Explicitly out of v1
 - Team search / other franchises as home targets
@@ -76,14 +76,15 @@ Preserved for history; superseded by §1 where they conflict.
 |---|---|
 | Team search / all 30 teams | Unnecessary if Nets are the target |
 | Player photos | Deferred; names enough |
-| DnD trade + team projections | Out of credible 10-day scope |
+| Full DnD trade packages + team +/- projections | Out of credible 10-day scope |
+| One-for-one Radar→starter swap + Fit deltas | Phase 3 wrap — peer aggregation only |
 
 ### LATER
 | Idea | Notes |
 |---|---|
 | Player search carousel / recommendations by role gap | After dossier + court work |
 | Click-to-preview non-Nets player in drawer | Lighter than DnD |
-| Visual swap without numeric projection | Optional stretch |
+| Visual swap without numeric projection | Superseded by Fit-delta swap |
 | Headshots | When we have a reliable source |
 
 ---

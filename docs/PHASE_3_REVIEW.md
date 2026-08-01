@@ -9,6 +9,7 @@ Hardening + product additions after Phase 2. Per-pass fix tables live in git his
 - **Scoring v1.1:** creator dominance margin; thin sample caps Strong → Conditional
 - **Layout:** radar / court / bench spacing; mobile-first HalfCourt (no PG clip on stacked); even page margins
 - **Lineup Fit (PR 1):** `composeTeamFit` + `GET /api/team-fit` + `TeamFitPanel`; four-column desktop; empty/partial id gates; heading focus park on retry
+- **Lineup swap (PR 2):** Radar→starter HTML5 DnD + Place/keyboard path; `useLineupSim`; Fit grade/pillar deltas vs real five; Reset; outline carve-out for one-for-one sim (not trade packages)
 
 ## Residual
 | Item | Notes |
@@ -16,5 +17,4 @@ Hardening + product additions after Phase 2. Per-pass fix tables live in git his
 | Search combobox ARIA | Arrow keys / `aria-activedescendant` deferred; Tab/Enter work |
 | Dialog `inert` | Carried from Phase 1–2 |
 | Lineup Fit polish | Bar poor-tone (≤35) vs gap callout (≤45); shared bar helpers with dossier; gated copy under “Starting five” subtitle |
-| Outline non-goal | DnD trade sim — update [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md) when swap simulation (PR 2) lands |
 | Post-demo data | Paid GOAT month covers the demo window; fixtures remain the documented fallback ([`VENDOR_DECISION.md`](./VENDOR_DECISION.md)) |
