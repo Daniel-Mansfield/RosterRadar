@@ -78,10 +78,12 @@
 .sortRow {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--space-2);
   margin-top: var(--space-2);
   min-width: 0;
+  /* Match .rowWrap: leave the swap-button column empty so the select
+     right edge lines up with the player cards (not the swap icons). */
+  padding-right: calc(1.7rem + var(--space-2));
 }
 
 .sortLabel {
@@ -96,7 +98,6 @@
 .sortSelect {
   flex: 1 1 auto;
   min-width: 0;
-  max-width: 12rem;
   margin: 0;
   padding: 0.3rem 0.45rem;
   border: 1px solid var(--border);
@@ -118,37 +119,6 @@
 }
 
 .sortSelect:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.sortApply {
-  flex: 0 0 auto;
-  margin: 0;
-  padding: 0.3rem 0.55rem;
-  border: 1px solid var(--border);
-  border-radius: 0.35rem;
-  background: transparent;
-  color: var(--content-muted);
-  font: inherit;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.sortApply:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--content-primary);
-}
-
-.sortApply:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.sortApply:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }

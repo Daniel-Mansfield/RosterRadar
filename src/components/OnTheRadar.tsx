@@ -81,8 +81,8 @@ export function OnTheRadar({
     pickRadarCandidates(RADAR_POOL, RADAR_PICK_COUNT),
   );
   const [shuffleCount, setShuffleCount] = useState(0);
-  const [sortPillarId, setSortPillarId] = useState<PillarId>(PILLAR_IDS[0]);
-  const [pillarTouched, setPillarTouched] = useState(false);
+  /** Null until the user (or an explicit sort) picks a pillar. */
+  const [userPillarId, setUserPillarId] = useState<PillarId | null>(null);
   const [sortStatus, setSortStatus] = useState<SortStatus>({ kind: "idle" });
   const [justSorted, setJustSorted] = useState(false);
   const headingId = useId();
@@ -92,11 +92,7 @@ export function OnTheRadar({
   const listRef = useRef<HTMLUListElement>(null);
 
   // Prefer the real five's need until the user picks a different pillar.
-  useEffect(() => {
-    if (!pillarTouched && needPillar) {
-      setSortPillarId(needPillar.id);
-    }
-  }, [needPillar, pillarTouched]);
+  const sortPillarId = userPillarId ?? needPillar?.id ?? PILLAR_IDS[0];
 
   function reshuffle(): void {
     requestIdRef.current += 1;
@@ -122,10 +118,9 @@ export function OnTheRadar({
       return;
     }
 
-    // Lock the picker so a late Fit needPillar sync cannot desync the
+    // Lock the picker so a late Fit needPillar change cannot desync the
     // dropdown from an in-flight or completed sort.
-    setPillarTouched(true);
-    setSortPillarId(pillarId);
+    setUserPillarId(pillarId);
 
     const requestId = ++requestIdRef.current;
     const pillarLabel = PILLAR_LABELS[pillarId];
@@ -191,8 +186,6 @@ export function OnTheRadar({
   function handlePillarChange(event: ChangeEvent<HTMLSelectElement>): void {
     const value = event.target.value;
     if (!isPillarId(value)) return;
-    setPillarTouched(true);
-    setSortPillarId(value);
     void sortByPillar(value);
   }
 
@@ -274,12 +267,12 @@ export function OnTheRadar({
           }
         >
           {PILLAR_IDS.map((id) => {
-            let suffix = "";
-            if (needPillar && needPillar.id === id) {
-              suffix = isHardLineupGap(needPillar)
+            const suffix =
+              needPillar &&
+              needPillar.id === id &&
+              isHardLineupGap(needPillar)
                 ? " — lineup gap"
-                : " — softest";
-            }
+                : "";
             return (
               <option key={id} value={id}>
                 {PILLAR_LABELS[id]}
@@ -288,22 +281,6 @@ export function OnTheRadar({
             );
           })}
         </select>
-        <button
-          type="button"
-          className={styles.sortApply}
-          onClick={() => {
-            void sortByPillar(sortPillarId);
-          }}
-          disabled={sorting}
-          aria-label={`Sort shortlist by ${PILLAR_LABELS[sortPillarId]}`}
-          title={
-            needHint
-              ? `Sort by ${PILLAR_LABELS[sortPillarId]} (${needHint})`
-              : `Sort by ${PILLAR_LABELS[sortPillarId]}`
-          }
-        >
-          Sort
-        </button>
       </div>
 
       {sortStatus.kind === "loading" ? (
