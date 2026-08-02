@@ -86,10 +86,35 @@
 
 .tourSlot {
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   justify-content: flex-end;
+  gap: 0.35rem;
   align-self: flex-end;
   /* Keep clear of the page edge while staying right-aligned. */
   padding-right: var(--space-2);
+}
+
+.sourceLink {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  color: var(--content-muted);
+  text-decoration: none;
+}
+
+.sourceLink:hover {
+  color: var(--content-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.sourceLink:focus-visible {
+  outline: 2px solid var(--content-primary);
+  outline-offset: 2px;
+  border-radius: 0.15rem;
 }
 
 .tourButton {
