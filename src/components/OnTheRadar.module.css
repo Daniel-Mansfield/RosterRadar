@@ -273,6 +273,9 @@
 }
 
 .row {
+  /* Contain .srOnly absolutes so they don't escape to <body> and inflate
+     document scroll height (wheel over the court was scrolling empty space). */
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-3);

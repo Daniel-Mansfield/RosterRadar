@@ -290,6 +290,14 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
           />
         </div>
         <div className={styles.tourSlot}>
+          <a
+            className={styles.sourceLink}
+            href="https://github.com/Daniel-Mansfield/RosterRadar"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Source
+          </a>
           <button
             type="button"
             className={styles.tourButton}
