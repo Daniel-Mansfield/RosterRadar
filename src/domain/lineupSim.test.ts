@@ -214,8 +214,14 @@ describe("lineupSim", () => {
       },
     ]);
     assert.deepEqual(lines, [
-      "Anfernee Simons in for Nolan Traore (SG)",
-      "Cam Whitmore in for Noah Clowney (PF)",
+      {
+        slot: "SG",
+        text: "Anfernee Simons in for Nolan Traore (SG)",
+      },
+      {
+        slot: "PF",
+        text: "Cam Whitmore in for Noah Clowney (PF)",
+      },
     ]);
   });
 

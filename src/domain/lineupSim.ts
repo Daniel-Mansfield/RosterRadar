@@ -295,13 +295,19 @@ export function buildSimBench(
   return [...pins, ...working];
 }
 
+/** One stacked Fit-banner row (slot is the stable React key). */
+export type LineupSimSummaryLine = {
+  slot: StarterSlot;
+  text: string;
+};
+
 /** One banner line per changed slot (PG→C), vs the real five. */
 export function lineupSimSummaryLines(
   starters: readonly RosterPlayer[],
   overrides: readonly LineupSlotOverride[],
-): string[] {
+): LineupSimSummaryLine[] {
   const bySlot = overrideMap(overrides);
-  const lines: string[] = [];
+  const lines: LineupSimSummaryLine[] = [];
 
   for (const slot of STARTER_SLOT_ORDER) {
     const override = bySlot.get(slot);
@@ -311,7 +317,10 @@ export function lineupSimSummaryLines(
       ? `${real.firstName} ${real.lastName}`
       : slot;
     const inName = `${override.incoming.firstName} ${override.incoming.lastName}`;
-    lines.push(`${inName} in for ${outName} (${slot})`);
+    lines.push({
+      slot,
+      text: `${inName} in for ${outName} (${slot})`,
+    });
   }
 
   return lines;

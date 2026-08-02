@@ -15,6 +15,7 @@ import {
   upsertLineupOverride,
   type LineupIncoming,
   type LineupSimState,
+  type LineupSimSummaryLine,
   type LineupSlotOverride,
   type LineupSwapSource,
   type StarterSlot,
@@ -41,7 +42,7 @@ type UseLineupSimResult = {
   /** True while at least one slot override is active. */
   isSimulating: boolean;
   /** Banner lines for each changed slot (PG→C). */
-  simSummaryLines: string[];
+  simSummaryLines: LineupSimSummaryLine[];
   /** Incoming player waiting for a keyboard/click slot pick. */
   pendingIncoming: PendingLineupIncoming | null;
   beginPendingRadar: (candidate: RadarCandidate) => void;

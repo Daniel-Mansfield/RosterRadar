@@ -10,6 +10,7 @@ import {
 } from "react";
 
 import type { FitRecommendation, PillarId } from "@/domain/dossier";
+import type { LineupSimSummaryLine } from "@/domain/lineupSim";
 import type { TeamFit } from "@/domain/teamFit";
 import { LINEUP_SIZE } from "@/domain/teamFit";
 import { apiErrorSchema } from "@/lib/api/schemas";
@@ -25,7 +26,7 @@ type TeamFitPanelProps = {
   baseline?: TeamFit | null;
   isSimulating?: boolean;
   /** Stacked change lines under the subtitle while simulating (PG→C). */
-  simSummaryLines?: string[];
+  simSummaryLines?: LineupSimSummaryLine[];
   onReset?: () => void;
 };
 
@@ -168,17 +169,19 @@ export function TeamFitPanel({
           : "Starting five vs league peers"}
       </p>
       {isSimulating && simSummaryLines.length > 0 ? (
-        <div className={styles.simBanner} role="status">
-          <ul className={styles.simSummaryList}>
-            {simSummaryLines.map((line) => (
-              <li key={line} className={styles.simSummary}>
-                {line}
-              </li>
-            ))}
-          </ul>
-          <p className={styles.simCaveat}>
-            Peer aggregation, not synergy
-          </p>
+        <div className={styles.simBanner}>
+          <div role="status">
+            <ul className={styles.simSummaryList}>
+              {simSummaryLines.map((line) => (
+                <li key={line.slot} className={styles.simSummary}>
+                  {line.text}
+                </li>
+              ))}
+            </ul>
+            <p className={styles.simCaveat}>
+              Peer aggregation, not synergy
+            </p>
+          </div>
           {onReset ? (
             <button
               type="button"
