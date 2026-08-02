@@ -300,6 +300,8 @@ export function composeDossierFromLines(input: {
       lastName: line.lastName,
       position: line.position,
       teamAbbreviation,
+      // Dossier photos use DrawerIdentity / curated ids — not season lines.
+      espnAthleteId: null,
     },
     season: line.season,
     role: {

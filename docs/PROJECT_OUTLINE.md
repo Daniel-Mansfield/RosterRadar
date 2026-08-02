@@ -36,7 +36,7 @@ A **Brooklyn Nets–anchored** scouting experience:
 Identity detail: [`IDENTITY.md`](./IDENTITY.md). Visual tokens: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).
 
 ### 2.2 Non-goals (v1)
-Auth, multi-team picker, film, tracking, salary/cap, **full** multi-player DnD trade packages, team +/- / synergy projections, **full** headshot pipeline for arbitrary search results (Nets use curated ESPN ids only — see IDENTITY), social, live in-game tools.
+Auth, multi-team picker, film, tracking, salary/cap, **full** multi-player DnD trade packages, team +/- / synergy projections, **guaranteed** headshots for every search hit (best-effort ESPN + initials fallback — see IDENTITY), social, live in-game tools.
 
 **In scope (narrow):** one-for-one client-side Radar-or-bench → starter swap that recomputes Lineup Fit peer aggregation and shows deltas — not a trade engine.
 

@@ -18,7 +18,7 @@
 - Dark branded shell (`--graphite` base; see palette)
 - Wordmark: **Roster** (`--brand-roster` / white, bold) + ***Radar*** (`--brand-radar` / intense cherry, thin italic)
 - Roster as a **basketball half-court**: starting five as cards in positional spots; **bench** as a side list
-- Player cards: **name + headshot** on Nets roster (curated ESPN ids); initials fallback; acquisition search uses initials (no photo pipeline)
+- Player cards: **name + headshot** on Nets roster (curated ESPN ids); acquisition search uses curated map + best-effort ESPN resolve, initials on miss
 - Click **Nets** card → **right drawer = role-fit scouting dossier**
 
 ### Player search (acquisition candidates)
@@ -28,7 +28,7 @@
 
 ### Explicitly out of v1
 - Team search / other franchises as home targets
-- Full BDL→NBA headshot pipeline for arbitrary search results (Nets use curated ESPN ids only)
+- Guaranteed headshots for every search hit (best-effort ESPN only; initials remain the fallback)
 - Drag-and-drop trades onto the court
 - Projected team +/- from a simulated trade
 

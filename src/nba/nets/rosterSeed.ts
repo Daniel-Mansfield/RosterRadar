@@ -1,4 +1,5 @@
 import type { CourtSlot, PlayerId } from "@/domain/player";
+import { normalizePersonName } from "@/nba/personName";
 
 /**
  * Brooklyn Nets — curated roster seed for v1.
@@ -165,11 +166,3 @@ export const NETS_SEED_NAME_KEYS: ReadonlySet<string> = new Set(
       `${normalizePersonName(entry.firstName)}|${normalizePersonName(entry.lastName)}`,
   ),
 );
-
-export function normalizePersonName(value: string): string {
-  return value
-    .normalize("NFD") // decompose accents so "Traoré" → "Traore" + combining mark
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z]/g, "");
-}

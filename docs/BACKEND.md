@@ -76,6 +76,7 @@ Names can adjust when scaffolding; the **boundaries** must not.
 - Input: search string (server-validated; min length, max length)
 - Output: `{ players: PlayerSummary[] }`
 - Multi-word queries: BDL `search` is single-field, so the adapter plans a vendor token + local first/last prefixes (`playerSearchQuery.ts`) — e.g. `LeBron J` searches given name and filters last initial
+- Headshots: `PlayerSummary.espnAthleteId` from curated Nets/Radar ids, else best-effort ESPN site search (`nba/espn/`) with short timeout; only successful ids are TTL-cached; enrichment runs *after* the BDL search cache (`withEspnSearchHeadshots`) so a slow photo miss cannot freeze initials; never fails the players response
 
 ### `GET /api/dossier/[playerId]?season=`
 - Input: player id + optional season

@@ -45,6 +45,7 @@ function makeDossier(options: DossierOptions = {}): Dossier {
       lastName,
       position: "G",
       teamAbbreviation: "BKN",
+      espnAthleteId: null,
     },
     season,
     role: { id: "wing_scorer", label: "Wing scorer" },

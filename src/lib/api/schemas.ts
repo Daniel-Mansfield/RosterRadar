@@ -13,6 +13,7 @@ export const playerSummarySchema = z.object({
   lastName: z.string(),
   position: z.string().nullable(),
   teamAbbreviation: z.string().nullable(),
+  espnAthleteId: z.number().nullable(),
 });
 
 export const playersApiResponseSchema = z.object({

@@ -12,9 +12,9 @@ import {
   NETS_ROSTER_SEED,
   NETS_SEED_NAME_KEYS,
   STARTER_SLOTS,
-  normalizePersonName,
   type NetsSeedEntry,
 } from "@/nba/nets/rosterSeed";
+import { normalizePersonName } from "@/nba/personName";
 import { parseMinutes } from "@/nba/parseMinutes";
 import { isEspnAthleteId } from "@/nba/headshot";
 import {
@@ -73,6 +73,7 @@ function toPlayerSummary(player: BalldontliePlayer): PlayerSummary {
     lastName: player.last_name,
     position: player.position ?? null,
     teamAbbreviation: player.team?.abbreviation ?? null,
+    espnAthleteId: null,
   };
 }
 

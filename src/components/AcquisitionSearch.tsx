@@ -155,6 +155,7 @@ export function AcquisitionSearch({
                       <PlayerAvatar
                         firstName={player.firstName}
                         lastName={player.lastName}
+                        espnAthleteId={player.espnAthleteId}
                         size={40}
                       />
                       <span>

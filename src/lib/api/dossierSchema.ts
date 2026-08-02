@@ -28,6 +28,7 @@ export const dossierSchema = z.object({
     lastName: z.string(),
     position: z.string().nullable(),
     teamAbbreviation: z.string().nullable(),
+    espnAthleteId: z.number().nullable(),
   }),
   season: z.number(),
   role: z.object({
