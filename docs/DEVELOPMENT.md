@@ -47,8 +47,8 @@ Branch names: `phase-N/…`, `feat/…`, `fix/…`, `docs/…`, `chore/…`.
 ### Phase 4 — Ship
 - [x] Write-up — [`WRITEUP.md`](./WRITEUP.md) + [`FINAL_QA.md`](./FINAL_QA.md)
 - [x] AI disclosure — [`AI_USAGE.md`](./AI_USAGE.md)
-- [ ] Final QA on live URL after Phase 3 wrap PRs merge
-- [ ] Stretch only if ahead (compare / role toggle) — skipped
+- [x] Final QA on live URL after Phase 3 wrap PRs merge — [`FINAL_QA.md`](./FINAL_QA.md) (2026-08-02 @ `2d2b684`)
+- [x] Stretch only if ahead (compare / role toggle) — skipped
 
 ## Definition of done
 1. Types + boundary validation correct (no `any` on vendor JSON)

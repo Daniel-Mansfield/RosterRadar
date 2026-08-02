@@ -2,15 +2,15 @@
 
 Run against **production** ([live URL](https://roster-radar-orcin.vercel.app)) after Phase 3 wrap is merged. Paid GOAT key must be set on Vercel.
 
-**Smoke completed:** 2026-08-01 on production (`main` @ `c0d0ae6`).
+**Smoke completed:** 2026-08-02 on production (`main` @ `2d2b684`, post PRs #15–#16).
 
 ## Happy path
 - [x] Home loads: brand, search, court, Fit, Radar, bench
 - [x] Click starter → dossier drawer (verdict, pillars, callouts)
 - [x] Search non-Nets player → same dossier flow
-- [ ] Search swap icon → click starter: acquisition sim (Out on displaced); Fit banner; Reset
-- [ ] Search dossier **Try in lineup** → same acquisition sim path
-- [ ] Search results / dossier / post-swap court show headshots when ESPN id resolves; initials on miss
+- [x] Search swap icon → click starter: acquisition sim (Out on displaced); Fit banner; Reset *(LeBron → SF earlier; LeBron → PG via Try in lineup)*
+- [x] Search dossier **Try in lineup** → same acquisition sim path *(LeBron → PG; Demin Out; Fit “in for Egor Demin”; deltas)*
+- [x] Search results / dossier / post-swap court show headshots when ESPN id resolves; initials on miss *(LeBron ESPN `…/full/1966.png` in search, dossier, court)*
 - [x] Radar card click → dossier with full scouting angle under the subtitle
 - [x] Lineup Fit shows grade + six pillars for real five
 - [ ] Drag Radar → starter: court updates; Fit banner + deltas; Reset restores *(swap-icon path verified; HTML5 DnD not re-exercised in this smoke)*
@@ -21,7 +21,7 @@ Run against **production** ([live URL](https://roster-radar-orcin.vercel.app)) a
 ## States
 - [ ] Fit / dossier loading skeletons appear briefly on slow network *(not forced this pass)*
 - [ ] Force error (offline) → message + Try again where applicable *(not forced this pass)*
-- [ ] Thin-sample note appears when relevant (low-game player) *(not forced this pass)*
+- [ ] Thin-sample note appears when relevant (low-game player) *(not observed on current Nets/search sample this pass; unit-covered)*
 
 ## Responsive
 - [x] Mobile stacked layout: court usable; PG card not clipped *(390×844)*

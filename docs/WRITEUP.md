@@ -123,7 +123,7 @@ Design system: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md). Identity: [`IDENTITY.md
 
 ## 10. Final QA checklist
 
-See [`FINAL_QA.md`](./FINAL_QA.md). Smoke on production after Phase 3 wrap merges: home, dossier (roster + search + Radar angle), Lineup Fit, Radar/bench swap + Reset, Tutorial, mobile stack, thin-sample / error paths.
+See [`FINAL_QA.md`](./FINAL_QA.md). Production smoke 2026-08-02 (`main` @ `2d2b684`): home, dossier (roster + search + Radar angle), search swap / Try in lineup + headshots, Lineup Fit, Radar/bench swap + Reset, Tutorial, mobile stack. Forced offline / skeleton / thin-sample UI not re-exercised on that pass.
 
 ---
 
