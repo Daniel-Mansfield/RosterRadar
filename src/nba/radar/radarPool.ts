@@ -155,8 +155,13 @@ export const RADAR_POOL: readonly RadarCandidate[] = [
   },
 ];
 
-/** How many candidates the home panel surfaces per page load. */
-export const RADAR_PICK_COUNT = 5;
+/**
+ * How many candidates the home panel surfaces per shuffle.
+ * Equals the curated pool so the strip shows every seeded target; Shuffle
+ * still redraws via {@link pickRadarCandidates} (a random subset of the pool,
+ * which is the full pool at the current seed size).
+ */
+export const RADAR_PICK_COUNT = RADAR_POOL.length;
 
 /**
  * Random subset of the pool, order shuffled. `random` is injectable so tests

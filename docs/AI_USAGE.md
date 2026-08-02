@@ -67,3 +67,8 @@ This log supports the assignment requirement to disclose AI use. Keep entries su
 - **Tool:** Cursor agent
 - **Used for:** Accumulated slot overrides (`lineupSim` + `useLineupSim`); stacked Fit banner; Out-pin return; overwrite same slot; docs/tour copy
 - **Not used for:** Trade packages, salary, synergy/+/-
+
+### 2026-08-02 — Radar gap reorder
+- **Tool:** Cursor agent
+- **Used for:** Gap-aware Radar shortlist reorder (`radarGapReorder`, `/api/radar-scores`, pillar picker + full-pool vertical scroll); season-line pillar scores only
+- **Not used for:** League-wide attribute search
