@@ -84,6 +84,7 @@ export function OnTheRadar({
   const [sortPillarId, setSortPillarId] = useState<PillarId>(PILLAR_IDS[0]);
   const [pillarTouched, setPillarTouched] = useState(false);
   const [sortStatus, setSortStatus] = useState<SortStatus>({ kind: "idle" });
+  const [justSorted, setJustSorted] = useState(false);
   const headingId = useId();
   const sortSelectId = useId();
   const draggedRef = useRef(false);
@@ -102,8 +103,19 @@ export function OnTheRadar({
     setPicks(pickRadarCandidates(RADAR_POOL, RADAR_PICK_COUNT));
     setShuffleCount((count) => count + 1);
     setSortStatus({ kind: "idle" });
+    setJustSorted(false);
     listRef.current?.scrollTo({ top: 0 });
   }
+
+  useEffect(() => {
+    if (!justSorted) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setJustSorted(false);
+    }, 450);
+    return () => window.clearTimeout(timer);
+  }, [justSorted]);
 
   async function sortByPillar(pillarId: PillarId): Promise<void> {
     if (sortStatus.kind === "loading") {
@@ -154,6 +166,7 @@ export function OnTheRadar({
         reorderByPillarScores(picks, scoresByPlayerId(parsed.data.scores)),
       );
       listRef.current?.scrollTo({ top: 0 });
+      setJustSorted(true);
 
       let needKind: "gap" | "softest" | null = null;
       if (needPillar && needPillar.id === pillarId) {
@@ -314,7 +327,13 @@ export function OnTheRadar({
         </p>
       ) : null}
 
-      <ul ref={listRef} className={styles.list} tabIndex={0} aria-label="Radar candidates">
+      <ul
+        ref={listRef}
+        className={styles.list}
+        tabIndex={0}
+        aria-label="Radar candidates"
+        data-just-sorted={justSorted ? "true" : "false"}
+      >
         {picks.map((candidate) => {
           const pending = pendingCandidateId === candidate.id;
           const name = `${candidate.firstName} ${candidate.lastName}`;

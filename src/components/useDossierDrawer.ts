@@ -42,13 +42,18 @@ export type DrawerState =
 
 type UseDossierDrawerResult = {
   drawer: DrawerState;
+  /** True while the exit animation runs; identity stays mounted until finish. */
+  isClosing: boolean;
   /** Open the drawer and load the dossier; requires a resolved player id. */
   openDossier: (identity: DrawerIdentity) => void;
   /** Open the drawer in the terminal "unavailable" state (no fetch). */
   showUnavailable: (identity: DrawerIdentity, message: string) => void;
   /** Re-fire the fetch for the currently open, errored dossier. */
   retryDossier: () => void;
+  /** Begin close (exit motion); call again to finish immediately. */
   closeDrawer: () => void;
+  /** Complete close after exit motion (or timeout fallback). */
+  finishCloseDrawer: () => void;
   /** Attach to the dialog element — scopes the focus trap. */
   drawerRef: RefObject<HTMLElement | null>;
   /** Attach to the close button — receives initial focus on open. */
@@ -67,22 +72,44 @@ type UseDossierDrawerResult = {
  */
 export function useDossierDrawer(): UseDossierDrawerResult {
   const [drawer, setDrawer] = useState<DrawerState>({ open: false });
+  const [isClosing, setIsClosing] = useState(false);
   const drawerRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const requestIdRef = useRef(0);
+  const isClosingRef = useRef(false);
+  const drawerOpenRef = useRef(false);
   const titleId = useId();
+  isClosingRef.current = isClosing;
+  drawerOpenRef.current = drawer.open;
 
-  function closeDrawer(): void {
+  function finishCloseDrawer(): void {
     // Invalidate in-flight dossier fetches so a late response cannot reopen the drawer.
     requestIdRef.current += 1;
+    isClosingRef.current = false;
+    setIsClosing(false);
     setDrawer({ open: false });
+  }
+
+  function closeDrawer(): void {
+    // Second Escape / close during exit finishes immediately.
+    if (isClosingRef.current) {
+      finishCloseDrawer();
+      return;
+    }
+    if (!drawerOpenRef.current) {
+      return;
+    }
+    isClosingRef.current = true;
+    setIsClosing(true);
   }
 
   function showDrawer(
     identity: DrawerIdentity,
     dossier: DossierLoadState,
   ): void {
+    isClosingRef.current = false;
+    setIsClosing(false);
     setDrawer({ open: true, ...identity, dossier });
   }
 
@@ -214,12 +241,25 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     };
   }, [drawer.open]);
 
+  // Fallback if transitionend does not fire (reduced-motion / interrupted).
+  useEffect(() => {
+    if (!isClosing) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      finishCloseDrawer();
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [isClosing]);
+
   return {
     drawer,
+    isClosing,
     openDossier,
     showUnavailable,
     retryDossier,
     closeDrawer,
+    finishCloseDrawer,
     drawerRef,
     closeButtonRef,
     titleId,

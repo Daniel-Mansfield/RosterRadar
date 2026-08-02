@@ -288,8 +288,8 @@
   text-align: left;
   cursor: pointer;
   transition:
-    border-color 120ms ease,
-    transform 120ms ease;
+    border-color var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
 }
 
 .row:hover {
@@ -297,9 +297,49 @@
   transform: translateY(-1px);
 }
 
+.row:active {
+  transform: translateY(0) scale(0.99);
+}
+
 .row:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .list[data-just-sorted="true"] .item {
+    animation: radarReorderIn var(--motion-ui) var(--ease-out) both;
+  }
+
+  .list[data-just-sorted="true"] .item:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .list[data-just-sorted="true"] .item:nth-child(2) {
+    animation-delay: 30ms;
+  }
+  .list[data-just-sorted="true"] .item:nth-child(3) {
+    animation-delay: 60ms;
+  }
+  .list[data-just-sorted="true"] .item:nth-child(4) {
+    animation-delay: 90ms;
+  }
+  .list[data-just-sorted="true"] .item:nth-child(5) {
+    animation-delay: 120ms;
+  }
+  .list[data-just-sorted="true"] .item:nth-child(n + 6) {
+    animation-delay: 150ms;
+  }
+}
+
+@keyframes radarReorderIn {
+  from {
+    opacity: 0.35;
+    transform: translateY(0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -307,7 +347,8 @@
     transition: none;
   }
 
-  .row:hover {
+  .row:hover,
+  .row:active {
     transform: none;
   }
 }

@@ -84,4 +84,18 @@ Re-check contrast on graphite before shipping new pairings.
 Loading / empty / error / thin-sample for roster and dossier.
 
 ## Motion
-Subtle transitions; honor `prefers-reduced-motion: reduce`.
+
+Subtle, functional motion only (FO / ops tone — not marketing flair).
+
+| Token | Duration | Use |
+|---|---|---|
+| `--motion-fast` | 120ms | Hover / press |
+| `--motion-ui` | 200ms | Content crossfade, list reorder cue |
+| `--motion-panel` | 280ms | Drawer enter / exit |
+| `--ease-out` | cubic-bezier(0.22, 1, 0.36, 1) | Panel / enter |
+| `--ease-standard` | ease | Simple UI |
+
+**Rules**
+- Prefer `transform` + `opacity` (compositor-friendly).
+- Honor `prefers-reduced-motion: reduce` — large slides collapse to short fades; continuous loops opt in via `no-preference`.
+- Animate state changes that orient the user (drawer, load→ready, sort reorder), not decorative noise.

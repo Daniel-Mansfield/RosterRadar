@@ -52,7 +52,7 @@ export function DossierPanel({
   const fitLabel = FIT_LABEL[dossier.fit.recommendation];
 
   return (
-    <div className={styles.wrap}>
+    <div className={`${styles.wrap} ${styles.contentEnter}`}>
       <section className={styles.hero} aria-label="Fit verdict">
         <div className={styles.heroTop}>
           <div className={styles.heroPortrait}>

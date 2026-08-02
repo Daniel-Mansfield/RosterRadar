@@ -72,3 +72,8 @@ This log supports the assignment requirement to disclose AI use. Keep entries su
 - **Tool:** Cursor agent
 - **Used for:** Gap-aware Radar shortlist reorder (`radarGapReorder`, `/api/radar-scores`, pillar picker + full-pool vertical scroll); season-line pillar scores only
 - **Not used for:** League-wide attribute search
+
+### 2026-08-02 — UI motion polish
+- **Tool:** Cursor agent
+- **Used for:** CSS-first motion tokens; dossier drawer enter/exit; Fit/dossier content enter; Radar sort reorder cue; card press feedback
+- **Not used for:** Framer Motion / GSAP; decorative marketing animation

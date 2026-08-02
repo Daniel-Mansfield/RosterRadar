@@ -282,7 +282,7 @@ function PanelBody({
       : `${fitLabel}, lineup grade ${teamFit.grade}`;
 
   return (
-    <div className={styles.body}>
+    <div className={`${styles.body} ${styles.contentEnter}`}>
       <div className={styles.scoreboard} aria-label={scoreAria}>
         <p className={`${styles.grade} ${fitClass}`} aria-hidden="true">
           {teamFit.grade}

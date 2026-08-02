@@ -177,6 +177,23 @@
   flex: 0 0 auto;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .contentEnter {
+    animation: contentEnter var(--motion-ui) var(--ease-out) both;
+  }
+}
+
+@keyframes contentEnter {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* —— Grade scoreboard —— */
 
 .scoreboard {
