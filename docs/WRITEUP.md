@@ -123,7 +123,7 @@ Design system: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md). Identity: [`IDENTITY.md
 
 ## 10. Final QA checklist
 
-See [`FINAL_QA.md`](./FINAL_QA.md). Production smoke 2026-08-02 (`main` @ `2d2b684`): home, dossier (roster + search + Radar angle), search swap / Try in lineup + headshots, Lineup Fit, Radar HTML5 DnD + bench swap + Reset, Tutorial, mobile stack, Fit/dossier skeletons, offline dossier retry, thin-sample (Dadiet).
+See [`FINAL_QA.md`](./FINAL_QA.md). Production smoke 2026-08-02 (`main` @ `2d2b684`, then multi-slot @ `f49de8c`): home, dossier (roster + search + Radar angle), search swap / Try in lineup + headshots, Lineup Fit, Radar HTML5 DnD + bench swap + Reset, accumulated multi-slot sim (stack / overwrite / Out return / bench no-Out), Tutorial, mobile stack, Fit/dossier skeletons, offline dossier retry, thin-sample (Dadiet).
 
 ---
 

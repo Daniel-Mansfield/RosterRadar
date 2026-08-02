@@ -2,7 +2,7 @@
 
 Run against **production** ([live URL](https://roster-radar-orcin.vercel.app)) after Phase 3 wrap is merged. Paid GOAT key must be set on Vercel.
 
-**Smoke completed:** 2026-08-02 on production (`main` @ `2d2b684`, post PRs #15–#16). Residual state paths + HTML5 Radar DnD re-checked same day.
+**Smoke completed:** 2026-08-02 on production (`main` @ `2d2b684`, post PRs #15–#16). Residual state paths + HTML5 Radar DnD re-checked same day. Multi-slot sim re-smoked 2026-08-02 on `main` @ `f49de8c` (PR #18).
 
 ## Happy path
 - [x] Home loads: brand, search, court, Fit, Radar, bench
@@ -17,6 +17,11 @@ Run against **production** ([live URL](https://roster-radar-orcin.vercel.app)) a
 - [x] Radar swap icon → click starter: same as drag; Esc or second tap cancels pending
 - [x] Drag bench → starter (or bench swap icon): true exchange; Fit deltas; Reset
 - [x] Tutorial: steps highlight regions; Skip / Esc / Done / arrows work; Tab stays in card; re-open starts at step 1 *(open + Esc verified; arrows/Tab spot-checked in prior local pass)*
+- [x] Multi-slot accumulate: two Radar placements → stacked Fit banner (PG→C order); both Out pins *(Simons SG + Kuzma PF)*
+- [x] Same-slot overwrite: second acquisition replaces first; Out stays the real starter *(Johnson over Kuzma at PF; Clowney still Out)*
+- [x] Out return home clears that override only *(Traore → SG; Johnson/PF remains)*
+- [x] Bench-only exchange: no Out badge / no Return control *(Cam → SG; Traore shows Swap, not Return)*
+- [x] Reset clears every stacked change
 
 ## States
 - [x] Fit / dossier loading skeletons appear briefly on slow network *(Fit skeleton after Radar drag; dossier “Loading role-fit dossier…” under throttled network)*
