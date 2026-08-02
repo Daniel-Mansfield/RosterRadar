@@ -12,7 +12,7 @@ This document is the submission write-up. Detailed design notes live in sibling 
 
 **RosterRadar** is a role-aware scouting tool for Brooklyn Nets roster decisions. It answers: *what role does this player play, how do they grade in that role versus peers, and is that a Strong / Conditional / Poor fit — with evidence?*
 
-The home surface shows the Nets starting five on a half-court plus bench depth, a **Lineup Fit** rail (peer-percentile aggregation for the five), and **On the Radar** (curated acquisition shortlist). Search opens dossiers for non-Nets players. An optional **Tutorial** coach-marks the live UI. A scoped **one-for-one swap** lets staff drag (or use a swap icon) a Radar candidate or bench player onto a starter and see Lineup Fit deltas — peer aggregation only, not a trade engine.
+The home surface shows the Nets starting five on a half-court plus bench depth, a **Lineup Fit** rail (peer-percentile aggregation for the five), and **On the Radar** (curated acquisition shortlist). Search opens dossiers for non-Nets players. An optional **Tutorial** coach-marks the live UI. Staff can **stack one-for-one slot swaps** (Radar, search, or bench → starter; Out pins can return) and see a stacked Fit banner plus deltas — peer aggregation only, not a trade engine.
 
 ---
 
@@ -73,7 +73,7 @@ Version string on payloads (`scoringVersion`) keeps UI and write-up aligned. Det
 ### Swap simulation
 - Client-side: one incoming player replaces one starter by slot (acquisition from Radar or player search, or bench true-exchange).
 - Fit refetch for the hypothetical five; deltas vs the real five’s baseline Fit.
-- Acquisition swaps pin the displaced starter on the bench (Out); bench swaps exchange spots.
+- Acquisition swaps pin displaced real starters on the bench (Out); further slot changes accumulate; Out pins can return; bench swaps exchange spots; Reset clears the board.
 - Search: swap icon on results or **Try in lineup** in the dossier; same Fit path as Radar.
 - No salary, multi-player packages, or chemistry claims.
 
@@ -85,7 +85,7 @@ Version string on payloads (`scoringVersion`) keeps UI and write-up aligned. Det
 2. **Dossier drawer** — search or click → role, grade, pillars, callouts, evidence  
 3. **On the Radar** — curated shortlist, shuffle, zero API until dossier open  
 4. **Lineup Fit** — starting-five aggregation + methodology disclosure  
-5. **Lineup swap** — Radar, search, or bench → starter via DnD / swap icon / Try in lineup; Fit banner + Reset  
+5. **Lineup sim** — Radar, search, or bench → starter via DnD / swap icon / Try in lineup; stack slots; Out return; stacked Fit banner + Reset  
 6. **Tutorial** — optional spotlight coach marks (never auto-blocking)  
 7. **States** — loading skeletons, errors/retry, thin-sample, unavailable ids  
 

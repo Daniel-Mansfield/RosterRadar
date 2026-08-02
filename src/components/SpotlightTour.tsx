@@ -25,27 +25,27 @@ const TOUR_STEPS: TourStep[] = [
   {
     target: "search",
     title: "Search acquisition targets",
-    body: "Find non-Nets players for a role-fit dossier, or use the swap icon / Try in lineup to simulate them into a starter slot.",
+    body: "Find non-Nets players for a role-fit dossier, or use the swap icon / Try in lineup to place them on a starter slot. Keep stacking other slots — or drop someone else on the same hole to try a different fit.",
   },
   {
     target: "court",
     title: "Starting five",
-    body: "Click a Nets starter for their dossier. During a swap, drop or click a slot to place the incoming player.",
+    body: "Click a Nets starter for their dossier. While placing, drop or click any slot to fill it; you can overwrite a slot you already changed without resetting.",
   },
   {
     target: "team-fit",
     title: "Lineup Fit",
-    body: "Peer-percentile read for the starting five — grade, pillars, and balance callouts. Hypothetical swaps show deltas vs the real five.",
+    body: "Peer-percentile read for the starting five — grade, pillars, and balance callouts. Stack multiple slot swaps; the banner lists each change and Fit shows deltas vs the real five.",
   },
   {
     target: "radar",
     title: "On the Radar",
-    body: "A rotating shortlist of acquisition targets. Click for a dossier, or drag / tap the swap icon onto a starter to simulate fit.",
+    body: "A rotating shortlist of acquisition targets. Click for a dossier, or drag / tap the swap icon onto a starter — then keep filling other slots the same way.",
   },
   {
     target: "bench",
     title: "Bench swaps",
-    body: "Drag a bench card onto a starter, or tap its swap icon then click a slot — true exchange with Fit deltas. Reset clears the hypothetical.",
+    body: "Drag a bench card onto a starter, or tap its swap icon then click a slot — true exchange with Fit deltas. Out pins can return to a slot. Reset clears every change.",
   },
 ];
 

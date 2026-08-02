@@ -4,7 +4,7 @@ import type { RadarCandidate } from "@/nba/radar/radarPool";
 /** Starter slots that can receive a lineup swap. */
 export type StarterSlot = Exclude<CourtSlot, "BENCH">;
 
-/** Shared shape for acquisition or bench players entering a starter slot. */
+/** Shared shape for acquisition, bench, or returning Out players. */
 export type LineupIncoming = {
   id: number;
   espnAthleteId: number | null;
@@ -17,12 +17,11 @@ export type LineupIncoming = {
 /**
  * Where the incoming player came from.
  *
- * - `acquisition`: non-Nets candidate (Radar shortlist or player search) in;
- *   displaced starter pinned on the bench.
- * - `bench`: true exchange — bench player starts; displaced starter takes that
- *   bench spot.
+ * - `acquisition`: non-Nets candidate (Radar / search)
+ * - `bench`: real bench → starter (true exchange on the bench list)
+ * - `return`: Out-pinned real starter placed back onto a slot
  */
-export type LineupSwapSource = "acquisition" | "bench";
+export type LineupSwapSource = "acquisition" | "bench" | "return";
 
 export function isAcquisitionSource(
   source: LineupSwapSource,
@@ -31,26 +30,32 @@ export function isAcquisitionSource(
 }
 
 /**
- * One player in for one starter out — client-side hypothetical only.
+ * One slot override in an accumulated hypothetical five.
  * Not a trade engine (no salary, packages, or synergy).
  */
-export type LineupSwap = {
+export type LineupSlotOverride = {
   slot: StarterSlot;
-  /** BALLDONTLIE id of the displaced starter. */
-  outgoingId: number;
   incoming: LineupIncoming;
   source: LineupSwapSource;
 };
 
+/** @deprecated Prefer LineupSlotOverride — single-swap era name. */
+export type LineupSwap = LineupSlotOverride & {
+  /** BALLDONTLIE id of the real starter for this slot (informational). */
+  outgoingId: number;
+};
+
 export type LineupSimState =
   | { status: "idle" }
-  | { status: "simulating"; swap: LineupSwap };
+  | { status: "simulating"; overrides: LineupSlotOverride[] };
 
-/** MIME type for HTML5 drag payloads (acquisition or bench → starter). */
+/** MIME type for HTML5 drag payloads (acquisition, bench, or return → starter). */
 export const LINEUP_DRAG_MIME = "application/x-rosterradar-lineup-incoming";
 
 /** @deprecated Use LINEUP_DRAG_MIME — kept so in-flight drops still parse. */
 export const RADAR_DRAG_MIME = LINEUP_DRAG_MIME;
+
+const STARTER_SLOT_ORDER: StarterSlot[] = ["PG", "SG", "SF", "PF", "C"];
 
 export function isStarterSlot(slot: CourtSlot): slot is StarterSlot {
   return slot !== "BENCH";
@@ -81,7 +86,7 @@ export function lineupIncomingFromSummary(player: PlayerSummary): LineupIncoming
   };
 }
 
-/** Returns null when the bench player has no resolved BALLDONTLIE id. */
+/** Returns null when the bench/Out player has no resolved BALLDONTLIE id. */
 export function lineupIncomingFromBench(
   player: RosterPlayer,
 ): LineupIncoming | null {
@@ -105,58 +110,220 @@ export function starterIdsFromPlayers(starters: RosterPlayer[]): number[] {
     .filter((id): id is number => id != null);
 }
 
-/** Replace the starter in `swap.slot` with the incoming player. */
-export function applyLineupSwap(
+function overrideMap(
+  overrides: readonly LineupSlotOverride[],
+): Map<StarterSlot, LineupSlotOverride> {
+  return new Map(overrides.map((override) => [override.slot, override]));
+}
+
+/** Apply accumulated slot overrides onto the real starting five. */
+export function applyLineupOverrides(
   starters: RosterPlayer[],
-  swap: LineupSwap,
+  overrides: readonly LineupSlotOverride[],
 ): RosterPlayer[] {
+  const bySlot = overrideMap(overrides);
   return starters.map((player) => {
-    if (player.slot !== swap.slot) {
+    if (!isStarterSlot(player.slot)) {
+      return player;
+    }
+    const override = bySlot.get(player.slot);
+    if (!override) {
       return player;
     }
     return {
-      id: swap.incoming.id,
-      espnAthleteId: swap.incoming.espnAthleteId,
-      firstName: swap.incoming.firstName,
-      lastName: swap.incoming.lastName,
-      position: swap.incoming.position,
-      teamAbbreviation: swap.incoming.teamAbbreviation,
-      slot: swap.slot,
+      id: override.incoming.id,
+      espnAthleteId: override.incoming.espnAthleteId,
+      firstName: override.incoming.firstName,
+      lastName: override.incoming.lastName,
+      position: override.incoming.position,
+      teamAbbreviation: override.incoming.teamAbbreviation,
+      slot: player.slot,
     };
   });
 }
 
-/** Real starter displaced by the swap (still on the Nets roster). */
-export function outgoingStarter(
+/** @deprecated Prefer applyLineupOverrides. */
+export function applyLineupSwap(
   starters: RosterPlayer[],
-  swap: LineupSwap,
+  swap: LineupSlotOverride,
+): RosterPlayer[] {
+  return applyLineupOverrides(starters, [swap]);
+}
+
+/** Real starter currently assigned to a slot on the real roster. */
+export function realStarterInSlot(
+  starters: readonly RosterPlayer[],
+  slot: StarterSlot,
 ): RosterPlayer | null {
-  return starters.find((player) => player.slot === swap.slot) ?? null;
+  return starters.find((player) => player.slot === slot) ?? null;
+}
+
+/** @deprecated Prefer realStarterInSlot. */
+export function outgoingStarter(
+  starters: readonly RosterPlayer[],
+  swap: LineupSlotOverride,
+): RosterPlayer | null {
+  return realStarterInSlot(starters, swap.slot);
+}
+
+/** True when this id already occupies a simulated starter slot. */
+export function isIncomingOnSimFive(
+  displayStarters: readonly RosterPlayer[],
+  incomingId: number,
+): boolean {
+  return displayStarters.some((player) => player.id === incomingId);
 }
 
 /**
- * Bench during a sim:
- * - acquisition: displaced starter pinned at the front (as BENCH), then real bench
- * - bench: true exchange — incoming removed; displaced starter takes that spot
+ * Upsert a slot override. Returning a real starter to their home slot clears
+ * that override. Empty result → caller should idle the sim.
+ */
+export function upsertLineupOverride(
+  overrides: readonly LineupSlotOverride[],
+  next: LineupSlotOverride,
+  starters: readonly RosterPlayer[],
+): LineupSlotOverride[] {
+  const home = starters.find((player) => player.id === next.incoming.id);
+  const withoutSlot = overrides.filter((override) => override.slot !== next.slot);
+
+  if (home && isStarterSlot(home.slot) && home.slot === next.slot) {
+    return withoutSlot;
+  }
+
+  const source: LineupSwapSource =
+    home && isStarterSlot(home.slot) ? "return" : next.source;
+
+  return [...withoutSlot, { ...next, source }];
+}
+
+/**
+ * Real starters absent from the simulated five.
+ * Ordered PG → C for stable UI.
+ */
+export function displacedRealStarters(
+  starters: readonly RosterPlayer[],
+  displayStarters: readonly RosterPlayer[],
+): RosterPlayer[] {
+  const onFive = new Set(
+    displayStarters
+      .map((player) => player.id)
+      .filter((id): id is number => id != null),
+  );
+
+  return STARTER_SLOT_ORDER.flatMap((slot) => {
+    const real = starters.find((player) => player.slot === slot);
+    if (!real || real.id == null || onFive.has(real.id)) {
+      return [];
+    }
+    return [{ ...real, slot: "BENCH" as const }];
+  });
+}
+
+/**
+ * Out-badge pins: real starters displaced by acquisition or return overrides.
+ * Bench true-exchanges seat the displaced starter on the bench list without Out.
+ */
+export function outPinnedRealStarters(
+  starters: readonly RosterPlayer[],
+  displayStarters: readonly RosterPlayer[],
+  overrides: readonly LineupSlotOverride[],
+): RosterPlayer[] {
+  const bySlot = overrideMap(overrides);
+  const onFive = new Set(
+    displayStarters
+      .map((player) => player.id)
+      .filter((id): id is number => id != null),
+  );
+
+  return STARTER_SLOT_ORDER.flatMap((slot) => {
+    const real = starters.find((player) => player.slot === slot);
+    if (!real || real.id == null || onFive.has(real.id)) {
+      return [];
+    }
+    const override = bySlot.get(slot);
+    if (!override || override.source === "bench") {
+      return [];
+    }
+    return [{ ...real, slot: "BENCH" as const }];
+  });
+}
+
+/**
+ * Bench during a multi-slot sim:
+ * - bench-source overrides exchange in place (incoming seat ← real starter)
+ * - remaining displaced real starters are prepended (Out pins)
  */
 export function buildSimBench(
   bench: RosterPlayer[],
   starters: RosterPlayer[],
-  swap: LineupSwap,
+  overrides: readonly LineupSlotOverride[],
 ): RosterPlayer[] {
-  const outgoing = outgoingStarter(starters, swap);
-  if (!outgoing) {
-    return bench;
-  }
-  const pinned: RosterPlayer = { ...outgoing, slot: "BENCH" };
+  const display = applyLineupOverrides(starters, overrides);
+  const onFive = new Set(
+    display
+      .map((player) => player.id)
+      .filter((id): id is number => id != null),
+  );
 
-  if (swap.source === "bench") {
-    return bench.map((player) =>
-      player.id === swap.incoming.id ? pinned : player,
+  let working = [...bench];
+  for (const override of overrides) {
+    if (override.source !== "bench") {
+      continue;
+    }
+    const realAtSlot = realStarterInSlot(starters, override.slot);
+    if (!realAtSlot) {
+      continue;
+    }
+    working = working.map((player) =>
+      player.id === override.incoming.id
+        ? { ...realAtSlot, slot: "BENCH" }
+        : player,
     );
   }
 
-  return [pinned, ...bench];
+  working = working.filter(
+    (player) => player.id == null || !onFive.has(player.id),
+  );
+
+  const inWorking = new Set(
+    working.map((player) => player.id).filter((id): id is number => id != null),
+  );
+  const pins = displacedRealStarters(starters, display).filter(
+    (player) => player.id != null && !inWorking.has(player.id),
+  );
+
+  return [...pins, ...working];
+}
+
+/** One stacked Fit-banner row (slot is the stable React key). */
+export type LineupSimSummaryLine = {
+  slot: StarterSlot;
+  text: string;
+};
+
+/** One banner line per changed slot (PG→C), vs the real five. */
+export function lineupSimSummaryLines(
+  starters: readonly RosterPlayer[],
+  overrides: readonly LineupSlotOverride[],
+): LineupSimSummaryLine[] {
+  const bySlot = overrideMap(overrides);
+  const lines: LineupSimSummaryLine[] = [];
+
+  for (const slot of STARTER_SLOT_ORDER) {
+    const override = bySlot.get(slot);
+    if (!override) continue;
+    const real = realStarterInSlot(starters, slot);
+    const outName = real
+      ? `${real.firstName} ${real.lastName}`
+      : slot;
+    const inName = `${override.incoming.firstName} ${override.incoming.lastName}`;
+    lines.push({
+      slot,
+      text: `${inName} in for ${outName} (${slot})`,
+    });
+  }
+
+  return lines;
 }
 
 export type LineupDragPayload = {
@@ -165,7 +332,7 @@ export type LineupDragPayload = {
 };
 
 function normalizeDragSource(value: unknown): LineupSwapSource | null {
-  if (value === "acquisition" || value === "bench") {
+  if (value === "acquisition" || value === "bench" || value === "return") {
     return value;
   }
   // Pre-rename payloads used "radar" for acquisition candidates.

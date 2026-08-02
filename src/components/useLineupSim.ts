@@ -2,20 +2,27 @@ import { useCallback, useMemo, useState } from "react";
 
 import type { RosterPlayer } from "@/domain/player";
 import {
-  applyLineupSwap,
+  applyLineupOverrides,
   buildSimBench,
-  isAcquisitionSource,
+  isIncomingOnSimFive,
+  isStarterSlot,
+  outPinnedRealStarters,
   lineupIncomingFromBench,
   lineupIncomingFromRadar,
-  outgoingStarter,
+  lineupSimSummaryLines,
+  realStarterInSlot,
   starterIdsFromPlayers,
+  upsertLineupOverride,
   type LineupIncoming,
   type LineupSimState,
-  type LineupSwap,
+  type LineupSimSummaryLine,
+  type LineupSlotOverride,
   type LineupSwapSource,
   type StarterSlot,
 } from "@/domain/lineupSim";
 import type { RadarCandidate } from "@/nba/radar/radarPool";
+
+const EMPTY_OVERRIDES: LineupSlotOverride[] = [];
 
 export type PendingLineupIncoming = {
   source: LineupSwapSource;
@@ -26,28 +33,38 @@ type UseLineupSimResult = {
   sim: LineupSimState;
   /** Starters as shown on court (real or simulated). */
   displayStarters: RosterPlayer[];
-  /** Bench as shown — acquisition pin or bench true-exchange. */
+  /** Bench as shown — Out pins + bench exchanges. */
   displayBench: RosterPlayer[];
-  /** BDL id of acquisition-displaced starter (bench “Out” badge), if any. */
-  displacedPlayerId: number | null;
+  /** BDL ids of real starters absent from the simulated five (Out badges). */
+  displacedPlayerIds: number[];
   /** Resolved ids for Lineup Fit (real or simulated). */
   displayStarterIds: number[];
-  /** True while a hypothetical swap is active. */
+  /** True while at least one slot override is active. */
   isSimulating: boolean;
+  /** Banner lines for each changed slot (PG→C). */
+  simSummaryLines: LineupSimSummaryLine[];
   /** Incoming player waiting for a keyboard/click slot pick. */
   pendingIncoming: PendingLineupIncoming | null;
   beginPendingRadar: (candidate: RadarCandidate) => void;
   beginPendingAcquisition: (incoming: LineupIncoming) => void;
   beginPendingBench: (player: RosterPlayer) => boolean;
+  /** Out-pinned real starter → place back onto a slot. */
+  beginPendingReturn: (player: RosterPlayer) => boolean;
   cancelPendingSwap: () => void;
-  applySwap: (swap: LineupSwap) => void;
+  /** Place acquisition / bench / return incoming onto a starter slot. */
+  placeIncomingOnSlot: (
+    slot: StarterSlot,
+    source: LineupSwapSource,
+    incoming: LineupIncoming,
+  ) => boolean;
   /** Place the pending incoming onto a starter slot. */
-  placeOnSlot: (slot: StarterSlot, starter: RosterPlayer) => boolean;
+  placeOnSlot: (slot: StarterSlot) => boolean;
   reset: () => void;
 };
 
 /**
- * Client-side one-for-one lineup simulation (acquisition or bench → starter).
+ * Client-side accumulated lineup simulation (multi-slot).
+ * Each Radar/search/bench/return placement upserts one slot; Reset clears all.
  * Does not mutate the server roster prop; Fit refetch follows display ids.
  */
 export function useLineupSim(
@@ -58,45 +75,66 @@ export function useLineupSim(
   const [pendingIncoming, setPendingIncoming] =
     useState<PendingLineupIncoming | null>(null);
 
+  const overrides =
+    sim.status === "simulating" ? sim.overrides : EMPTY_OVERRIDES;
+
   const displayStarters = useMemo(() => {
-    if (sim.status !== "simulating") {
+    if (overrides.length === 0) {
       return starters;
     }
-    return applyLineupSwap(starters, sim.swap);
-  }, [sim, starters]);
+    return applyLineupOverrides(starters, overrides);
+  }, [overrides, starters]);
 
   const displayBench = useMemo(() => {
-    if (sim.status !== "simulating") {
+    if (overrides.length === 0) {
       return bench;
     }
-    return buildSimBench(bench, starters, sim.swap);
-  }, [sim, bench, starters]);
+    return buildSimBench(bench, starters, overrides);
+  }, [overrides, bench, starters]);
 
-  const displacedPlayerId = useMemo(() => {
-    if (sim.status !== "simulating" || !isAcquisitionSource(sim.swap.source)) {
-      return null;
+  const displacedPlayerIds = useMemo(() => {
+    if (overrides.length === 0) {
+      return [];
     }
-    return outgoingStarter(starters, sim.swap)?.id ?? null;
-  }, [sim, starters]);
+    return outPinnedRealStarters(starters, displayStarters, overrides)
+      .map((player) => player.id)
+      .filter((id): id is number => id != null);
+  }, [overrides, starters, displayStarters]);
 
   const displayStarterIds = useMemo(
     () => starterIdsFromPlayers(displayStarters),
     [displayStarters],
   );
 
-  const beginPendingAcquisition = useCallback((incoming: LineupIncoming) => {
-    // Second tap on the same pressed swap icon cancels (touch-friendly).
-    setPendingIncoming((prev) => {
-      if (
-        prev &&
-        isAcquisitionSource(prev.source) &&
-        prev.incoming.id === incoming.id
-      ) {
-        return null;
-      }
-      return { source: "acquisition", incoming };
-    });
-  }, []);
+  const simSummaryLines = useMemo(() => {
+    if (overrides.length === 0) {
+      return [];
+    }
+    return lineupSimSummaryLines(starters, overrides);
+  }, [overrides, starters]);
+
+  const beginPendingWithSource = useCallback(
+    (source: LineupSwapSource, incoming: LineupIncoming) => {
+      setPendingIncoming((prev) => {
+        if (
+          prev &&
+          prev.source === source &&
+          prev.incoming.id === incoming.id
+        ) {
+          return null;
+        }
+        return { source, incoming };
+      });
+    },
+    [],
+  );
+
+  const beginPendingAcquisition = useCallback(
+    (incoming: LineupIncoming) => {
+      beginPendingWithSource("acquisition", incoming);
+    },
+    [beginPendingWithSource],
+  );
 
   const beginPendingRadar = useCallback(
     (candidate: RadarCandidate) => {
@@ -105,43 +143,82 @@ export function useLineupSim(
     [beginPendingAcquisition],
   );
 
-  const beginPendingBench = useCallback((player: RosterPlayer): boolean => {
-    const incoming = lineupIncomingFromBench(player);
-    if (!incoming) {
-      return false;
-    }
-    setPendingIncoming((prev) => {
-      if (prev?.source === "bench" && prev.incoming.id === incoming.id) {
-        return null;
+  const beginPendingBench = useCallback(
+    (player: RosterPlayer): boolean => {
+      const incoming = lineupIncomingFromBench(player);
+      if (!incoming) {
+        return false;
       }
-      return { source: "bench", incoming };
-    });
-    return true;
-  }, []);
+      beginPendingWithSource("bench", incoming);
+      return true;
+    },
+    [beginPendingWithSource],
+  );
+
+  const beginPendingReturn = useCallback(
+    (player: RosterPlayer): boolean => {
+      const incoming = lineupIncomingFromBench(player);
+      if (!incoming) {
+        return false;
+      }
+      beginPendingWithSource("return", incoming);
+      return true;
+    },
+    [beginPendingWithSource],
+  );
 
   const cancelPendingSwap = useCallback(() => {
     setPendingIncoming(null);
   }, []);
 
-  const applySwap = useCallback((swap: LineupSwap) => {
-    setSim({ status: "simulating", swap });
-    setPendingIncoming(null);
-  }, []);
-
-  const placeOnSlot = useCallback(
-    (slot: StarterSlot, starter: RosterPlayer): boolean => {
-      if (starter.id == null || !pendingIncoming) {
+  const placeIncomingOnSlot = useCallback(
+    (
+      slot: StarterSlot,
+      source: LineupSwapSource,
+      incoming: LineupIncoming,
+    ): boolean => {
+      if (realStarterInSlot(starters, slot)?.id == null) {
         return false;
       }
-      applySwap({
-        slot,
-        outgoingId: starter.id,
-        incoming: pendingIncoming.incoming,
-        source: pendingIncoming.source,
-      });
+
+      // Block re-placing someone already on the simulated five (except clearing
+      // via return-to-home, handled inside upsert when ids match home slot).
+      const home = starters.find((player) => player.id === incoming.id);
+      const returningHome =
+        home != null && home.slot === slot && isStarterSlot(home.slot);
+      if (!returningHome && isIncomingOnSimFive(displayStarters, incoming.id)) {
+        return false;
+      }
+
+      const nextOverrides = upsertLineupOverride(
+        overrides,
+        { slot, incoming, source },
+        starters,
+      );
+
+      setSim(
+        nextOverrides.length === 0
+          ? { status: "idle" }
+          : { status: "simulating", overrides: nextOverrides },
+      );
+      setPendingIncoming(null);
       return true;
     },
-    [applySwap, pendingIncoming],
+    [starters, displayStarters, overrides],
+  );
+
+  const placeOnSlot = useCallback(
+    (slot: StarterSlot): boolean => {
+      if (!pendingIncoming) {
+        return false;
+      }
+      return placeIncomingOnSlot(
+        slot,
+        pendingIncoming.source,
+        pendingIncoming.incoming,
+      );
+    },
+    [pendingIncoming, placeIncomingOnSlot],
   );
 
   const reset = useCallback(() => {
@@ -153,15 +230,17 @@ export function useLineupSim(
     sim,
     displayStarters,
     displayBench,
-    displacedPlayerId,
+    displacedPlayerIds,
     displayStarterIds,
     isSimulating: sim.status === "simulating",
+    simSummaryLines,
     pendingIncoming,
     beginPendingRadar,
     beginPendingAcquisition,
     beginPendingBench,
+    beginPendingReturn,
     cancelPendingSwap,
-    applySwap,
+    placeIncomingOnSlot,
     placeOnSlot,
     reset,
   };
