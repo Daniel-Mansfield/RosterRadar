@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { RADAR_POOL } from "@/nba/radar/radarPool";
+import { pillarIdSchema } from "@/lib/api/dossierSchema";
 import { toErrorResponse } from "@/lib/api/errorResponse";
 import { loadPillarScores } from "@/nba/loadPillarScores";
 import { PILLAR_LABELS } from "@/scoring/composeDossier";
@@ -9,14 +10,7 @@ import { PILLAR_LABELS } from "@/scoring/composeDossier";
 const MAX_RADAR_SCORE_IDS = RADAR_POOL.length;
 
 const querySchema = z.object({
-  pillar: z.enum([
-    "scoring",
-    "playmaking",
-    "rebounding",
-    "spacing",
-    "disruption",
-    "workload",
-  ]),
+  pillar: pillarIdSchema,
   ids: z
     .string()
     .min(1)

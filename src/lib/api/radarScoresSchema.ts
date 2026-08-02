@@ -1,15 +1,10 @@
 import { z } from "zod";
 
+import { pillarIdSchema } from "@/lib/api/dossierSchema";
+
 export const radarScoresApiResponseSchema = z.object({
   pillar: z.object({
-    id: z.enum([
-      "scoring",
-      "playmaking",
-      "rebounding",
-      "spacing",
-      "disruption",
-      "workload",
-    ]),
+    id: pillarIdSchema,
     label: z.string().min(1),
   }),
   scores: z.array(
