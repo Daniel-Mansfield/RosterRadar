@@ -4,6 +4,8 @@
 
 **Repo description:** Scouting dossiers that grade NBA players by role, not just box scores.
 
+> **Shipped status (2026-08-02):** MVP + post-ship lineup/Radar features are on `main`. This outline is the **original plan**; for current product truth use [`IDENTITY.md`](./IDENTITY.md) and [`WRITEUP.md`](./WRITEUP.md). Docs map: [`README.md`](./README.md). Stretch items (§4 compare / role toggle) were **skipped**. Optional sticky mini-header (§5) was **not** built.
+
 ---
 
 ## 1. Assignment alignment

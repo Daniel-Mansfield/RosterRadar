@@ -1,6 +1,6 @@
 # Phase 2 review
 
-Standards QA after the dossier vertical slice (PR #3). Detail of individual fixes is in git history.
+**Historical.** Standards QA after the dossier vertical slice (PR #3). Current product: [`IDENTITY.md`](./IDENTITY.md) · docs map: [`README.md`](./README.md).
 
 ## What shipped
 - Pure `scoring/` + unit tests; `GET /api/dossier/[id]`; drawer `DossierPanel`

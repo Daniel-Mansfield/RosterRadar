@@ -33,7 +33,9 @@ Auth, multi-team picker, film, tracking, salary/cap, DnD trade sim, team +/- pro
 TypeScript + Next.js; ports/adapters (`nba/` + pure `scoring/`); Zod at boundaries; BALLDONTLIE via `NbaStatsPort`; Route Handlers return typed `Dossier` JSON; deploy (e.g. Vercel).
 
 ## Source of truth
-- Outline: `docs/PROJECT_OUTLINE.md`
+- Docs map: `docs/README.md`
+- Current product: `docs/IDENTITY.md` + `docs/WRITEUP.md`
+- Outline (original plan): `docs/PROJECT_OUTLINE.md`
 - Backend: `docs/BACKEND.md`
 - Design system: `docs/DESIGN_SYSTEM.md`
 - Phases: `docs/DEVELOPMENT.md`
