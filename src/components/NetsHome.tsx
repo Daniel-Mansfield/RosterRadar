@@ -24,6 +24,7 @@ import {
   type LineupDragPayload,
   type StarterSlot,
 } from "@/domain/lineupSim";
+import { primaryLineupNeedPillar } from "@/domain/radarGapReorder";
 import type { TeamFit } from "@/domain/teamFit";
 import { LINEUP_SIZE } from "@/domain/teamFit";
 import type { RadarCandidate } from "@/nba/radar/radarPool";
@@ -130,6 +131,11 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
 
   const baselineForPanel =
     realStarterIds.length === LINEUP_SIZE ? baselineFit : null;
+
+  const radarNeedPillar = useMemo(
+    () => (baselineFit ? primaryLineupNeedPillar(baselineFit) : null),
+    [baselineFit],
+  );
 
   useEffect(() => {
     if (!pendingIncoming) return;
@@ -399,6 +405,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
                 ? pendingIncoming.incoming.id
                 : null
             }
+            needPillar={radarNeedPillar}
           />
         </div>
       </div>

@@ -18,34 +18,62 @@ import styles from "./SpotlightTour.module.css";
 type TourStep = {
   target: string;
   title: string;
-  body: string;
+  /** One-line “what this is”. */
+  intro: string;
+  /** Short “what to try” cues — keep to 2–3. */
+  bullets: readonly [string, string] | readonly [string, string, string];
 };
 
 const TOUR_STEPS: TourStep[] = [
   {
     target: "search",
-    title: "Search acquisition targets",
-    body: "Find non-Nets players for a role-fit dossier, or use the swap icon / Try in lineup to place them on a starter slot. Keep stacking other slots — or drop someone else on the same hole to try a different fit.",
+    title: "Search",
+    intro: "Look up non-Nets players as acquisition targets.",
+    bullets: [
+      "Open a role-fit dossier from any result",
+      "Use the swap icon or Try in lineup to place them on a starter slot",
+      "Stack more slots — or drop someone else on the same hole to compare",
+    ],
   },
   {
     target: "court",
     title: "Starting five",
-    body: "Click a Nets starter for their dossier. While placing, drop or click any slot to fill it; you can overwrite a slot you already changed without resetting.",
+    intro: "The Nets starters live here.",
+    bullets: [
+      "Click a player to open their dossier",
+      "While placing someone, drop or click a slot to fill it",
+      "Overwrite a slot you’ve already changed without resetting",
+    ],
   },
   {
     target: "team-fit",
     title: "Lineup Fit",
-    body: "Peer-percentile read for the starting five — grade, pillars, and balance callouts. Stack multiple slot swaps; the banner lists each change and Fit shows deltas vs the real five.",
+    intro: "How the starting five grades versus league peers.",
+    bullets: [
+      "Read the overall grade, six pillars, and balance callouts",
+      "After swaps, Fit shows deltas versus the real five",
+      "The banner lists every stacked change; Reset clears them",
+    ],
   },
   {
     target: "radar",
     title: "On the Radar",
-    body: "A rotating shortlist of acquisition targets. Click for a dossier, or drag / tap the swap icon onto a starter — then keep filling other slots the same way.",
+    intro: "A curated shortlist of acquisition targets.",
+    bullets: [
+      "Scroll the full list; Shuffle redraws it",
+      "Sort by any Fit pillar (defaults to the lineup’s softest need)",
+      "Click for a dossier, or drag / tap swap onto a starter",
+    ],
   },
   {
     target: "bench",
-    title: "Bench swaps",
-    body: "Drag a bench card onto a starter, or tap its swap icon then click a slot — true exchange with Fit deltas. Out pins can return to a slot. Reset clears every change.",
+    title: "Bench",
+    intro: "Depth players you can exchange with a starter.",
+    bullets: [
+      "Drag onto a starter, or tap swap then click a slot",
+      "It’s a true exchange — Fit updates with deltas",
+      "Out pins can return to a slot; Reset clears every change",
+    ],
   },
 ];
 
@@ -135,7 +163,7 @@ export function SpotlightTour({
         { width: window.innerWidth, height: window.innerHeight },
       ),
     );
-  }, [open, rect, stepIndex, step?.body, step?.title]);
+  }, [open, rect, stepIndex, step?.intro, step?.title, step?.bullets]);
 
   useEffect(() => {
     if (!open) return;
@@ -249,7 +277,12 @@ export function SpotlightTour({
         <h2 id={titleId} className={styles.title}>
           {step.title}
         </h2>
-        <p className={styles.body}>{step.body}</p>
+        <p className={styles.intro}>{step.intro}</p>
+        <ul className={styles.bullets}>
+          {step.bullets.map((bullet) => (
+            <li key={bullet}>{bullet}</li>
+          ))}
+        </ul>
         <div className={styles.actions}>
           <button type="button" className={styles.ghost} onClick={onClose}>
             Skip

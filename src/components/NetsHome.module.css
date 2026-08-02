@@ -555,7 +555,7 @@
     overflow: hidden;
   }
 
-  /* Acquisition shortlist — adjacent to the court (drop targets in PR 2). */
+  /* Acquisition shortlist — adjacent to the court; list scrolls vertically. */
   .radarPane {
     grid-column: 2;
     grid-row: 1;
@@ -563,23 +563,7 @@
     width: 15rem;
     margin-right: var(--space-5);
     min-height: 0;
-    overflow-y: auto;
-    /* Thin scrollbar when the shortlist overflows the court column. */
-    scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--border) 80%, transparent) transparent;
-  }
-
-  .radarPane::-webkit-scrollbar {
-    width: 0.35rem;
-  }
-
-  .radarPane::-webkit-scrollbar-thumb {
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--border) 80%, transparent);
-  }
-
-  .radarPane::-webkit-scrollbar-track {
-    background: transparent;
+    overflow: hidden;
   }
 
   .benchScroll {

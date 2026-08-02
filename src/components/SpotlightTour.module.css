@@ -33,7 +33,7 @@
 .card {
   position: fixed;
   z-index: 52;
-  width: min(20rem, calc(100vw - 2rem));
+  width: min(22rem, calc(100vw - 2rem));
   max-height: calc(100vh - 2rem);
   overflow: auto;
   padding: var(--space-4);
@@ -61,11 +61,26 @@
   letter-spacing: 0.01em;
 }
 
-.body {
+.intro {
+  margin: 0 0 var(--space-3);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--content-primary);
+}
+
+.bullets {
   margin: 0 0 var(--space-4);
-  font-size: 0.88rem;
-  line-height: 1.45;
+  padding: 0 0 0 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.84rem;
+  line-height: 1.4;
   color: var(--content-muted);
+}
+
+.bullets li::marker {
+  color: var(--accent);
 }
 
 .actions {

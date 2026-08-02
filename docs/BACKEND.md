@@ -193,6 +193,7 @@ Per BALLDONTLIE’s published endpoint matrix ([nba.balldontlie.io](https://nba.
 - **Vendor:** BALLDONTLIE primary (GOAT trial for Phase 2 stats/roster endpoints).
 - **Nets roster:** prefer live/active when the key allows; **curated seed** remains fallback (`rosterSeed.ts`).
 - **Acquisition search:** live `/nba/v1/players?search=` with `excludeNets` (alias-aware).
+- **Radar pillar sort:** `GET /api/radar-scores?pillar=&ids=` scores the current shortlist (up to the curated pool size) from season lines only (same `buildPillars` percentiles as dossiers; no game-log evidence).
 - **Stats for scoring:** GOAT season averages / game stats; paid month covers the demo window (fixtures = fallback).
 - **Not on Vercel runtime:** official NBA.com `stats.nba.com` adapter (local-only research if ever needed).
 

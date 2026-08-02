@@ -1,6 +1,5 @@
 .radar {
   min-width: 0;
-  /* Stacked layouts: natural height. Wide layout fills the court column. */
   height: auto;
   display: flex;
   flex-direction: column;
@@ -13,7 +12,6 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  /* Shared with Fit / Bench titles (shuffle control is 1.7rem). */
   min-height: 1.7rem;
 }
 
@@ -63,7 +61,6 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* The svg is keyed on shuffle count, so each click replays the spin. */
   .shuffleIcon {
     animation: radarSpin 450ms ease;
   }
@@ -78,6 +75,100 @@
   }
 }
 
+.sortRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  min-width: 0;
+}
+
+.sortLabel {
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--content-muted);
+}
+
+.sortSelect {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 12rem;
+  margin: 0;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: var(--surface-raised);
+  color: var(--content-primary);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.sortSelect:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.sortSelect:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sortSelect:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sortApply {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--content-muted);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.sortApply:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--content-primary);
+}
+
+.sortApply:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sortApply:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sortNote {
+  margin: var(--space-2) 0 0;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--content-muted);
+}
+
+.sortError {
+  margin: var(--space-2) 0 0;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--fit-poor);
+}
+
 .list {
   list-style: none;
   margin: var(--space-2) 0 0;
@@ -86,6 +177,30 @@
   flex-direction: column;
   justify-content: flex-start;
   gap: var(--space-2);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--border) 80%, transparent) transparent;
+}
+
+.list:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.list::-webkit-scrollbar {
+  width: 0.35rem;
+}
+
+.list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.list::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .item {
@@ -107,7 +222,6 @@
   border-radius: 0.5rem;
 }
 
-/* Compact swap control — beside the row, not overlaid on it. */
 .swap {
   flex: 0 0 auto;
   display: inline-flex;
@@ -145,31 +259,16 @@
   height: 0.8rem;
 }
 
-/* Wide layout: fill the court-height gutter (paired with NetsHome ≥64em). */
+/* Wide layout: column fills the court-height gutter; list scrolls vertically. */
 @media (min-width: 64em) {
   .radar {
     height: 100%;
+    min-height: 0;
   }
 
   .list {
     flex: 1 1 auto;
     min-height: 0;
-    justify-content: flex-start;
-    gap: var(--space-2);
-  }
-
-  .item {
-    flex: 1 1 auto;
-    min-height: 0;
-    max-height: 8.5rem;
-  }
-
-  .rowWrap {
-    height: 100%;
-  }
-
-  .row {
-    height: 100%;
   }
 }
 
@@ -213,7 +312,6 @@
   }
 }
 
-/* Visually hidden, still read by screen readers. */
 .srOnly {
   position: absolute;
   width: 1px;

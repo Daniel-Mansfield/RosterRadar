@@ -1,25 +1,38 @@
 "use client";
 
 import {
+  useEffect,
   useId,
   useRef,
   useState,
+  type ChangeEvent,
   type DragEvent,
   type ReactElement,
 } from "react";
 
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import type { PillarId } from "@/domain/dossier";
 import {
   LINEUP_DRAG_MIME,
   lineupIncomingFromRadar,
   type LineupDragPayload,
 } from "@/domain/lineupSim";
+import type { TeamFitPillar } from "@/domain/teamFit";
+import {
+  isHardLineupGap,
+  isPillarId,
+  reorderByPillarScores,
+  scoresByPlayerId,
+} from "@/domain/radarGapReorder";
+import { apiErrorSchema } from "@/lib/api/schemas";
+import { radarScoresApiResponseSchema } from "@/lib/api/radarScoresSchema";
 import {
   RADAR_PICK_COUNT,
   RADAR_POOL,
   pickRadarCandidates,
   type RadarCandidate,
 } from "@/nba/radar/radarPool";
+import { PILLAR_IDS, PILLAR_LABELS } from "@/scoring/composeDossier";
 
 import styles from "./OnTheRadar.module.css";
 
@@ -29,36 +42,145 @@ type OnTheRadarProps = {
   onBeginPlace?: (candidate: RadarCandidate) => void;
   /** Candidate currently waiting for a court slot (highlight its row). */
   pendingCandidateId?: number | null;
+  /**
+   * Primary need from the real starting five's Lineup Fit (hard gap or
+   * softest pillar). Null while Fit is still loading.
+   */
+  needPillar?: TeamFitPillar | null;
 };
 
+type SortStatus =
+  | { kind: "idle" }
+  | { kind: "loading"; pillarLabel: string }
+  | {
+      kind: "sorted";
+      pillarLabel: string;
+      /** Set when the sorted pillar matches the real five's primary need. */
+      needKind: "gap" | "softest" | null;
+    }
+  | { kind: "error"; message: string };
+
 /**
- * Rotating acquisition shortlist for the left court gutter.
+ * Acquisition shortlist for the court gutter.
  *
- * The shuffle is intentionally random per page load, so this component must
- * only render on the client (`next/dynamic` with `ssr: false` in NetsHome) —
- * server-rendering random markup would break hydration. The header button
- * reshuffles on demand; the pool is static, so shuffling costs no API calls.
+ * Shuffle draws a random subset of the curated pool (currently the full pool)
+ * per mount / click — client-only (`next/dynamic` + `ssr: false`) so random
+ * markup never hydrates against the server.
  *
- * Rows are draggable onto starters; click still opens the dossier. A compact
- * swap icon arms keyboard/click placement for a11y without relying on DnD.
+ * Pillar sort reorders the *current* column by RR percentiles — not a
+ * league-wide attribute search. The picker defaults to the real five's
+ * primary Fit need when available.
  */
 export function OnTheRadar({
   onSelectCandidate,
   onBeginPlace,
   pendingCandidateId = null,
+  needPillar = null,
 }: OnTheRadarProps): ReactElement {
-  // Lazy initializer: one shuffle per mount, stable across re-renders.
   const [picks, setPicks] = useState<RadarCandidate[]>(() =>
     pickRadarCandidates(RADAR_POOL, RADAR_PICK_COUNT),
   );
-  // Keyed to the icon so each click retriggers the spin animation.
   const [shuffleCount, setShuffleCount] = useState(0);
+  const [sortPillarId, setSortPillarId] = useState<PillarId>(PILLAR_IDS[0]);
+  const [pillarTouched, setPillarTouched] = useState(false);
+  const [sortStatus, setSortStatus] = useState<SortStatus>({ kind: "idle" });
   const headingId = useId();
+  const sortSelectId = useId();
   const draggedRef = useRef(false);
+  const requestIdRef = useRef(0);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  // Prefer the real five's need until the user picks a different pillar.
+  useEffect(() => {
+    if (!pillarTouched && needPillar) {
+      setSortPillarId(needPillar.id);
+    }
+  }, [needPillar, pillarTouched]);
 
   function reshuffle(): void {
+    requestIdRef.current += 1;
     setPicks(pickRadarCandidates(RADAR_POOL, RADAR_PICK_COUNT));
     setShuffleCount((count) => count + 1);
+    setSortStatus({ kind: "idle" });
+    listRef.current?.scrollTo({ top: 0 });
+  }
+
+  async function sortByPillar(pillarId: PillarId): Promise<void> {
+    if (sortStatus.kind === "loading") {
+      return;
+    }
+
+    // Lock the picker so a late Fit needPillar sync cannot desync the
+    // dropdown from an in-flight or completed sort.
+    setPillarTouched(true);
+    setSortPillarId(pillarId);
+
+    const requestId = ++requestIdRef.current;
+    const pillarLabel = PILLAR_LABELS[pillarId];
+    setSortStatus({ kind: "loading", pillarLabel });
+
+    try {
+      const ids = picks.map((pick) => pick.id).join(",");
+      const response = await fetch(
+        `/api/radar-scores?pillar=${pillarId}&ids=${ids}`,
+      );
+      const json: unknown = await response.json();
+
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+
+      if (!response.ok) {
+        const err = apiErrorSchema.safeParse(json);
+        setSortStatus({
+          kind: "error",
+          message: err.success
+            ? err.data.error.message
+            : "Could not rank Radar by pillar.",
+        });
+        return;
+      }
+
+      const parsed = radarScoresApiResponseSchema.safeParse(json);
+      if (!parsed.success) {
+        setSortStatus({
+          kind: "error",
+          message: "Radar scores failed validation.",
+        });
+        return;
+      }
+
+      setPicks(
+        reorderByPillarScores(picks, scoresByPlayerId(parsed.data.scores)),
+      );
+      listRef.current?.scrollTo({ top: 0 });
+
+      let needKind: "gap" | "softest" | null = null;
+      if (needPillar && needPillar.id === pillarId) {
+        needKind = isHardLineupGap(needPillar) ? "gap" : "softest";
+      }
+      setSortStatus({
+        kind: "sorted",
+        pillarLabel: parsed.data.pillar.label,
+        needKind,
+      });
+    } catch {
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+      setSortStatus({
+        kind: "error",
+        message: "Could not reach Radar scores API.",
+      });
+    }
+  }
+
+  function handlePillarChange(event: ChangeEvent<HTMLSelectElement>): void {
+    const value = event.target.value;
+    if (!isPillarId(value)) return;
+    setPillarTouched(true);
+    setSortPillarId(value);
+    void sortByPillar(value);
   }
 
   function handleDragStart(
@@ -75,7 +197,6 @@ export function OnTheRadar({
   }
 
   function handleDragEnd(): void {
-    // Click fires after drag on some browsers; ignore the post-drag click.
     window.setTimeout(() => {
       draggedRef.current = false;
     }, 0);
@@ -85,6 +206,14 @@ export function OnTheRadar({
     if (draggedRef.current) return;
     onSelectCandidate(candidate);
   }
+
+  const sorting = sortStatus.kind === "loading";
+  const needHint =
+    needPillar && needPillar.id === sortPillarId
+      ? isHardLineupGap(needPillar)
+        ? "lineup gap"
+        : "softest pillar"
+      : null;
 
   return (
     <aside
@@ -113,7 +242,79 @@ export function OnTheRadar({
           </svg>
         </button>
       </div>
-      <ul className={styles.list}>
+
+      <div className={styles.sortRow}>
+        <label className={styles.sortLabel} htmlFor={sortSelectId}>
+          Sort by
+        </label>
+        <select
+          id={sortSelectId}
+          className={styles.sortSelect}
+          value={sortPillarId}
+          onChange={handlePillarChange}
+          disabled={sorting}
+          aria-label="Sort Radar shortlist by pillar"
+          title={
+            needHint
+              ? `Defaults to ${PILLAR_LABELS[sortPillarId]} (${needHint}) from Lineup Fit`
+              : "Reorder this shortlist by pillar percentile"
+          }
+        >
+          {PILLAR_IDS.map((id) => {
+            let suffix = "";
+            if (needPillar && needPillar.id === id) {
+              suffix = isHardLineupGap(needPillar)
+                ? " — lineup gap"
+                : " — softest";
+            }
+            return (
+              <option key={id} value={id}>
+                {PILLAR_LABELS[id]}
+                {suffix}
+              </option>
+            );
+          })}
+        </select>
+        <button
+          type="button"
+          className={styles.sortApply}
+          onClick={() => {
+            void sortByPillar(sortPillarId);
+          }}
+          disabled={sorting}
+          aria-label={`Sort shortlist by ${PILLAR_LABELS[sortPillarId]}`}
+          title={
+            needHint
+              ? `Sort by ${PILLAR_LABELS[sortPillarId]} (${needHint})`
+              : `Sort by ${PILLAR_LABELS[sortPillarId]}`
+          }
+        >
+          Sort
+        </button>
+      </div>
+
+      {sortStatus.kind === "loading" ? (
+        <p className={styles.sortNote} role="status">
+          Ranking by {sortStatus.pillarLabel}…
+        </p>
+      ) : null}
+      {sortStatus.kind === "sorted" ? (
+        <p className={styles.sortNote} role="status">
+          Sorted by {sortStatus.pillarLabel}
+          {sortStatus.needKind === "gap"
+            ? " (lineup gap)"
+            : sortStatus.needKind === "softest"
+              ? " (softest pillar)"
+              : ""}
+        </p>
+      ) : null}
+      {sortStatus.kind === "error" ? (
+        <p className={styles.sortError} role="alert">
+          {sortStatus.message}
+        </p>
+      ) : null}
+
+      <ul ref={listRef} className={styles.list} tabIndex={0} aria-label="Radar candidates">
         {picks.map((candidate) => {
           const pending = pendingCandidateId === candidate.id;
           const name = `${candidate.firstName} ${candidate.lastName}`;

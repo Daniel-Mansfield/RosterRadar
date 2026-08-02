@@ -34,8 +34,9 @@ describe("RADAR_POOL", () => {
     }
   });
 
-  it("is larger than one rotation so the shuffle has room to vary", () => {
-    assert.ok(RADAR_POOL.length > RADAR_PICK_COUNT);
+  it("surfaces the full curated pool on each shuffle", () => {
+    assert.equal(RADAR_PICK_COUNT, RADAR_POOL.length);
+    assert.ok(RADAR_POOL.length >= 10);
   });
 });
 
@@ -44,6 +45,12 @@ describe("pickRadarCandidates", () => {
     const picks = pickRadarCandidates(RADAR_POOL, RADAR_PICK_COUNT);
     assert.equal(picks.length, RADAR_PICK_COUNT);
     assert.equal(new Set(picks.map((c) => c.id)).size, RADAR_PICK_COUNT);
+  });
+
+  it("can still return a smaller random subset when asked", () => {
+    const picks = pickRadarCandidates(RADAR_POOL, 5);
+    assert.equal(picks.length, 5);
+    assert.equal(new Set(picks.map((c) => c.id)).size, 5);
   });
 
   it("is deterministic for a fixed random source", () => {

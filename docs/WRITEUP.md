@@ -74,6 +74,7 @@ Version string on payloads (`scoringVersion`) keeps UI and write-up aligned. Det
 - Client-side: one incoming player replaces one starter by slot (acquisition from Radar or player search, or bench true-exchange).
 - Fit refetch for the hypothetical five; deltas vs the real five’s baseline Fit.
 - Acquisition swaps pin displaced real starters on the bench (Out); further slot changes accumulate; Out pins can return; bench swaps exchange spots; Reset clears the board.
+- On the Radar shows the full curated pool in a vertical scroll column; staff can sort the current cards by any Fit pillar (defaults to the real five’s primary need) via honest RR percentiles — not a league attribute search.
 - Search: swap icon on results or **Try in lineup** in the dossier; same Fit path as Radar.
 - No salary, multi-player packages, or chemistry claims.
 

@@ -34,7 +34,7 @@ const ROLE_LABELS = {
   versatile_forward: "Versatile forward",
 } as const satisfies Record<RoleId, string>;
 
-const PILLAR_LABELS = {
+export const PILLAR_LABELS = {
   scoring: "Scoring",
   playmaking: "Playmaking",
   rebounding: "Rebounding",
@@ -42,6 +42,16 @@ const PILLAR_LABELS = {
   disruption: "Disruption",
   workload: "Workload",
 } as const satisfies Record<PillarId, string>;
+
+/** Stable pillar order for pickers and rails. */
+export const PILLAR_IDS = [
+  "scoring",
+  "playmaking",
+  "rebounding",
+  "spacing",
+  "disruption",
+  "workload",
+] as const satisfies readonly PillarId[];
 
 /** English ordinal for percentile copy — "71st", "82nd", "93rd", "11th". */
 export function ordinal(n: number): string {

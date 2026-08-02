@@ -25,6 +25,7 @@
 - Search finds **only players not on the Brooklyn Nets** (you can’t trade for someone already on the roster)
 - Selecting a search result opens their **role-fit dossier in the drawer** (evaluate as a potential addition)
 - Search and Radar share **acquisition** lineup sims: swap icon or **Try in lineup** → starter slot; stack further slot changes; displaced real starters pinned Out (can return to a slot); Lineup Fit deltas + stacked banner. Bench swaps remain a true exchange. Does **not** model salary, packages, or synergy/+/-
+- **On the Radar** shows the full curated pool in a vertical scroll column; Shuffle redraws via random pick; a pillar picker reorders the *current* list by any RR pillar (defaults to the real five’s primary Fit need) — not a league-wide attribute search
 
 ### Explicitly out of v1
 - Team search / other franchises as home targets
