@@ -62,3 +62,8 @@ This log supports the assignment requirement to disclose AI use. Keep entries su
 - **Tool:** Cursor agent
 - **Used for:** Bench↔starter true exchange; swap icon UX; Fit reset banner; Radar angle in dossier; Tutorial placement/a11y; docs sync after local testing
 - **Not used for:** Multi-slot stacked swaps / trade packages
+
+### 2026-08-02 — Multi-slot lineup sim
+- **Tool:** Cursor agent
+- **Used for:** Accumulated slot overrides (`lineupSim` + `useLineupSim`); stacked Fit banner; Out-pin return; overwrite same slot; docs/tour copy
+- **Not used for:** Trade packages, salary, synergy/+/-

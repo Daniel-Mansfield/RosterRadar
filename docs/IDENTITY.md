@@ -2,7 +2,7 @@
 
 **Purpose:** Capture the *core feeling* of RosterRadar, map it to the assignment outline, and record keep / cut / later decisions. Living template for identity—not every idea ships in the 10-day MVP.
 
-**Status:** Core IA + brand palette **locked** (2026-07-26). Scoped one-for-one Radar-or-bench→starter swap ships in Phase 3 wrap; full trade packages / +/- stay out.
+**Status:** Core IA + brand palette **locked** (2026-07-26). Accumulated multi-slot lineup sim (Radar/search/bench → starter; Out return; Reset clears all) ships post Phase 4; full trade packages / +/- stay out.
 
 **Related:** [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md) · [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) · `src/styles/palette.css`
 
@@ -24,7 +24,7 @@
 ### Player search (acquisition candidates)
 - Search finds **only players not on the Brooklyn Nets** (you can’t trade for someone already on the roster)
 - Selecting a search result opens their **role-fit dossier in the drawer** (evaluate as a potential addition)
-- Search and Radar share **acquisition** lineup sims: swap icon or **Try in lineup** → one starter slot; displaced starter pinned on the bench (Out); Lineup Fit deltas. Bench swaps remain a true exchange. Does **not** model salary, packages, or synergy/+/-
+- Search and Radar share **acquisition** lineup sims: swap icon or **Try in lineup** → starter slot; stack further slot changes; displaced real starters pinned Out (can return to a slot); Lineup Fit deltas + stacked banner. Bench swaps remain a true exchange. Does **not** model salary, packages, or synergy/+/-
 
 ### Explicitly out of v1
 - Team search / other franchises as home targets
@@ -77,7 +77,7 @@ Preserved for history; superseded by §1 where they conflict.
 | Team search / all 30 teams | Unnecessary if Nets are the target |
 | Player photos | Deferred; names enough |
 | Full DnD trade packages + team +/- projections | Out of credible 10-day scope |
-| One-for-one Radar/bench→starter swap + Fit deltas | Phase 3 wrap — peer aggregation only |
+| Multi-slot Radar/search/bench→starter sim + Fit deltas | Accumulated overrides — peer aggregation only |
 
 ### LATER
 | Idea | Notes |

@@ -24,8 +24,8 @@ type TeamFitPanelProps = {
   /** Real-lineup Fit used for deltas while simulating. */
   baseline?: TeamFit | null;
   isSimulating?: boolean;
-  /** Short line under the subtitle while a swap is active. */
-  simSummary?: string | null;
+  /** Stacked change lines under the subtitle while simulating (PG→C). */
+  simSummaryLines?: string[];
   onReset?: () => void;
 };
 
@@ -118,7 +118,7 @@ export function TeamFitPanel({
   playerIds,
   baseline = null,
   isSimulating = false,
-  simSummary = null,
+  simSummaryLines = [],
   onReset,
 }: TeamFitPanelProps): ReactElement {
   const headingId = useId();
@@ -167,9 +167,18 @@ export function TeamFitPanel({
           ? "Hypothetical starting five vs league peers"
           : "Starting five vs league peers"}
       </p>
-      {isSimulating && simSummary ? (
+      {isSimulating && simSummaryLines.length > 0 ? (
         <div className={styles.simBanner} role="status">
-          <p className={styles.simSummary}>{simSummary}</p>
+          <ul className={styles.simSummaryList}>
+            {simSummaryLines.map((line) => (
+              <li key={line} className={styles.simSummary}>
+                {line}
+              </li>
+            ))}
+          </ul>
+          <p className={styles.simCaveat}>
+            Peer aggregation, not synergy
+          </p>
           {onReset ? (
             <button
               type="button"

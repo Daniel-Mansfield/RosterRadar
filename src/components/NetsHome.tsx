@@ -74,21 +74,27 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   const benchListRef = useRef<HTMLUListElement>(null);
 
   const {
-    sim,
     displayStarters,
     displayBench,
-    displacedPlayerId,
+    displacedPlayerIds,
     displayStarterIds,
     isSimulating,
+    simSummaryLines,
     pendingIncoming,
     beginPendingRadar,
     beginPendingAcquisition,
     beginPendingBench,
+    beginPendingReturn,
     cancelPendingSwap,
-    applySwap,
+    placeIncomingOnSlot,
     placeOnSlot,
     reset,
   } = useLineupSim(roster.starters, roster.bench);
+
+  const displacedIdSet = useMemo(
+    () => new Set(displacedPlayerIds),
+    [displacedPlayerIds],
+  );
 
   const realStarterIds = useMemo(
     () => starterIdsFromPlayers(roster.starters),
@@ -138,16 +144,6 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [pendingIncoming, cancelPendingSwap]);
 
-  const simSummary = useMemo(() => {
-    if (sim.status !== "simulating") return null;
-    const outgoing = roster.starters.find((p) => p.slot === sim.swap.slot);
-    const outName = outgoing
-      ? `${outgoing.firstName} ${outgoing.lastName}`
-      : sim.swap.slot;
-    const inName = `${sim.swap.incoming.firstName} ${sim.swap.incoming.lastName}`;
-    return `${inName} in for ${outName} (${sim.swap.slot}) — peer aggregation, not synergy`;
-  }, [sim, roster.starters]);
-
   function updateBenchScrollHint(): void {
     const list = benchListRef.current;
     if (!list) {
@@ -161,13 +157,10 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   }
 
   function openForRosterPlayer(player: RosterPlayer): void {
-    // Place mode always targets the real starter in that slot (not a prior sim).
+    // Place mode targets the court slot (display card); overrides upsert by slot.
     if (pendingIncoming && isStarterSlot(player.slot)) {
-      const real = roster.starters.find((p) => p.slot === player.slot);
-      if (real && real.id != null) {
-        placeOnSlot(player.slot, real);
-        return;
-      }
+      placeOnSlot(player.slot);
+      return;
     }
 
     const identity: DrawerIdentity = {
@@ -235,14 +228,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   }
 
   function handleLineupDrop(slot: StarterSlot, payload: LineupDragPayload): void {
-    const starter = roster.starters.find((p) => p.slot === slot);
-    if (!starter || starter.id == null) return;
-    applySwap({
-      slot,
-      outgoingId: starter.id,
-      incoming: payload.incoming,
-      source: payload.source,
-    });
+    placeIncomingOnSlot(slot, payload.source, payload.incoming);
   }
 
   useEffect(() => {
@@ -321,7 +307,7 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             playerIds={displayStarterIds}
             baseline={baselineForPanel}
             isSimulating={isSimulating}
-            simSummary={simSummary}
+            simSummaryLines={simSummaryLines}
             onReset={reset}
           />
         </div>
@@ -330,16 +316,16 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
           <h2 className={styles.benchTitle}>Bench</h2>
           <div className={styles.benchScroll}>
             <ul ref={benchListRef} className={styles.benchList}>
-              {displayBench.map((player, index) => {
+              {displayBench.map((player) => {
                 const isDisplacedOut =
-                  displacedPlayerId != null &&
-                  player.id === displacedPlayerId &&
-                  index === 0;
-                const canSwap =
-                  !isDisplacedOut && lineupIncomingFromBench(player) != null;
+                  player.id != null && displacedIdSet.has(player.id);
+                const canPlace =
+                  lineupIncomingFromBench(player) != null;
                 const pending =
-                  pendingIncoming?.source === "bench" &&
-                  pendingIncoming.incoming.id === player.id;
+                  pendingIncoming != null &&
+                  pendingIncoming.incoming.id === player.id &&
+                  (pendingIncoming.source === "bench" ||
+                    pendingIncoming.source === "return");
                 const name = `${player.firstName} ${player.lastName}`;
 
                 return (
@@ -354,13 +340,21 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
                     <div
                       className={`${styles.benchRow} ${pending ? styles.benchRowPending : ""}`}
                     >
-                      {canSwap ? (
+                      {canPlace ? (
                         <button
                           type="button"
                           className={styles.benchSwap}
-                          onClick={() => beginPendingBench(player)}
+                          onClick={() =>
+                            isDisplacedOut
+                              ? beginPendingReturn(player)
+                              : beginPendingBench(player)
+                          }
                           aria-pressed={pending}
-                          aria-label={`Swap ${name} onto a starter slot`}
+                          aria-label={
+                            isDisplacedOut
+                              ? `Return ${name} onto a starter slot`
+                              : `Swap ${name} onto a starter slot`
+                          }
                         >
                           <svg
                             className={styles.benchSwapIcon}
@@ -379,7 +373,8 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
                         onSelect={openForRosterPlayer}
                         size="bench"
                         outOfLineup={isDisplacedOut}
-                        draggableToCourt={canSwap}
+                        draggableToCourt={canPlace}
+                        dragSource={isDisplacedOut ? "return" : "bench"}
                       />
                     </div>
                   </li>

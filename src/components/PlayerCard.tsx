@@ -14,6 +14,7 @@ import {
   LINEUP_DRAG_MIME,
   parseLineupDragPayload,
   type LineupDragPayload,
+  type LineupSwapSource,
   type StarterSlot,
 } from "@/domain/lineupSim";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
@@ -34,8 +35,10 @@ type PlayerCardProps = {
   dropArmed?: boolean;
   /** Hypothetically displaced starter sitting on the bench during a sim. */
   outOfLineup?: boolean;
-  /** Allow dragging this bench card onto a starter. */
+  /** Allow dragging this bench / Out card onto a starter. */
   draggableToCourt?: boolean;
+  /** Drag payload source when dragging to court (bench exchange vs Out return). */
+  dragSource?: Extract<LineupSwapSource, "bench" | "return">;
 };
 
 /**
@@ -50,6 +53,7 @@ export function PlayerCard({
   dropArmed = false,
   outOfLineup = false,
   draggableToCourt = false,
+  dragSource = "bench",
 }: PlayerCardProps): ReactElement {
   const label = `${player.firstName} ${player.lastName}`;
   const sizeClass = size === "bench" ? styles.sizeBench : styles.starter;
@@ -58,9 +62,7 @@ export function PlayerCard({
     isStarterSlot(player.slot) &&
     player.id != null;
   const canDrag =
-    draggableToCourt &&
-    !outOfLineup &&
-    lineupIncomingFromBench(player) != null;
+    draggableToCourt && lineupIncomingFromBench(player) != null;
   const [dragOver, setDragOver] = useState(false);
   const draggedRef = useRef(false);
 
@@ -93,7 +95,7 @@ export function PlayerCard({
       return;
     }
     draggedRef.current = true;
-    const payload: LineupDragPayload = { source: "bench", incoming };
+    const payload: LineupDragPayload = { source: dragSource, incoming };
     event.dataTransfer.setData(LINEUP_DRAG_MIME, JSON.stringify(payload));
     event.dataTransfer.effectAllowed = "copy";
   }
