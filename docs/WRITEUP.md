@@ -4,7 +4,7 @@
 **Repo:** [Daniel-Mansfield/RosterRadar](https://github.com/Daniel-Mansfield/RosterRadar)  
 **Author:** Daniel Mansfield  
 
-This document is the submission write-up. Detailed design notes live in sibling docs; this page is the narrative graders can read end-to-end.
+This document is the submission write-up. Docs map: [`README.md`](./README.md). Sibling docs hold design depth; this page is the narrative graders can read end-to-end.
 
 ---
 
@@ -28,9 +28,9 @@ Primary job-to-be-done: *Given Player X, tell me their role, how they grade in i
 
 ```
 Browser (Next.js)
-  → Route Handlers (/api/players, /api/dossier/[id], /api/team-fit)
+  → Route Handlers (/api/players, /api/dossier/[id], /api/team-fit, /api/radar-scores)
     → NbaStatsPort (BALLDONTLIE adapter)
-    → pure scoring/ (composeDossier, composeTeamFit)
+    → pure scoring/ (composeDossier, composeTeamFit) + radar gap helpers
   ← typed JSON (Zod at boundaries)
 ```
 
@@ -74,20 +74,23 @@ Version string on payloads (`scoringVersion`) keeps UI and write-up aligned. Det
 - Client-side: one incoming player replaces one starter by slot (acquisition from Radar or player search, or bench true-exchange).
 - Fit refetch for the hypothetical five; deltas vs the real five’s baseline Fit.
 - Acquisition swaps pin displaced real starters on the bench (Out); further slot changes accumulate; Out pins can return; bench swaps exchange spots; Reset clears the board.
-- On the Radar shows the full curated pool in a vertical scroll column; staff can sort the current cards by any Fit pillar (defaults to the real five’s primary need) via honest RR percentiles — not a league attribute search.
 - Search: swap icon on results or **Try in lineup** in the dossier; same Fit path as Radar.
 - No salary, multi-player packages, or chemistry claims.
+
+### On the Radar
+- Full curated pool in a vertical scroll; Shuffle redraws the list.
+- Staff can sort the current cards by any Fit pillar (defaults to the real five’s primary need) via season-line RR percentiles (`GET /api/radar-scores`) — not a league-wide attribute search.
 
 ---
 
 ## 6. Product surface (shipped)
 
-1. **Nets home** — half-court + bench; portrait cards  
+1. **Nets home** — half-court + bench; portrait cards with curated headshots  
 2. **Dossier drawer** — search or click → role, grade, pillars, callouts, evidence  
-3. **On the Radar** — curated shortlist, shuffle, zero API until dossier open  
+3. **On the Radar** — full curated pool, vertical scroll, Shuffle, pillar sort  
 4. **Lineup Fit** — starting-five aggregation + methodology disclosure  
 5. **Lineup sim** — Radar, search, or bench → starter via DnD / swap icon / Try in lineup; stack slots; Out return; stacked Fit banner + Reset  
-6. **Tutorial** — optional spotlight coach marks (never auto-blocking)  
+6. **Tutorial** — optional spotlight coach marks (intro + bullets; never auto-blocking)  
 7. **States** — loading skeletons, errors/retry, thin-sample, unavailable ids  
 
 Design system: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md). Identity: [`IDENTITY.md`](./IDENTITY.md).
@@ -124,7 +127,7 @@ Design system: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md). Identity: [`IDENTITY.md
 
 ## 10. Final QA checklist
 
-See [`FINAL_QA.md`](./FINAL_QA.md). Production smoke 2026-08-02 (`main` @ `2d2b684`, then multi-slot @ `f49de8c`): home, dossier (roster + search + Radar angle), search swap / Try in lineup + headshots, Lineup Fit, Radar HTML5 DnD + bench swap + Reset, accumulated multi-slot sim (stack / overwrite / Out return / bench no-Out), Tutorial, mobile stack, Fit/dossier skeletons, offline dossier retry, thin-sample (Dadiet).
+See [`FINAL_QA.md`](./FINAL_QA.md). Production smoke 2026-08-02 through `main` @ `1ddde0e` (PR #20): home, dossier (roster + search + Radar angle), search swap / Try in lineup + headshots, Lineup Fit, Radar HTML5 DnD + bench swap + Reset, multi-slot sim, Radar full-pool scroll + pillar sort, Tutorial (intro + bullets), mobile stack, Fit/dossier skeletons, offline dossier retry, thin-sample (Dadiet).
 
 ---
 

@@ -1,6 +1,6 @@
 # Development process
 
-Phased plan for RosterRadar. Product/architecture detail lives in [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md), [`BACKEND.md`](./BACKEND.md), and [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).
+Phased plan for RosterRadar. Docs map: [`README.md`](./README.md). Product/architecture detail: [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md), [`BACKEND.md`](./BACKEND.md), [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).
 
 ## Git workflow
 
@@ -47,8 +47,13 @@ Branch names: `phase-N/…`, `feat/…`, `fix/…`, `docs/…`, `chore/…`.
 ### Phase 4 — Ship
 - [x] Write-up — [`WRITEUP.md`](./WRITEUP.md) + [`FINAL_QA.md`](./FINAL_QA.md)
 - [x] AI disclosure — [`AI_USAGE.md`](./AI_USAGE.md)
-- [x] Final QA on live URL after Phase 3 wrap PRs merge — [`FINAL_QA.md`](./FINAL_QA.md) (2026-08-02 @ `2d2b684`)
+- [x] Final QA on live URL — [`FINAL_QA.md`](./FINAL_QA.md) (2026-08-02; see checklist for SHAs)
 - [x] Stretch only if ahead (compare / role toggle) — skipped
+
+### Post–Phase 4 (still on `main`)
+- [x] Multi-slot lineup sim (PR #18) — stacked slot overrides, Out return, Reset
+- [x] Radar pillar sort + full-pool vertical shortlist (PR #20) — `/api/radar-scores`
+- [x] Tutorial copy → intro + bullets (PR #20)
 
 ## Definition of done
 1. Types + boundary validation correct (no `any` on vendor JSON)

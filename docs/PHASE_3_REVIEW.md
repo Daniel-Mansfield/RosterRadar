@@ -1,6 +1,6 @@
 # Phase 3 review
 
-Hardening + product additions after Phase 2. Per-pass fix tables live in git history; this page is the living summary.
+Hardening + product additions after Phase 2. **Historical** — for current product truth see [`IDENTITY.md`](./IDENTITY.md) / [`WRITEUP.md`](./WRITEUP.md) / [`DEVELOPMENT.md`](./DEVELOPMENT.md) (post–Phase 4). Docs map: [`README.md`](./README.md).
 
 ## What shipped
 - **Seed ids:** Traore / Thomas resolved; diacritic folding in name normalize

@@ -3,7 +3,7 @@
 **Purpose:** Preserve the research and tradeoffs behind RosterRadar’s data vendor and live-URL approach so the assignment write-up and future work don’t lose context.  
 **Audience:** Graders / write-up readers **and** future maintainers.  
 **Status:** Locked **2026-07-27** (post–Phase 1).  
-**Related:** [`BACKEND.md`](./BACKEND.md) · [`DEVELOPMENT.md`](./DEVELOPMENT.md) · [`PHASE_1_REVIEW.md`](./PHASE_1_REVIEW.md)
+**Related:** [`README.md`](./README.md) (docs map) · [`BACKEND.md`](./BACKEND.md) · [`DEVELOPMENT.md`](./DEVELOPMENT.md) · [`PHASE_1_REVIEW.md`](./PHASE_1_REVIEW.md)
 
 ---
 

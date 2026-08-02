@@ -1,10 +1,8 @@
 # RosterRadar — Identity & drawing board
 
-**Purpose:** Capture the *core feeling* of RosterRadar, map it to the assignment outline, and record keep / cut / later decisions. Living template for identity—not every idea ships in the 10-day MVP.
-
-**Status:** Core IA + brand palette **locked** (2026-07-26). Accumulated multi-slot lineup sim (Radar/search/bench → starter; Out return; Reset clears all) ships post Phase 4; full trade packages / +/- stay out.
-
-**Related:** [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md) · [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) · `src/styles/palette.css`
+**Purpose:** Product locks and keep / cut / later decisions.  
+**Status:** v1 **shipped** (2026-08-02). Core IA + palette locked 2026-07-26; post–Phase 4 adds multi-slot sim + Radar pillar sort.  
+**Related:** [`README.md`](./README.md) (docs map) · [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md) · [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) · `src/styles/palette.css`
 
 ---
 
@@ -12,7 +10,7 @@
 
 ### Target team
 - **Brooklyn Nets only** — no multi-team search in v1
-- Home **is** the Nets roster experience (not a separate marketing landing + team picker)
+- Home **is** the Nets roster experience (not a marketing landing + team picker)
 
 ### Home / Nets page
 - Dark branded shell (`--graphite` base; see palette)
@@ -22,20 +20,26 @@
 - Click **Nets** card → **right drawer = role-fit scouting dossier**
 
 ### Player search (acquisition candidates)
-- Search finds **only players not on the Brooklyn Nets** (you can’t trade for someone already on the roster)
-- Selecting a search result opens their **role-fit dossier in the drawer** (evaluate as a potential addition)
-- Search and Radar share **acquisition** lineup sims: swap icon or **Try in lineup** → starter slot; stack further slot changes; displaced real starters pinned Out (can return to a slot); Lineup Fit deltas + stacked banner. Bench swaps remain a true exchange. Does **not** model salary, packages, or synergy/+/-
-- **On the Radar** shows the full curated pool in a vertical scroll column; Shuffle redraws via random pick; a pillar picker reorders the *current* list by any RR pillar (defaults to the real five’s primary Fit need) — not a league-wide attribute search
+- Search finds **only players not on the Brooklyn Nets**
+- Selecting a result opens their **role-fit dossier** (evaluate as a potential addition)
+- Search and Radar share **acquisition** lineup sims: swap icon or **Try in lineup** → starter slot; stack further slot changes; displaced real starters pinned Out (can return); Lineup Fit deltas + stacked banner. Bench swaps remain a true exchange. Does **not** model salary, packages, or synergy/+/-
+
+### On the Radar
+- Full curated pool in a **vertical scroll** column
+- **Shuffle** redraws via random pick from the pool
+- **Pillar sort** reorders the *current* list by any RR pillar (defaults to the real five’s primary Fit need) — not a league-wide attribute search
 
 ### Explicitly out of v1
 - Team search / other franchises as home targets
-- Guaranteed headshots for every search hit (best-effort ESPN only; initials remain the fallback)
-- Drag-and-drop trades onto the court
-- Projected team +/- from a simulated trade
+- Guaranteed headshots for every search hit (best-effort ESPN; initials fallback)
+- Full multi-player **trade packages** and salary/cap
+- Projected team +/- / synergy from a simulated trade
+- Compare-two-players view; “Evaluate as” role toggle
+- Sticky dossier mini-header (optional polish, never shipped)
 
 ---
 
-## 2. Original vision (archived notes)
+## 2. Original vision (archived)
 
 Preserved for history; superseded by §1 where they conflict.
 
@@ -52,41 +56,43 @@ Preserved for history; superseded by §1 where they conflict.
 | Decision-maker framing | Nets roster context + fit dossier | FO/scouting role-fit | **Yes** |
 | Opinionated UI | Court + drawer + brand | Verdict-first dossier | **Yes** |
 | Progressive disclosure | Card → dossier drawer | Hero → details | **Yes** |
-| Entry | Nets home (fixed team) | Was player-first search | **Updated** — outline should follow identity |
-| Core artifact | Court + **dossier in drawer** | Scouting dossier | **Yes (merged)** |
-| Trade sim | Later | Non-goal for v1 | **Yes** |
+| Entry | Nets home (fixed team) | Was player-first search | **Updated** — identity wins |
+| Core artifact | Court + **dossier in drawer** | Scouting dossier | **Yes** |
+| Full trade sim | Out of v1 | Non-goal for v1 | **Yes** |
 
 **MVP story:** Open RosterRadar → see Brooklyn Nets on a half-court → click a Nets player for a role-fit dossier **or** search a non-Nets player to evaluate them as an acquisition candidate in the same drawer.
 
 ---
 
-## 4. Keep / cut / later (confirmed)
+## 4. Keep / cut / later
 
-### KEEP
+### KEEP (shipped)
 | Idea | Why |
 |---|---|
 | Dark brand + Roster / *Radar* wordmark | Core identity |
 | Nets-only home as half-court roster | Scope cut that still feels like “Roster” |
-| Name-only player cards | **Updated:** Nets cards use curated ESPN headshots + initials fallback; search uses initials |
-| Drawer = role-fit dossier | Assignment MVP + your interaction model |
-| Player search near the roster | Non-Nets only — acquisition evaluation |
+| Headshots + initials fallback | Curated ESPN for Nets/Radar; best-effort for search |
+| Drawer = role-fit dossier | Assignment MVP |
+| Non-Nets player search | Acquisition evaluation |
 | Bench list + starters on court | Readable roster structure |
+| Lineup Fit + stacked one-for-one sim | Peer aggregation only — not a trade engine |
+| On the Radar full pool + pillar sort | Gap-aware shortlist without league attribute search |
+| Optional Tutorial (intro + bullets) | Coach marks on live UI |
 
 ### CUT (v1)
 | Idea | Why |
 |---|---|
 | Team search / all 30 teams | Unnecessary if Nets are the target |
-| Player photos | Deferred; names enough |
-| Full DnD trade packages + team +/- projections | Out of credible 10-day scope |
-| Multi-slot Radar/search/bench→starter sim + Fit deltas | Accumulated overrides — peer aggregation only |
+| Full DnD trade packages + team +/- | Out of credible 10-day scope |
+| Compare two players / role toggle | Stretch; skipped when Phase 4 shipped |
 
-### LATER
+### LATER (not required for submit)
 | Idea | Notes |
 |---|---|
-| Player search carousel / recommendations by role gap | After dossier + court work |
-| Click-to-preview non-Nets player in drawer | Lighter than DnD |
-| Visual swap without numeric projection | Superseded by Fit-delta swap |
-| Headshots | When we have a reliable source |
+| League-wide attribute / role-gap search | Radar sort covers curated pool only |
+| Search combobox full ARIA | Arrow keys / `aria-activedescendant`; Tab/Enter work today |
+| Sticky dossier mini-header | Name · Role · Fit on scroll |
+| Guaranteed headshots for every search hit | Needs a more reliable photo source |
 
 ---
 
@@ -109,7 +115,8 @@ Preserved for history; superseded by §1 where they conflict.
 | Date | Decision |
 |---|---|
 | 2026-07-26 | Vision captured; hybrid court + dossier proposed |
-| 2026-07-27 | **Update:** Nets player cards use curated ESPN headshots (Option B) + card chrome; full BDL→NBA photo pipeline still deferred |
-| 2026-07-27 | Half-court background: local PNG from Signs by SI half-court graphic (`public/nets-halfcourt.png`); panel `aspect-ratio` matches source |
-| 2026-07-26 | **Lock:** Player search = **non-Nets only** (acquisition candidates → dossier drawer) |
+| 2026-07-26 | **Lock:** Player search = **non-Nets only** |
 | 2026-07-26 | **Lock:** Brand palette (graphite / intense cherry / imperial blue / white / dim grey) |
+| 2026-07-27 | Nets cards use curated ESPN headshots + initials fallback |
+| 2026-07-27 | Half-court background: local PNG (`public/nets-halfcourt.png`) |
+| 2026-08-02 | Multi-slot lineup sim + Radar pillar sort shipped; IDENTITY keep/cut/later synced |

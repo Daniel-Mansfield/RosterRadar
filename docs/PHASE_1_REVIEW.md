@@ -1,6 +1,6 @@
 # Phase 1 review
 
-Self-review of the scaffold (`phase-1/scaffold`, PR #1). Full finding tables live in git history; this page keeps the useful summary.
+**Historical.** Self-review of the scaffold (`phase-1/scaffold`, PR #1). Current product: [`IDENTITY.md`](./IDENTITY.md) · docs map: [`README.md`](./README.md).
 
 ## What shipped
 - Null-safe seed ids (`number | null`); never invent synthetic BDL ids
