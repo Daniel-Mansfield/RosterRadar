@@ -4,17 +4,38 @@ RosterRadar’s **concept, scoring model, and product decisions are original** (
 
 This log supports the assignment requirement to disclose AI use. Keep entries summary-style; append when a phase or major feature uses AI.
 
+Docs map: [`README.md`](./README.md). Write-up summary: [`WRITEUP.md`](./WRITEUP.md) §9.
+
 ## Tools
+
 | Tool | Role |
 |---|---|
 | Cursor (Composer / agent) | Planning, docs, rules, coding assistance |
 | Other LLMs (if used) | Note model + purpose in an entry below |
 
 ## Policy
+
 - Disclose assistance relevant to submitted work in the final write-up (summarize from this log).
 - Do not paste secrets or API keys into AI chats.
 - Prefer AI for scaffolding, refactors, and explanation; keep scoring formulas and product judgment human-owned and documented.
 - Review all AI-generated code against project rules (root-cause-first, TS/React, backend, UI/UX).
+
+## Log index (scan first)
+
+| Date | Entry | AI used for |
+|---|---|---|
+| 2026-07-26 | Phase 0–1 foundation | Framing, outline, scaffold, Nets home shell |
+| 2026-07-27 | Vendor + Phase 2 dossier | Vendor spike, scoring/, dossier API/UI |
+| 2026-07-28 | Phase 3 harden + Radar | Seed ids, On the Radar, scoring v1.1 |
+| 2026-07-30 | Lineup Fit (PR 1) | composeTeamFit, team-fit API, panel |
+| 2026-08-01 | Lineup swap (PR 2) | useLineupSim, DnD, Fit deltas |
+| 2026-08-01 | Spotlight tour | Tutorial coach marks |
+| 2026-08-01 | Phase 3 polish | Shared percentile tones, docs sync |
+| 2026-08-01 | Write-up | WRITEUP + FINAL_QA drafts |
+| 2026-08-01 | Post-stack local iteration | Bench exchange, swap UX, tour a11y |
+| 2026-08-02 | Multi-slot lineup sim | Accumulated slot overrides |
+| 2026-08-02 | Radar gap reorder | Pillar sort API + full-pool Radar + tour bullets |
+| 2026-08-02 | Docs parseable cleanup | Docs index + stale IDENTITY / QA sync |
 
 ## Log
 
@@ -70,8 +91,13 @@ This log supports the assignment requirement to disclose AI use. Keep entries su
 
 ### 2026-08-02 — Radar gap reorder
 - **Tool:** Cursor agent
-- **Used for:** Gap-aware Radar shortlist reorder (`radarGapReorder`, `/api/radar-scores`, pillar picker + full-pool vertical scroll); season-line pillar scores only
+- **Used for:** Gap-aware Radar shortlist reorder (`radarGapReorder`, `/api/radar-scores`, pillar picker + full-pool vertical scroll); tutorial intro + bullets; season-line pillar scores only
 - **Not used for:** League-wide attribute search
+
+### 2026-08-02 — Docs parseable cleanup
+- **Tool:** Cursor agent
+- **Used for:** `docs/README.md` reading-order index; sync stale IDENTITY keep/cut/later, README status, WRITEUP/DEVELOPMENT/FINAL_QA/BACKEND pointers
+- **Not used for:** Product behavior changes
 
 ### 2026-08-02 — UI motion polish
 - **Tool:** Cursor agent

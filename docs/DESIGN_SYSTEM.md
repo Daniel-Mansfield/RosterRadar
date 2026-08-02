@@ -1,6 +1,6 @@
 # RosterRadar — Design System
 
-Clarity-first scouting dossier UI on a dark branded shell. Identity: [`IDENTITY.md`](./IDENTITY.md). Inspiration: Leetify clarity structure + staff-serious tone.
+Clarity-first scouting dossier UI on a dark branded shell. Docs map: [`README.md`](./README.md). Identity: [`IDENTITY.md`](./IDENTITY.md). Inspiration: Leetify clarity structure + staff-serious tone.
 
 ## Principles (with sources)
 

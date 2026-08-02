@@ -2,7 +2,7 @@
 
 **Philosophy:** The backend owns interpretation; the frontend owns presentation. External NBA data is compiled into one typed **dossier** — role, fit grade, pillars, strengths/risks, evidence — so the UI mostly renders, not recalculates.
 
-Full product scope: [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md).
+Docs map: [`README.md`](./README.md). Product scope: [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md) · locks: [`IDENTITY.md`](./IDENTITY.md).
 
 ---
 
@@ -15,7 +15,7 @@ Full product scope: [`PROJECT_OUTLINE.md`](./PROJECT_OUTLINE.md).
 | Domain | **Our types only** (`Player`, `Role`, `Dossier`, …) | Vendor JSON never leaks into UI or scoring |
 | Validation | **Zod at trust boundaries** | TS erases at runtime; validate unknown ingress once |
 | Scoring | **Pure functions, no I/O** | Unit-testable; same inputs → same grades |
-| API surface | **Thin GET resources** | Search + dossier; compare is stretch |
+| API surface | **Thin GET resources** | players, dossier, team-fit, radar-scores; compare stretch skipped |
 | Persistence | **None for v1** | Read-through cache only; no DB |
 | Auth | **None for v1** | Assignment non-goal |
 | Data vendor | **BALLDONTLIE NBA API** (primary) | GOAT trial for Phase 2; NBA.com rejected for Vercel runtime — [`VENDOR_DECISION.md`](./VENDOR_DECISION.md) |
@@ -29,13 +29,14 @@ Inspired by Alistair Cockburn’s **Ports and Adapters** (hexagonal architecture
 ```
 ┌──────────────────────────────────────────────────┐
 │  Driving adapter: Route Handlers (HTTP)          │
-│    /api/players · /api/dossier/[id] · /api/team-fit │
+│    /api/players · /api/dossier/[id]              │
+│    /api/team-fit · /api/radar-scores             │
 └─────────────────────┬────────────────────────────┘
                       │
 ┌─────────────────────▼────────────────────────────┐
 │  Application core                                │
 │    composeDossier() · composeTeamFit() · search  │
-│    scoring/*  (pure)                             │
+│    loadPillarScores() · scoring/*  (pure)        │
 └─────────────────────┬────────────────────────────┘
                       │  port: NbaStatsPort
 ┌─────────────────────▼────────────────────────────┐
@@ -57,16 +58,18 @@ Inspired by Alistair Cockburn’s **Ports and Adapters** (hexagonal architecture
 
 ```
 src/
-  domain/           # shared types (Player, Role, Dossier) + AppError
-  nba/              # NbaStatsPort + vendor adapter(s) + Zod schemas
-  scoring/          # pure: roles, percentiles, fit, callouts
-  app/
-    api/
-      players/route.ts
-      dossier/[playerId]/route.ts
+  domain/           # shared types (Player, Dossier, TeamFit, lineup sim) + AppError
+  nba/              # NbaStatsPort + vendor adapter(s) + Zod schemas + loaders
+  scoring/          # pure: roles, percentiles, fit, callouts, team fit
+  lib/api/          # shared Zod response schemas (dossier, team-fit, radar-scores)
+  app/api/
+    players/route.ts
+    dossier/[playerId]/route.ts
+    team-fit/route.ts
+    radar-scores/route.ts
 ```
 
-Names can adjust when scaffolding; the **boundaries** must not.
+Boundaries must not blur: scoring stays pure; vendor JSON stays in `nba/`.
 
 ---
 
