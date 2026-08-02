@@ -434,12 +434,9 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
             onTransitionEnd={(event) => {
               if (!isClosing) return;
               if (event.target !== event.currentTarget) return;
-              if (
-                event.propertyName !== "transform" &&
-                event.propertyName !== "opacity"
-              ) {
-                return;
-              }
+              // Opacity runs in both full and reduced-motion exits; avoid
+              // double-finish when transform also transitions.
+              if (event.propertyName !== "opacity") return;
               finishCloseDrawer();
             }}
           >

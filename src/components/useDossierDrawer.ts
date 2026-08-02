@@ -84,9 +84,14 @@ export function useDossierDrawer(): UseDossierDrawerResult {
   drawerOpenRef.current = drawer.open;
 
   function finishCloseDrawer(): void {
+    // One-shot: transitionend can fire per property; ignore after the first finish.
+    if (!drawerOpenRef.current && !isClosingRef.current) {
+      return;
+    }
     // Invalidate in-flight dossier fetches so a late response cannot reopen the drawer.
     requestIdRef.current += 1;
     isClosingRef.current = false;
+    drawerOpenRef.current = false;
     setIsClosing(false);
     setDrawer({ open: false });
   }
@@ -100,6 +105,8 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     if (!drawerOpenRef.current) {
       return;
     }
+    // Drop in-flight dossier responses so a late ready cannot cancel the exit.
+    requestIdRef.current += 1;
     isClosingRef.current = true;
     setIsClosing(true);
   }
