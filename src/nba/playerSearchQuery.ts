@@ -1,5 +1,5 @@
 import type { PlayerSummary } from "@/domain/player";
-import { normalizePersonName } from "@/nba/nets/rosterSeed";
+import { normalizePersonName } from "@/nba/personName";
 
 /**
  * How to query BALLDONTLIE for acquisition search.

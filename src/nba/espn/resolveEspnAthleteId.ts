@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-import { normalizePersonName } from "@/nba/nets/rosterSeed";
 import { isEspnAthleteId } from "@/nba/headshot";
 import { teamSubtitleMatches } from "@/nba/espn/teamHints";
+import { normalizePersonName } from "@/nba/personName";
 
 const ESPN_SEARCH_URL = "https://site.web.api.espn.com/apis/search/v2";
 

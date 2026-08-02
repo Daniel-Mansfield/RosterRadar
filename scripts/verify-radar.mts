@@ -15,7 +15,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import { RADAR_POOL } from "../src/nba/radar/radarPool";
-import { normalizePersonName } from "../src/nba/nets/rosterSeed";
+import { normalizePersonName } from "../src/nba/personName";
 
 function loadEnvLocal(): void {
   try {

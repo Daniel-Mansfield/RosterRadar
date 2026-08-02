@@ -1,19 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import {
-  NETS_SEED_NAME_KEYS,
-  normalizePersonName,
-} from "@/nba/nets/rosterSeed";
+import { NETS_SEED_NAME_KEYS } from "@/nba/nets/rosterSeed";
+import { normalizePersonName } from "@/nba/personName";
 
-describe("normalizePersonName", () => {
-  it("lowercases and strips punctuation", () => {
-    assert.equal(normalizePersonName("Porter Jr."), "porterjr");
-    assert.equal(normalizePersonName("Day'Ron"), "dayron");
-  });
-
-  it("folds diacritics so vendor spellings match the seed", () => {
-    // BDL stores "Nolan Traoré"; our seed spells it "Traore".
+describe("NETS_SEED_NAME_KEYS", () => {
+  it("includes Traore under the normalized key used for search exclusion", () => {
     assert.equal(normalizePersonName("Traoré"), "traore");
     assert.ok(NETS_SEED_NAME_KEYS.has("nolan|traore"));
   });
