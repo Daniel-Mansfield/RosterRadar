@@ -17,9 +17,9 @@
   font: inherit;
   box-shadow: 0 0.4rem 0.95rem color-mix(in srgb, var(--scrim) 30%, transparent);
   transition:
-    border-color 120ms ease,
-    box-shadow 120ms ease,
-    transform 120ms ease;
+    border-color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
 }
 
 .starter {
@@ -38,7 +38,8 @@
     transition: none;
   }
 
-  .card:hover {
+  .card:hover,
+  .card:active {
     transform: none;
   }
 }
@@ -49,8 +50,17 @@
   transform: translateY(-2px);
 }
 
+.card:active {
+  transform: translateY(0) scale(0.985);
+  box-shadow: 0 0.3rem 0.7rem color-mix(in srgb, var(--scrim) 28%, transparent);
+}
+
 .sizeBench:hover {
   box-shadow: 0 0.35rem 0.8rem color-mix(in srgb, var(--scrim) 34%, transparent);
+}
+
+.sizeBench:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .card:focus-visible {

@@ -62,10 +62,12 @@ type NetsHomeProps = {
 export function NetsHome({ roster }: NetsHomeProps): ReactElement {
   const {
     drawer,
+    isClosing,
     openDossier,
     showUnavailable,
     retryDossier,
     closeDrawer,
+    finishCloseDrawer,
     drawerRef,
     closeButtonRef,
     titleId,
@@ -416,19 +418,27 @@ export function NetsHome({ roster }: NetsHomeProps): ReactElement {
       ) : null}
 
       {drawer.open ? (
-        <div className={styles.drawerRoot}>
+        <div className={styles.drawerRoot} data-closing={isClosing ? "true" : "false"}>
           <button
             type="button"
-            className={styles.backdrop}
+            className={`${styles.backdrop} ${isClosing ? styles.backdropClosing : ""}`}
             aria-label="Close dossier drawer"
             onClick={closeDrawer}
           />
           <aside
             ref={drawerRef}
-            className={styles.drawer}
+            className={`${styles.drawer} ${isClosing ? styles.drawerClosing : styles.drawerEntering}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
+            onTransitionEnd={(event) => {
+              if (!isClosing) return;
+              if (event.target !== event.currentTarget) return;
+              // Opacity runs in both full and reduced-motion exits; avoid
+              // double-finish when transform also transitions.
+              if (event.propertyName !== "opacity") return;
+              finishCloseDrawer();
+            }}
           >
             <div className={styles.drawerHeader}>
               {drawer.dossier.status === "ready" ? (

@@ -98,3 +98,8 @@ Docs map: [`README.md`](./README.md). Write-up summary: [`WRITEUP.md`](./WRITEUP
 - **Tool:** Cursor agent
 - **Used for:** `docs/README.md` reading-order index; sync stale IDENTITY keep/cut/later, README status, WRITEUP/DEVELOPMENT/FINAL_QA/BACKEND pointers
 - **Not used for:** Product behavior changes
+
+### 2026-08-02 — UI motion polish
+- **Tool:** Cursor agent
+- **Used for:** CSS-first motion tokens; dossier drawer enter/exit; Fit/dossier content enter; Radar sort reorder cue; card press feedback
+- **Not used for:** Framer Motion / GSAP; decorative marketing animation
