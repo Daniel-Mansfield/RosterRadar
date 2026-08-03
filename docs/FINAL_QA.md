@@ -11,6 +11,7 @@ Docs map: [`README.md`](./README.md).
 | 2026-08-02 | `2d2b684` | Core MVP + search swap/headshots (PRs #15–#16) |
 | 2026-08-02 | `f49de8c` | Multi-slot lineup sim (PR #18) |
 | 2026-08-02 | `1ddde0e` | Radar full pool + pillar sort + tutorial bullets (PR #20) — local + Vercel preview before merge |
+| 2026-08-02 | `6336a87` | Motion polish, court scroll fix, Source link, Radar sort UI + lint hygiene (PRs #22–#24) |
 
 Re-check residual / DnD paths on production after each merge listed above. Pillar-sort rows below were verified on the feature branch / preview; spot-check on production if the deploy SHA matches.
 
@@ -36,8 +37,8 @@ Re-check residual / DnD paths on production after each merge listed above. Pilla
 - [x] Bench-only exchange: no Out badge / no Return control
 - [x] Reset clears every stacked change
 - [x] On the Radar shows the full curated pool (~14) in a **vertical** scroll
-- [x] Pillar picker defaults to lineup need when Fit loads; **Sort** reorders; status “Sorted by …”
-- [x] Changing pillar reorders; Shuffle clears sort status and redraws the list
+- [x] Pillar picker defaults to lineup need when Fit loads; changing pillar reorders; status “Sorted by …”
+- [x] Shuffle clears sort status and redraws the list
 
 ## States
 

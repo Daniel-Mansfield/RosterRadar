@@ -36,6 +36,7 @@ Docs map: [`README.md`](./README.md). Write-up summary: [`WRITEUP.md`](./WRITEUP
 | 2026-08-02 | Multi-slot lineup sim | Accumulated slot overrides |
 | 2026-08-02 | Radar gap reorder | Pillar sort API + full-pool Radar + tour bullets |
 | 2026-08-02 | Docs parseable cleanup | Docs index + stale IDENTITY / QA sync |
+| 2026-08-02 | README + write-up polish | Portfolio README; WRITEUP demo walkthrough / reflections stub |
 
 ## Log
 
@@ -103,3 +104,8 @@ Docs map: [`README.md`](./README.md). Write-up summary: [`WRITEUP.md`](./WRITEUP
 - **Tool:** Cursor agent
 - **Used for:** CSS-first motion tokens; dossier drawer enter/exit; Fit/dossier content enter; Radar sort reorder cue; card press feedback
 - **Not used for:** Framer Motion / GSAP; decorative marketing animation
+
+### 2026-08-02 — README + write-up polish
+- **Tool:** Cursor agent
+- **Used for:** Portfolio-style root README; WRITEUP structure (demo walkthrough, scoring example, QA SHA, reflections stub); docs map / FINAL_QA sync
+- **Not used for:** Personal reflections copy (author-owned)

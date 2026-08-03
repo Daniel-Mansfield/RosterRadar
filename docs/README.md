@@ -3,7 +3,7 @@
 Single map for humans and AI. Prefer this index over opening every file.
 
 **Live:** https://roster-radar-orcin.vercel.app  
-**Repo status:** MVP shipped on `main` (Phase 4 + post-ship features through PR #20, 2026-08-02).
+**Repo status:** MVP shipped on `main` (write-up + post-ship features through PR #24, 2026-08-02).
 
 ---
 

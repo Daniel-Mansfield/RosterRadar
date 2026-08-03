@@ -4,7 +4,7 @@
 **Repo:** [Daniel-Mansfield/RosterRadar](https://github.com/Daniel-Mansfield/RosterRadar)  
 **Author:** Daniel Mansfield  
 
-This document is the submission write-up. Docs map: [`README.md`](./README.md). Sibling docs hold design depth; this page is the narrative graders can read end-to-end.
+This document is the submission write-up. Sibling docs hold design depth; this page is the narrative graders can read end-to-end. Docs map: [`README.md`](./README.md).
 
 ---
 
@@ -12,19 +12,33 @@ This document is the submission write-up. Docs map: [`README.md`](./README.md). 
 
 **RosterRadar** is a role-aware scouting tool for Brooklyn Nets roster decisions. It answers: *what role does this player play, how do they grade in that role versus peers, and is that a Strong / Conditional / Poor fit — with evidence?*
 
-The home surface shows the Nets starting five on a half-court plus bench depth, a **Lineup Fit** rail (peer-percentile aggregation for the five), and **On the Radar** (curated acquisition shortlist). Search opens dossiers for non-Nets players. An optional **Tutorial** coach-marks the live UI. Staff can **stack one-for-one slot swaps** (Radar, search, or bench → starter; Out pins can return) and see a stacked Fit banner plus deltas — peer aggregation only, not a trade engine.
+The product is built for an FO / scouting-staff mindset: verdict first, evidence second, progressive disclosure. The home surface centers the Nets five on a half-court; search and Radar open the same dossier drawer for acquisition evaluation. Lineup Fit and optional one-for-one slot swaps let staff stress-test a hypothetical five without pretending to be a trade engine.
+
+Shipped surfaces are listed in §7. Methodology detail is in §6.
 
 ---
 
 ## 2. Problem & audience
 
-NBA front offices evaluate players in **roles**, not as generic box-score piles. Existing public tools either bury the verdict in tables or lean on proprietary models we cannot ship. RosterRadar targets an FO / scouting-staff mindset: verdict first, evidence second, progressive disclosure, calm ops + editorial hybrid (CTG seriousness + Leetify clarity structure). Framing references only — no proprietary formulas copied.
+NBA front offices evaluate players in **roles**, not as generic box-score piles. Existing public tools either bury the verdict in tables or lean on proprietary models we cannot ship. RosterRadar targets staff who need a fast, defensible read: calm ops + editorial hybrid (Cleaning the Glass seriousness + Leetify clarity structure). Framing references only — no proprietary formulas copied.
 
 Primary job-to-be-done: *Given Player X, tell me their role, how they grade in it, and whether they’re a strong / conditional / poor roster fit — with evidence.*
 
 ---
 
-## 3. Architecture
+## 3. Demo walkthrough (~3 minutes)
+
+Use the [live demo](https://roster-radar-orcin.vercel.app) (or local `npm run dev` with a BALLDONTLIE key).
+
+1. **Home** — Confirm brand, search, half-court starters, Lineup Fit, On the Radar, and bench.
+2. **Roster dossier** — Click a starter (e.g. Nic Claxton). Confirm role label, fit grade + Strong/Conditional/Poor, six peer-percentile pillars, strengths/risks, and evidence. Expand methodology notes.
+3. **Acquisition search** — Search a non-Nets name. Open a result → same dossier shape. Optionally use the result swap icon or **Try in lineup**, then click a starter slot; note the Fit banner and Out pin; **Reset**.
+4. **Radar + Fit** — Open a Radar card (scouting angle under the subtitle). Change **Sort by** to a pillar and confirm the list reorders. Drag or swap a Radar player onto a starter; confirm Fit deltas; Reset.
+5. **Tutorial** — Open Tutorial; step through intro + bullets; Skip or Done. Confirm it never blocks the app on load.
+
+---
+
+## 4. Architecture
 
 ```
 Browser (Next.js)
@@ -46,13 +60,13 @@ Browser (Next.js)
 
 ---
 
-## 4. Data vendor
+## 5. Data vendor
 
 **BALLDONTLIE GOAT** behind `NbaStatsPort`. An NBA.com spike failed from Vercel (IP / bot blocks); BALLDONTLIE is cloud-callable and sufficient for season averages + game logs. The demo window uses a **paid GOAT month**; fixtures remain the documented offline fallback. Headshots use curated ESPN athlete ids (Nets seed + Radar pool) plus best-effort ESPN search for acquisition results — not BDL. Decision record: [`VENDOR_DECISION.md`](./VENDOR_DECISION.md).
 
 ---
 
-## 5. Scoring methodology (original)
+## 6. Scoring methodology (original)
 
 ### Player dossier
 - Map season averages / rates into **six role pillars** (scoring, playmaking, rebounding, spacing, disruption, workload) as **peer percentiles**.
@@ -60,6 +74,8 @@ Browser (Next.js)
 - **Fit grade** from role-weighted pillars; recommendation Strong / Conditional / Poor with text verdict.
 - **Thin sample** (low games) lowers confidence and can cap Strong → Conditional.
 - Callouts: up to two strengths + two risks from thresholds; evidence strip contrasts L10 vs season where available.
+
+**Example read:** A paint-leaning big with elite rebounding / disruption and near-floor spacing tends toward a paint / rim role, not a primary creator — even if assist rank looks incidental. The dossier surfaces that as a Conditional (or Poor) creator-style fit when the role weights ask for creation and spacing the tape doesn’t support. The grade stays honest; thin samples cannot paper over gaps by claiming Strong.
 
 Version string on payloads (`scoringVersion`) keeps UI and write-up aligned. Details and limits are in methodology notes on each dossier and in [`BACKEND.md`](./BACKEND.md).
 
@@ -79,11 +95,11 @@ Version string on payloads (`scoringVersion`) keeps UI and write-up aligned. Det
 
 ### On the Radar
 - Full curated pool in a vertical scroll; Shuffle redraws the list.
-- Staff can sort the current cards by any Fit pillar (defaults to the real five’s primary need) via season-line RR percentiles (`GET /api/radar-scores`) — not a league-wide attribute search.
+- Staff can sort the current cards by any Fit pillar (defaults to the real five’s primary need) via season-line RR percentiles (`GET /api/radar-scores`) — not a league-wide attribute search. Changing the pillar reorders immediately.
 
 ---
 
-## 6. Product surface (shipped)
+## 7. Product surface (shipped)
 
 1. **Nets home** — half-court + bench; portrait cards with curated headshots  
 2. **Dossier drawer** — search or click → role, grade, pillars, callouts, evidence  
@@ -97,7 +113,7 @@ Design system: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md). Identity: [`IDENTITY.md
 
 ---
 
-## 7. Tech choices
+## 8. Tech choices
 
 | Choice | Why |
 |---|---|
@@ -109,7 +125,7 @@ Design system: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md). Identity: [`IDENTITY.md
 
 ---
 
-## 8. Limits & honesty
+## 9. Limits & honesty
 
 - Public counting stats only — no tracking, film, or contested-shot models.  
 - Percentiles are relative to the loaded peer pool for the season, not a proprietary FO database.  
@@ -119,15 +135,35 @@ Design system: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md). Identity: [`IDENTITY.md
 
 ---
 
-## 9. AI disclosure
+## 10. AI disclosure
 
 **Concept, scoring model, and product judgment are original.** Cursor (Composer / agent) assisted with planning, documentation, scaffolding, refactors, and implementation under project rules (root-cause-first, ports/adapters, UI/UX tokens). AI did **not** invent the FO scouting thesis or the Fit/Lineup aggregation semantics (those were human-approved). Phase-by-phase log: [`AI_USAGE.md`](./AI_USAGE.md).
 
 ---
 
-## 10. Final QA checklist
+## 11. Final QA checklist
 
-See [`FINAL_QA.md`](./FINAL_QA.md). Production smoke 2026-08-02 through `main` @ `1ddde0e` (PR #20): home, dossier (roster + search + Radar angle), search swap / Try in lineup + headshots, Lineup Fit, Radar HTML5 DnD + bench swap + Reset, multi-slot sim, Radar full-pool scroll + pillar sort, Tutorial (intro + bullets), mobile stack, Fit/dossier skeletons, offline dossier retry, thin-sample (Dadiet).
+See [`FINAL_QA.md`](./FINAL_QA.md). Production / local smoke through `main` @ `6336a87` (includes motion polish, court scroll fix, Source link, Radar sort UI cleanup, and React lint hygiene): home, dossier (roster + search + Radar angle), search swap / Try in lineup + headshots, Lineup Fit, Radar DnD + bench swap + Reset, multi-slot sim, Radar full-pool scroll + pillar sort (select auto-sorts), Tutorial, mobile stack, skeletons, offline dossier retry, thin-sample (Dadiet).
+
+---
+
+## 12. Reflections & next steps
+
+<!-- Personal section — rewrite in your own voice. Starter bullets below are optional scaffolding. -->
+
+**What I care about in this build**
+
+- …
+
+**Tradeoffs I chose on purpose**
+
+- …
+
+**If I had another week**
+
+- Full ARIA combobox for acquisition search (arrow keys / `aria-activedescendant`)
+- Richer peer-pool honesty (document pool size drift; optional season picker)
+- Touch-friendlier swap targets and a clearer tablet mid-layout between phone stack and desktop rails
 
 ---
 
