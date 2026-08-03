@@ -2,9 +2,11 @@
 
 **Role-aware NBA scouting dossiers** — grade players by the job they play, not a flat box-score dump.
 
-Built for a Brooklyn Nets front-office mindset: verdict first, evidence second. Open a starter or search an acquisition target, get a role label, peer-percentile pillars, and a Strong / Conditional / Poor fit read you can defend.
+Built for a Brooklyn Nets front-office mindset: verdict first, evidence second.
+Open a starter or search an acquisition target, get a role label, peer-percentile pillars, and a Strong / Conditional / Poor fit read you can defend.
 
-**Live demo:** [roster-radar-orcin.vercel.app](https://roster-radar-orcin.vercel.app)
+**Live demo:** [roster-radar-orcin.vercel.app](https://roster-radar-orcin.vercel.app)  
+**Project narrative:** [`docs/WRITEUP.md`](docs/WRITEUP.md)
 
 ---
 
@@ -17,8 +19,6 @@ Built for a Brooklyn Nets front-office mindset: verdict first, evidence second. 
 - Browse **On the Radar** — curated acquisition shortlist with Shuffle and pillar sort
 - **Simulate one-for-one swaps** (Radar, search, or bench → a starter slot) and see Fit deltas
 - Walk the UI with an optional **Tutorial**
-
-Assignment write-up (methodology, architecture, AI disclosure): [`docs/WRITEUP.md`](docs/WRITEUP.md)
 
 ---
 
@@ -60,9 +60,7 @@ Full reading order and product map: [`docs/README.md`](docs/README.md)
 
 | Doc | Role |
 |---|---|
-| [`docs/WRITEUP.md`](docs/WRITEUP.md) | Submission narrative |
-| [`docs/IDENTITY.md`](docs/IDENTITY.md) | Product locks |
-| [`docs/BACKEND.md`](docs/BACKEND.md) | Architecture + API contracts |
-| [`docs/AI_USAGE.md`](docs/AI_USAGE.md) | AI disclosure log |
-
-AI assisted implementation under project rules; **concept and scoring judgment are original** — see the write-up and AI log.
+| [`docs/WRITEUP.md`](docs/WRITEUP.md) | The Project Narrative |
+| [`docs/IDENTITY.md`](docs/IDENTITY.md) | Product Locks |
+| [`docs/BACKEND.md`](docs/BACKEND.md) | Architecture + API Contracts |
+| [`docs/AI_USAGE.md`](docs/AI_USAGE.md) | AI Disclosure Log |
