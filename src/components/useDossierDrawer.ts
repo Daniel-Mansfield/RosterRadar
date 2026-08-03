@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useId,
   useRef,
@@ -77,13 +78,12 @@ export function useDossierDrawer(): UseDossierDrawerResult {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const requestIdRef = useRef(0);
+  /** Mirror open/closing for handlers + async paths — updated only in those paths. */
   const isClosingRef = useRef(false);
   const drawerOpenRef = useRef(false);
   const titleId = useId();
-  isClosingRef.current = isClosing;
-  drawerOpenRef.current = drawer.open;
 
-  function finishCloseDrawer(): void {
+  const finishCloseDrawer = useCallback((): void => {
     // One-shot: transitionend can fire per property; ignore after the first finish.
     if (!drawerOpenRef.current && !isClosingRef.current) {
       return;
@@ -94,9 +94,9 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     drawerOpenRef.current = false;
     setIsClosing(false);
     setDrawer({ open: false });
-  }
+  }, []);
 
-  function closeDrawer(): void {
+  const closeDrawer = useCallback((): void => {
     // Second Escape / close during exit finishes immediately.
     if (isClosingRef.current) {
       finishCloseDrawer();
@@ -109,13 +109,14 @@ export function useDossierDrawer(): UseDossierDrawerResult {
     requestIdRef.current += 1;
     isClosingRef.current = true;
     setIsClosing(true);
-  }
+  }, [finishCloseDrawer]);
 
   function showDrawer(
     identity: DrawerIdentity,
     dossier: DossierLoadState,
   ): void {
     isClosingRef.current = false;
+    drawerOpenRef.current = true;
     setIsClosing(false);
     setDrawer({ open: true, ...identity, dossier });
   }
@@ -246,7 +247,7 @@ export function useDossierDrawer(): UseDossierDrawerResult {
       document.body.style.overflow = previousOverflow;
       previousFocusRef.current?.focus();
     };
-  }, [drawer.open]);
+  }, [drawer.open, closeDrawer]);
 
   // Fallback if transitionend does not fire (reduced-motion / interrupted).
   useEffect(() => {
@@ -257,7 +258,7 @@ export function useDossierDrawer(): UseDossierDrawerResult {
       finishCloseDrawer();
     }, 400);
     return () => window.clearTimeout(timer);
-  }, [isClosing]);
+  }, [isClosing, finishCloseDrawer]);
 
   return {
     drawer,
