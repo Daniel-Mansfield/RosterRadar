@@ -1,55 +1,36 @@
 # RosterRadar
 
-Scouting dossiers that grade NBA players by role, not just box scores.
+**Role-aware NBA scouting dossiers** — grade players by the job they play, not a flat box-score dump.
 
-**RosterRadar** helps NBA decision-makers judge a player’s roster fit in under a minute — verdict first, evidence second.
+Built for a Brooklyn Nets front-office mindset: verdict first, evidence second. Open a starter or search an acquisition target, get a role label, peer-percentile pillars, and a Strong / Conditional / Poor fit read you can defend.
 
-**Live demo:** [https://roster-radar-orcin.vercel.app](https://roster-radar-orcin.vercel.app)
+**Live demo:** [roster-radar-orcin.vercel.app](https://roster-radar-orcin.vercel.app)
 
-## Status
+---
 
-**MVP shipped** (2026-08-02). Phase 4 write-up + production QA complete; post-ship features include multi-slot lineup sim and Radar pillar sort (PR #20).
+## What you can do
 
-Docs map (start here): [`docs/README.md`](docs/README.md)  
-Assignment write-up: [`docs/WRITEUP.md`](docs/WRITEUP.md)
+- Inspect the Nets **starting five** on a half-court, with bench depth beside it
+- Open a **dossier drawer** — role, fit grade, six pillars, strengths/risks, L10 vs season evidence
+- **Search** non-Nets players and evaluate them on the same dossier surface
+- Read **Lineup Fit** — peer-percentile aggregation for the five on the floor
+- Browse **On the Radar** — curated acquisition shortlist with Shuffle and pillar sort
+- **Simulate one-for-one swaps** (Radar, search, or bench → a starter slot) and see Fit deltas
+- Walk the UI with an optional **Tutorial**
 
-## Intentions & decisions
+Assignment write-up (methodology, architecture, AI disclosure): [`docs/WRITEUP.md`](docs/WRITEUP.md)
 
-| Area | Decision |
-|---|---|
-| **Audience** | NBA FO / scouting staff mindset — not a fan fantasy tool |
-| **Product** | Role-aware **scouting dossier**: fit grade, role pillars, strengths/risks, evidence |
-| **UX model** | Leetify-like clarity + Cleaning the Glass seriousness; progressive disclosure |
-| **Differentiator** | Grade by **role fit**, not a generic box-score dump |
-| **Scope** | Small 10-day MVP; compare / role toggle stretch **skipped** |
-| **Non-goals (v1)** | Auth, film, tracking, salary/cap, full trade packages / +/−, social, live tools |
-| **Frontend** | Opinionated, responsive; one accent; semantic tokens; WCAG AA contrast |
-| **Backend** | Backend owns interpretation; ports/adapters; pure scoring; Zod at boundaries |
-| **API surface** | `GET /api/players`, `/api/dossier/[id]`, `/api/team-fit`, `/api/radar-scores` |
-| **Data** | [BALLDONTLIE](https://docs.balldontlie.io/) (GOAT) — [`docs/VENDOR_DECISION.md`](docs/VENDOR_DECISION.md) |
-| **Stack** | TypeScript, React, Next.js, Vercel |
-| **Quality bar** | Root-cause fixes; original scoring + AI disclosed |
-| **Process** | Branch off `main`; named commits; merge after testing — [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
+---
 
-## Project docs
+## Stack
 
-Full index and reading order: [`docs/README.md`](docs/README.md).
+TypeScript · React · Next.js (App Router) · Zod · BALLDONTLIE · Vercel
 
-| Doc | Role |
-|---|---|
-| [`docs/WRITEUP.md`](docs/WRITEUP.md) | Assignment submission narrative |
-| [`docs/IDENTITY.md`](docs/IDENTITY.md) | Product locks / keep·cut·later |
-| [`docs/PROJECT_OUTLINE.md`](docs/PROJECT_OUTLINE.md) | Original plan + assignment alignment |
-| [`docs/BACKEND.md`](docs/BACKEND.md) | Architecture + API contracts |
-| [`docs/VENDOR_DECISION.md`](docs/VENDOR_DECISION.md) | Data vendor decision record |
-| [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) | Visual / UX tokens |
-| [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) | Phases + definition of done |
-| [`docs/FINAL_QA.md`](docs/FINAL_QA.md) | Production smoke checklist |
-| [`docs/AI_USAGE.md`](docs/AI_USAGE.md) | AI disclosure log |
-| Phase reviews | [`1`](docs/PHASE_1_REVIEW.md) · [`2`](docs/PHASE_2_REVIEW.md) · [`3`](docs/PHASE_3_REVIEW.md) (historical) |
-| Cursor rules | [`.cursor/rules/`](.cursor/rules/) |
+Ports/adapters for NBA data (`src/nba/`), pure scoring (`src/scoring/`), thin Route Handlers, CSS modules + semantic tokens.
 
-## Setup
+---
+
+## Run locally
 
 ```bash
 cp .env.example .env.local
@@ -58,4 +39,30 @@ npm install
 npm run dev
 ```
 
-Never commit secrets. On Vercel, set `BALLDONTLIE_API_KEY` for Production and Preview.
+Open [http://localhost:3000](http://localhost:3000). Never commit secrets. On Vercel, set `BALLDONTLIE_API_KEY` for Production and Preview.
+
+---
+
+## Verify
+
+```bash
+npm test          # unit tests (scoring, lineup sim, cache, …)
+npm run lint      # ESLint
+npx tsc --noEmit  # types
+npm run build     # production build
+```
+
+---
+
+## Docs
+
+Full reading order and product map: [`docs/README.md`](docs/README.md)
+
+| Doc | Role |
+|---|---|
+| [`docs/WRITEUP.md`](docs/WRITEUP.md) | Submission narrative |
+| [`docs/IDENTITY.md`](docs/IDENTITY.md) | Product locks |
+| [`docs/BACKEND.md`](docs/BACKEND.md) | Architecture + API contracts |
+| [`docs/AI_USAGE.md`](docs/AI_USAGE.md) | AI disclosure log |
+
+AI assisted implementation under project rules; **concept and scoring judgment are original** — see the write-up and AI log.
